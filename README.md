@@ -1,4 +1,1 @@
-tfg_redsocial
-=============
-
-A Symfony project created on October 26, 2018, 8:37 am.
+Aplicación web de una red social para la conexión entre usuarios de videojuegos de diferentes plataformas y gestión de torneos virtuales mediante el framework Symfony como Proyecto Final de Carrera de Salvador Aragón Reyes

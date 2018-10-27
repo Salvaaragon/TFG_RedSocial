@@ -1,0 +1,63 @@
+.paneles {
+    justify-content: center;
+    display:flex;
+    margin-bottom: 30px;
+}
+
+.perfil-panel {
+    width: 20%;
+    height: 150px;
+    margin-right: 20px;
+}
+
+.timeline-panel {
+    width: 40%;
+    height: auto;
+    margin-right: 20px;
+}
+
+.notification-panel {
+    width: 20%;
+    height: 165px;
+}
+
+.img_and_name {
+    display:flex;
+}
+
+.profile_img {
+    margin:10px;
+    width: 75px;
+    height: 75px;
+}
+
+.profile_data {
+    margin: 10px;
+    margin-top: 15px;
+}
+
+.data_numbers {
+    margin-top:15px;
+    text-align: center;
+}
+
+.post_img {
+    margin:5px;
+    width: 50px;
+    height: 50px;
+}
+
+.post_profile {
+    display:flex;
+}
+
+.post_data {
+    margin-left: 10px;
+}
+
+.post_panel {
+    margin:10px;
+    margin-top: 15px;
+}
+
+

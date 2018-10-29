@@ -1,0 +1,59 @@
+.games_panel {
+    margin-top: 56px;
+}
+
+.prueba {
+    margin-bottom: 0;
+}
+
+.menu_games{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: white;
+}
+
+.menu_games li {
+    float: left;
+}
+
+.menu_games li a {
+    display: block;
+    color: grey;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+/* Change the link color to #111 (black) on hover */
+.menu_games li a:hover {
+    color:black;
+}
+
+.menu_games_active {
+    border-bottom:3px solid green;
+}
+
+.img_hola {
+    width:200px;
+    height: 200px;
+    border: 3px solid grey;
+    margin-right:15px;
+    margin-top:5px;
+    margin-bottom: 5px;
+}
+
+.games_row {
+    justify-content: center;
+    display:flex;
+}
+
+.games_row > img {
+    margin: 20px;
+}
+
+.games_elements {
+    margin-bottom: 50px;
+    background-color: lightgray
+}

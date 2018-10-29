@@ -1,12 +1,24 @@
-<nav class="navbar navbar-default" align="center">
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-        <ul class="nav navbar-nav">
-            <li class="active"><a href="#"><span class="glyphicon glyphicon-home" aria-hidden="true"></span> INICIO<span class="sr-only">(current)</span></a></li>
-            <li><a href="#"><span class="glyphicon glyphicon-tower" aria-hidden="true"></span> TORNEOS</a></li>
-            <li><a href="#"><span class="glyphicon glyphicon-stats" aria-hidden="true"></span> RANKINGS</a></li>
-            <li><a href="#"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span> GRUPOS</a></li>
-            <li><a href="#"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span> CHATS</a></li>
-            <li><a href="#"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> PERFIL</a></li>
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="nav navbar-nav mx-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href=""><i class="fas fa-home"></i> INICIO<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ path('tournaments') }}"><i class="fas fa-trophy"></i> TORNEOS</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href=""><i class="fas fa-list-ol"></i> RANKINGS</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href=""><i class="fas fa-users"></i> GRUPOS</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href=""><i class="fas fa-comment-alt"></i> CHATS</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href=""><i class="fas fa-user"></i> PERFIL</a>
+            </li>
         </ul>
     </div>
 </nav>

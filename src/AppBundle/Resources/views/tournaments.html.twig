@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="games_panel">
+    <div class="jumbotron jumbotron-fluid prueba">
+        <div class="container">
+            <h1 class="display-4">TORNEOS<small>Juegos con torneos disponibles</small></h1>
+            <p class="lead"><b>En esta sección se encuentra la lista de juegos para los cuales hay disponibles torneos en los que los
+        usuarios pueden participar.</b></p>
+        </div>
+    </div>
+    <nav class="nav">
+        <a class="nav-link menu_games_active">Todos</a>
+        <a class="nav-link"><i class="fas fa-mobile-alt"></i> Móvil</a>
+        <a class="nav-link"><i class="fab fa-xbox"></i> Xbox</a>
+        <a class="nav-link"><i class="fab fa-playstation"></i> PlayStation</a>
+        <a class="nav-link"><i class="fab fa-steam"></i> Steam</a>
+    </nav>
+    <div class="games_elements">
+        <div class="games_row">
+            <a href="{{ path('clash_royale') }}"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
+            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
+            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
+            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
+            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
+            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
+        </div>
+        <div class="games_row">
+            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
+            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
+            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
+            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
+            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
+            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
+        </div>
+        <div class="games_row">
+            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
+            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
+            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
+            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
+            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
+            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
+        </div>
+        <div class="games_row">
+            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
+            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
+            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
+            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
+            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
+            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,11 @@
+home:
+  path: /home
+  defaults: { _controller:AppBundle:Home:index }
+
+tournaments:
+  path: /tournaments
+  defaults: { _controller:AppBundle:Tournaments:index }
+
+clash_royale:
+  path: /tournaments/clash_royale
+  defaults: { _controller:AppBundle:Tournaments:clash_royale }

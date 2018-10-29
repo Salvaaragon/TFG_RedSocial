@@ -2,7 +2,7 @@
 
 {% block body %}
 <div class="paneles">
-    <div class="panel panel-success perfil-panel"> <!-- PERFIL -->
+    <div class="card profile-panel">
         <div class="img_and_name">
             <div>
                 <img class="profile_img", src="{{ asset('bundles/app/image/default_profile.png') }}">
@@ -13,10 +13,11 @@
             </div>
         </div>
         <div class="data_numbers">
-            <a>Publicaciones: 500</a> |
-            <a>Puntuación: 288</a>
+            <a href="#">Publicaciones: 500</a> |
+            <a href="#">Puntuación: 288</a>
         </div>
     </div>
+
     <div class="panel panel-success timeline-panel"> 
         <ul class="list-group">
             <li class="list-group-item">
@@ -31,8 +32,8 @@
                 </div>
             </div>
             <div class="post_panel">
-                <a>Comentarios: 500</a> |
-                <a>Likes: 288</a>
+                <a href="#">Comentarios: 500</a> |
+                <a href="#">Likes: 288</a>
             </div>
             </li>
             <li class="list-group-item">
@@ -361,19 +362,19 @@
     <div class="panel panel-success notification-panel">
         <ul class="list-group">
             <li class="list-group-item">
-                <span class="badge">14</span>
                 Nuevos mensajes
+                <span class="badge badge-pill badge-dark">14</span>
             </li>
             <li class="list-group-item">
-                <span class="badge">14</span>
                 Nuevos me gusta
+                <span class="badge badge-pill badge-dark">5</span>
             </li>
             <li class="list-group-item">
-                <span class="badge">14</span>
                 Nuevos seguidores
+                <span class="badge badge-pill badge-dark">3</span> 
             </li>
             <li class="list-group-item">
-                <a>Ver todas las notificaciones</a>
+                <a href="#">Ver todas las notificaciones</a>
             </li>
         </ul>
     </div>

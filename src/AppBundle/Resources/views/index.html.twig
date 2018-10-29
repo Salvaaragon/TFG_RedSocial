@@ -359,24 +359,37 @@
 
         </ul>
     </div>
-    <div class="panel panel-success notification-panel">
-        <ul class="list-group">
-            <li class="list-group-item">
-                Nuevos mensajes
-                <span class="badge badge-pill badge-dark">14</span>
-            </li>
-            <li class="list-group-item">
-                Nuevos me gusta
-                <span class="badge badge-pill badge-dark">5</span>
-            </li>
-            <li class="list-group-item">
-                Nuevos seguidores
-                <span class="badge badge-pill badge-dark">3</span> 
-            </li>
-            <li class="list-group-item">
-                <a href="#">Ver todas las notificaciones</a>
-            </li>
-        </ul>
+    <div class="notification-panel">
+        <div class="panel panel-success">
+            <ul class="list-group">
+                <li class="list-group-item">
+                    Nuevos mensajes
+                    <span class="badge badge-pill badge-dark">14</span>
+                </li>
+                <li class="list-group-item">
+                    Nuevos me gusta
+                    <span class="badge badge-pill badge-dark">5</span>
+                </li>
+                <li class="list-group-item">
+                    Nuevos seguidores
+                    <span class="badge badge-pill badge-dark">3</span> 
+                </li>
+                <li class="list-group-item">
+                    <a href="#">Ver todas las notificaciones</a>
+                </li>
+            </ul>
+        </div>
+        <div class="card new_post_card">
+            <div class="card-header">
+                Nueva publicación
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <textarea class="form-control new_post" maxlength='140' rows="3"></textarea>
+                </div>
+                <a href="#" class="btn btn-primary btn_new_post">Enviar</a>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

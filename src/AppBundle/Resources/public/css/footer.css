@@ -4,11 +4,12 @@
     bottom: 0;
     left: 0;
     padding: 0.4rem;
-    background-color: #001439;
+    background-color:#014e5e;
     text-align: center;
     /*z-index: 99999;*/
 }
 
 .text_color {
     font-size: 14px;
+    color:#129fbb;
 }

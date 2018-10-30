@@ -1,0 +1,89 @@
+.login_block {
+    float:left;
+    width:100%;
+    padding : 80px 0;
+}
+
+.login_block:after { /* Con esto definimos la imagen de fondo transparente */
+    content: "";
+    background: url("../image/login_background.png"); 
+    opacity: 0.5;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    position: absolute;
+    z-index: -1;   
+}
+
+.global_panel {
+    background:#fff; 
+    border-radius: 10px; 
+    box-shadow: 0px 0px 12px 5px rgba(0,0,0,0.75); 
+    height: 70%; 
+    width: 70%;
+}
+
+.left_panel {
+    background:url("../image/index_image.jpg"); 
+    background-size:cover; 
+    min-height:500px; 
+    border-radius: 10px 0 0 10px; 
+    padding:0;
+}
+
+.left_panel_text {
+    color:white;
+    margin-top:20px;
+    margin-left:10px;
+}
+
+.web_title {
+    text-align:center;
+    font-family: 'Ubuntu', sans-serif;
+}
+
+.list_title {
+    list-style:none;
+    size:30px;
+}
+
+.list_title li {
+    padding-bottom: 30px;
+}
+
+.right_panel {
+    padding: 50px 30px; 
+    position: relative;
+}
+
+.right_panel h2 {
+    margin-bottom:30px; 
+    font-weight:800; 
+    font-size:30px; 
+    color:  #014e5e;
+}
+
+.right_panel h2:after {
+    content:" "; 
+    width:100px; 
+    height:5px; 
+    background:#014e5e;
+    display:block; 
+    margin-top:20px; 
+    border-radius:3px;
+    margin-left:auto;
+    margin-right:auto
+}
+
+.right_panel_footer {
+    position:absolute; 
+    width:80%; 
+    bottom:20px; 
+    font-size:13px; 
+    text-align:center;
+}
+
+.button_div {
+    margin-top:2px;
+}

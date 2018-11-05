@@ -65,7 +65,7 @@ class User implements AdvancedUserInterface
     /**
      * @var string
      * 
-     * @ORM\Column(name="password", type="string", length=16)
+     * @ORM\Column(name="password", type="string")
      */
     private $password;
 
@@ -311,7 +311,7 @@ class User implements AdvancedUserInterface
      */
     public function getRoles()
     {
-        return $this->roles;
+        return array($this->roles);
     }
 
     /**

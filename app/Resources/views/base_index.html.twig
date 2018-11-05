@@ -9,9 +9,17 @@
                     <div class="alert alert-{{ type }} alert-dismissible flash_message_index" role="alert">
                         <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
                         {{ message | raw }}
-                    </div>
+                    </div>   
                 {% endfor %}
             {% endfor %}
+        {% endblock %}
+        {% block error_login %}
+            {% if error %}
+                <div class="alert alert-danger alert-dismissible flash_message_index">
+                    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    {{ error.messageKey|trans(error.messageData, 'security')|replace({"Invalid credentials." : "El nombre de usuario o la contraseña son incorrectos."}) }}
+                </div>
+            {% endif %}
         {% endblock %}
         {% block body %}{% endblock %}
         {% block javascripts %}{% endblock %} 

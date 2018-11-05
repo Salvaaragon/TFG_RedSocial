@@ -4,8 +4,10 @@ security:
 
     # https://symfony.com/doc/current/security.html#b-configuring-how-users-are-loaded
     providers:
-        in_memory:
-            memory: ~
+        our_db_provider:
+            entity:
+                class: AppBundle:User
+                property: username
 
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
@@ -17,8 +19,15 @@ security:
             anonymous: ~
             # activate different ways to authenticate
 
+            pattern:    ^/
+            http_basic: ~
+            provider: our_db_provider
+
             # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
             #http_basic: ~
 
             # https://symfony.com/doc/current/security/form_login_setup.html
             #form_login: ~
+    encoders:
+        AppBundle\Entity\User: 
+            algorithm: bcrypt

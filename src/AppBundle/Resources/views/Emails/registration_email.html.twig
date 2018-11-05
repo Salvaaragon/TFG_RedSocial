@@ -1,0 +1,9 @@
+<h3>¡Bienvenido a Gaming Together!</h3>
+
+¡Hola {{ username }}! Te has registrado satisfactoriamente en nuestra web.
+<br>
+{# example, assuming you have a route named "login" #}
+Antes de poder iniciar sesión, es necesario que actives tu cuenta accediendo al siguiente enlace: 
+<a href="{{ url('active_account', {'username': username}) }}">Activar cuenta</a>
+<br>
+¡Gracias y esperamos que disfrutes de esta comunidad de jugadores!

@@ -1,0 +1,55 @@
+{% extends 'base_index.html.twig' %}
+
+{% block body %}
+
+{% if errors is defined %}
+<section class="register_block register_block_witherrors">
+{% else %}
+<section class="register_block register_block_withouterrors">
+{% endif %}
+    <div class="container register_global_panel">
+        <div class="col-md-12 register_top_separation"></div>
+        <div class="col-md-12 register_top_panel">
+            <h2 class="text-center">FORMULARIO DE REGISTRO</h2>
+        </div>
+        {% if errors is defined %}
+        <div class="card text-white bg-danger mb-12 register_error_card">
+            <div class="card-header">Se han encontrado los siguientes errores</div>
+            <div class="card-body register_error_body">
+                <ul class="register_error_list">
+                    {% for error in errors %}
+                        <li>{{ error.message }}</li>
+                    {% endfor %}
+                </ul>
+            </div> 
+        </div>
+        {% endif %}               
+        
+        <div class="row">
+            <div class="col-md-6 register_left_panel">
+            {{ form_start(form) }}
+                {{ form_widget(form.username) }}                                  
+                {{ form_widget(form.plainPassword.first) }}
+                {{ form_widget(form.profileName) }}
+                {{ form_widget(form.psn_id) }}
+            </div>
+            <div class="col-md-6 register_right_panel">
+                {{ form_widget(form.email) }}
+                {{ form_widget(form.plainPassword.second) }}
+                {{ form_widget(form.steam_id) }}
+                {{ form_widget(form.xbox_id) }}
+            </div>
+        <div class="col-md-12 register_div_buttons">
+            <div class="register_div_btn">{{ form_widget(form.submit) }}</div>
+            <div class="register_div_btn">
+                <button type="button" onclick="window.location.href = '{{ path('index') }}'" class="btn btn-danger register_btn">
+                    Volver a la página principal
+                </button>
+            </div>
+            <div class="register_div_btn">{{ form_widget(form.reset) }}</div>
+        {{ form_end(form) }}
+        </div>
+        <div class="col-md-12 register_bottom_separation"></div>
+    </div>
+</section>
+{% endblock %}

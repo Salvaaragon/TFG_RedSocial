@@ -4,6 +4,14 @@
     padding : 80px 0;
 }
 
+.flash_message_index {
+    width:50%;
+    left: 25%;
+    margin-top: 10px;
+    position:fixed;
+    text-align: center;
+}
+
 .login_block:after { /* Con esto definimos la imagen de fondo transparente */
     content: "";
     background: url("../image/login_background.png"); 

@@ -1,12 +1,14 @@
 # This file is auto-generated during the composer install
 parameters:
-    database_host: 127.0.0.1
-    database_port: null
-    database_name: symfony
+    database_host: localhost
+    database_port: 3306
+    database_name: tfg_redsocial
     database_user: root
-    database_password: null
-    mailer_transport: smtp
-    mailer_host: 127.0.0.1
-    mailer_user: null
-    mailer_password: null
+    database_password: mysql
+    mailer_transport: gmail
+    mailer_host: smtp.gmail.com
+    mailer_user: soporte.gamingtogether@gmail.com
+    mailer_password: tfg_redsocial2018
+    mailer_encryption: ssl
+    mailer_auth_mode: login
     secret: 3d6a83b217b3918766a5282b6fbf18e690f91720

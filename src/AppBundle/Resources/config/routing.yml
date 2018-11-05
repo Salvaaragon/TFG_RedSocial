@@ -1,6 +1,10 @@
 index:
   path: /
   defaults: { _controller:AppBundle:Main:index }
+
+register:
+  path: /register
+  defaults: { _controller:AppBundle:Register:index }
   
 home:
   path: /home
@@ -13,3 +17,7 @@ tournaments:
 clash_royale:
   path: /tournaments/clash_royale
   defaults: { _controller:AppBundle:Tournaments:clash_royale }
+
+active_account:
+  path: /active_account/{username}
+  defaults: { _controller:AppBundle:Register:active_account }

@@ -1,8 +1,18 @@
 <!DOCTYPE html>
 <html>
     {% include 'layout/header.html.twig' %}
+
     <body>
-        
+        {% block flash_messages %}
+            {% for type, messages in app.session.flashbag.all() %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ type }} alert-dismissible flash_message_index" role="alert">
+                        <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        {{ message | raw }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+        {% endblock %}
         {% block body %}{% endblock %}
         {% block javascripts %}{% endblock %} 
         

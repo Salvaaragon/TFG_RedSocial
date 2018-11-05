@@ -1,0 +1,105 @@
+.register_block_withouterrors {
+    float:left;
+    width:100%;
+    padding : 80px 0;
+}
+
+.register_block_witherrors {
+    float:left;
+    width:100%;
+    padding : 50px 0;
+}
+
+.register_block:after { /* Con esto definimos la imagen de fondo transparente */
+    content: "";
+    background: url("../image/login_background.png"); 
+    opacity: 0.5;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    position: absolute;
+    z-index: -1;   
+}
+
+.register_error_card {
+    height: auto;
+}
+
+.register_error_list {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.register_global_panel {
+    background:#fff; 
+    border-radius: 10px; 
+    box-shadow: 0px 0px 12px 5px rgba(0,0,0,0.75); 
+    height: 70%; 
+    width: 70%;
+}
+
+.register_left_panel {
+    padding: 10px 30px; 
+    position: relative;
+}
+
+.register_right_panel {
+    padding: 10px 30px; 
+    position: relative;
+}
+
+.register_top_separation {
+    height: 10px;
+}
+
+.register_top_panel h2 {
+    margin-top:10px;
+    margin-bottom:10px; 
+    font-weight:800; 
+    font-size:30px; 
+    color:  #014e5e;
+}
+
+.register_top_panel h2:after {
+    content:" "; 
+    width:100px; 
+    height:5px; 
+    background:#014e5e;
+    display:block; 
+    margin-top:20px; 
+    border-radius:3px;
+    margin-left:auto;
+    margin-right:auto
+}
+
+.register_right_panel_footer {
+    position:absolute; 
+    width:80%; 
+    bottom:20px; 
+    font-size:13px; 
+    text-align:center;
+}
+
+.register_field {
+    margin-bottom: 10px;
+    margin-top:10px;
+}
+
+.register_div_buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.register_div_btn {
+    margin-right: 5px;
+}
+
+.register_btn {
+    width:300px;
+}
+
+.register_bottom_separation {
+    height: 20px;
+}

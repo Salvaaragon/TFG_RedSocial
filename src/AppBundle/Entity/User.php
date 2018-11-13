@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * User
@@ -21,7 +22,7 @@ class User implements AdvancedUserInterface
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer", length=32)
+     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
@@ -100,10 +101,22 @@ class User implements AdvancedUserInterface
      */
     private $isActive;
 
+    /**
+    * @ORM\OneToMany(targetEntity="GameGroup", mappedBy="user")
+    */
+    private $game_groups;
+
+    /**
+    * @ORM\OneToMany(targetEntity="Message", mappedBy="user")
+    */
+    private $messages;
+
     public function __construct()
     {
         $this->roles = 'ROLE_USER';
         $this->isActive = false;
+        $this->game_groups = new ArrayCollection();
+        $this->messages = new ArrayCollection();
     }
 
     /**

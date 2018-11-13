@@ -21,3 +21,7 @@ clash_royale:
 active_account:
   path: /active_account/{username}
   defaults: { _controller:AppBundle:Register:active_account }
+
+group:
+  path: /group
+  defaults: { _controller:AppBundle:Group:index }

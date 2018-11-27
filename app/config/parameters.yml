@@ -9,6 +9,4 @@ parameters:
     mailer_host: smtp.gmail.com
     mailer_user: soporte.gamingtogether@gmail.com
     mailer_password: tfg_redsocial2018
-    mailer_encryption: ssl
-    mailer_auth_mode: login
     secret: 3d6a83b217b3918766a5282b6fbf18e690f91720

@@ -1,0 +1,48 @@
+    {% extends 'base.html.twig' %}
+
+    {% block stylesheets %}
+
+    {% endblock %}
+
+    {% block body %}
+    <div style="margin-top:100px;">
+        <div id="chat_mensajes" style="margin-top:150px;"></div>
+        <input id="field_text_message" type="text"><button id="send_message" type="button" class="btn btn-primary">Enviar</button>
+    </div>
+    {% endblock %}
+
+    {% block javascripts %}
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#chat_mensajes').load(Routing.generate('get_messages', { id_group: 7 }));
+
+        setInterval(charge_messages, 5000);
+    });
+
+    function charge_messages() {
+        $.ajax({  
+            url: Routing.generate('get_messages', { id_group: 7 }),  
+            success: function(data) {  
+                $('#chat_mensajes').html(data); 
+            }  
+        });
+    }
+
+    $('#send_message').on('click', function(event) {
+        var data = {}
+        var msg;
+        msg = $('#field_text_message').val();
+        data['id_group'] = 7;
+        data['id_user'] = "{{ app.user.id }}";
+        data['message'] = msg;
+        $.ajax({
+            url: Routing.generate('add_message', { id_group: 7}),
+            type: "POST",
+            data: data,
+            success: function(data) {
+            }
+        });
+    });
+
+    </script>
+    {% endblock %}

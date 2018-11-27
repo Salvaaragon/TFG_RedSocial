@@ -1,0 +1,85 @@
+<div class="group_list">
+    {% if groups is defined and groups is not null %}
+        {% for group in groups %}
+        {% if group.platform == "Xbox" %}
+        <div class="card border-success group_card">
+        {% elseif group.platform == "Steam" %}
+        <div class="card border-dark group_card">
+        {% elseif group.platform == "PlayStation" %}
+        <div class="card border-primary group_card">
+        {% endif %}
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <h5><b>Juego</b></h5>
+                        {{ group.game }}
+                    </div>
+                    <div class="col-lg-2">
+                        <h5><b>Plataforma</b></h5>
+                        {% if group.platform == "Xbox" %}
+                        <i class="fab fa-xbox"></i> 
+                        {% elseif group.platform == "Steam" %}
+                        <i class="fab fa-steam"></i> 
+                        {% elseif group.platform == "PlayStation" %}
+                        <i class="fab fa-playstation"></i> 
+                        {% endif %}
+                        {{ group.platform }}
+                    </div>
+                    <div class="col-lg-2">
+                        <h5><b>Se buscan</b></h5>
+                        {{ group.max_participants }}
+                    </div>
+                    <div class="col-lg-2">
+                        <h5><b>Participantes</b></h5>
+                        5
+                    </div>
+                    <div class="col-lg-2">
+                        <h5><b>Comienzo</b></h5>
+                        {{ group.datetime }}
+                    </div>
+                    <div class="col-lg-1">
+                        {% if group.platform == "Xbox" %}
+                        <button type="button" class="btn btn-success btn-lg btn-block" data-toggle="modal" data-target="#group_modal" 
+                            data-game="{{ group.game }}" 
+                            data-user="{{ group.user }}" 
+                            data-datetime="{{ group.datetime }}" 
+                            data-platform="{{ group.platform }}" 
+                            data-id="{{ group.id }}" 
+                            data-part="{{ group.max_participants }}"
+                            data-users="{{ group.participants }}">
+                            <i class="fas fa-info-circle" style="color:white;"></i>
+                        </button>
+                        {% elseif group.platform == "Steam" %}
+                        <button type="button" class="btn btn-dark btn-lg btn-block" data-toggle="modal" data-target="#group_modal" 
+                            data-game="{{ group.game }}" 
+                            data-user="{{ group.user }}" 
+                            data-datetime="{{ group.datetime }}" 
+                            data-platform="{{ group.platform }}" 
+                            data-id="{{ group.id }}" 
+                            data-part="{{ group.max_participants }}" 
+                            data-users="{{ group.participants }}">
+                            <i class="fas fa-info-circle" style="color:white;"></i>
+                        </button>
+                        {% elseif group.platform == "PlayStation" %}
+                        <button type="button" class="btn btn-primary btn-lg btn-block" data-toggle="modal" data-target="#group_modal" 
+                            data-game="{{ group.game }}"  
+                            data-user="{{ group.user }}" 
+                            data-datetime="{{ group.datetime }}" 
+                            data-platform="{{ group.platform }}" 
+                            data-id="{{ group.id }}" 
+                            data-part="{{ group.max_participants }}" 
+                            data-users="{{ group.participants }}">
+                            <i class="fas fa-info-circle" style="color:white;"></i>
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div style="text-align:center;">No hay grupos disponibles</div>
+    {% endif %}
+</div>
+
+

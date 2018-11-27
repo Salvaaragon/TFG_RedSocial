@@ -45,6 +45,7 @@ class ComposerStaticInitd52ade434dbf9c84e2cdda1ed29c43db
             'Sensio\\Bundle\\GeneratorBundle\\' => 30,
             'Sensio\\Bundle\\FrameworkExtraBundle\\' => 35,
             'Sensio\\Bundle\\DistributionBundle\\' => 33,
+            'SC\\DatetimepickerBundle\\' => 24,
         ),
         'P' => 
         array (
@@ -66,6 +67,7 @@ class ComposerStaticInitd52ade434dbf9c84e2cdda1ed29c43db
         array (
             'Fig\\Link\\' => 9,
             'FOS\\UserBundle\\' => 15,
+            'FOS\\JsRoutingBundle\\' => 20,
         ),
         'D' => 
         array (
@@ -167,6 +169,10 @@ class ComposerStaticInitd52ade434dbf9c84e2cdda1ed29c43db
         array (
             0 => __DIR__ . '/..' . '/sensio/distribution-bundle',
         ),
+        'SC\\DatetimepickerBundle\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/mwsimple/scdatetimepicker-bundle',
+        ),
         'Psr\\SimpleCache\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/simple-cache/src',
@@ -202,6 +208,10 @@ class ComposerStaticInitd52ade434dbf9c84e2cdda1ed29c43db
         'FOS\\UserBundle\\' => 
         array (
             0 => __DIR__ . '/..' . '/friendsofsymfony/user-bundle',
+        ),
+        'FOS\\JsRoutingBundle\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/friendsofsymfony/jsrouting-bundle',
         ),
         'Doctrine\\Instantiator\\' => 
         array (
@@ -250,6 +260,13 @@ class ComposerStaticInitd52ade434dbf9c84e2cdda1ed29c43db
             'SensioLabs\\Security' => 
             array (
                 0 => __DIR__ . '/..' . '/sensiolabs/security-checker',
+            ),
+        ),
+        'J' => 
+        array (
+            'JsonpCallbackValidator' => 
+            array (
+                0 => __DIR__ . '/..' . '/willdurand/jsonp-callback-validator/src',
             ),
         ),
         'D' => 

@@ -74,6 +74,6 @@ class Platform
     public function getName()
     {
         return $this->name;
-    }
+    } 
 }
 

@@ -1,9 +1,300 @@
-{% extends 'base.html.twig' %}
+    {% extends 'base.html.twig' %}
 
-{% block body %}
-<div class="games_panel">
-{{ form_start(form) }}
-{{ form_widget(form) }}
-{{ form_end(form) }}
-</div>
-{% endblock %} 
+    {% block stylesheets %}
+        {{ form_stylesheet(form) }}
+    {% endblock %}
+
+    {% block body %}
+
+    <section class="group_panel">
+    {% for flashMessage in app.session.flashbag.get('notice') %}
+
+    <div class="alert alert-success alert-dismissible flash_error_group" role="alert">
+        <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        {{ flashMessage }}
+    </div>
+
+    {% endfor %}
+
+    {% for flashMessage in app.session.flashbag.get('error') %}
+
+    <div class="alert alert-danger alert-dismissible flash_error_group" role="alert">
+        <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        {{ flashMessage }}
+    </div>
+
+    {% endfor %}
+ 
+    <div class="row platform_filter">
+        <div class="col-10">
+        <select class="custom-select" id="inputGroupSelect04" aria-label="Example select with button addon">
+            <option selected value="0">Todas las plataformas</option>
+            {% for platform in platforms %}
+                <option value="{{ platform.id }}">{{ platform.name }}</option>
+            {% endfor %}
+        </select>
+        </div>
+        <div class="col-2"><button class="btn btn-primary btn-block" id="new_group_btn" data-toggle="modal" data-target="#exampleModal">Nuevo grupo</button></div>
+    </div>
+      
+    <div id="loading_div" class="loading_group_div">Cargando grupos...</div>
+    <div name="div_dinamico" id="div_dinamico" class="div_dinamico">
+        <div class="loading_group_div">Cargando grupos...</div>
+    </div> 
+    </section>
+
+    <!-- Info group modal -->
+    <div class="modal" id="group_modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="group_leader"></div>
+                <div class="group_participants"></div>
+                <div class="group_part_require"><b>Huecos restantes:</b> 2</div>
+            </div>
+            <div class="modal-footer">
+                <div class="group_date mr-auto"></div>
+                <button id="group_signUp" type="button" class="btn btn-primary">Inscribirse</button>
+                <button id="group_delete" type="button" class="btn btn-primary">Eliminar</button>
+                <div id="confirm_delete" style="display:none;">
+                    <input type="hidden" id="group_id_value" name="group_id_value" readonly/>
+                    <div style="text-align:center;"><b>¿Está seguro?</b></div>
+                    <button id="group_delete_accept" type="button" class="btn btn-success btn-sm">Aceptar</button>
+                    <button id="group_delete_cancel" type="button" class="btn btn-danger btn-sm">Cancelar</button>
+                </div>
+                <button id="group_chat" type="button" class="btn btn-secondary">Entrar al chat</button>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New group modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Nuevo grupo</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{{ path('group') }}" method="post">
+                <div class="modal-body">
+                {% if num_groups_user is defined and num_groups_user <3 or num_groups_user is not defined %}
+                    <div class="group_form_field">{{ form_widget(form.game) }}</div>
+                    <div class="group_form_field">{{ form_widget(form.platform) }}</div>
+                    <div class="group_form_field">{{ form_widget(form.datetime) }}</div>
+                    <div class="group_form_field">{{ form_widget(form.max_participants) }}</div>
+                {% else %}
+                    <div id="max_groups_user">
+                        El usuario ha superado el límite de grupos creados y activos de manera simultánea
+                    </div>
+                {% endif %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    {% if num_groups_user is defined and num_groups_user < 3 or num_groups_user is not defined %}
+                    {{ form_widget(form.reset) }}
+                    {{ form_widget(form.submit) }}
+                    {% endif %}
+                </div>
+            <form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalChat" tabindex="-1" role="dialog" aria-labelledby="modalChatLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalChatLabel"><b>Chat </b></h5>
+                <button id="close_chat_btn" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="div_messages" class="div_messages"></div>
+            </div>
+            <div class="modal-footer">
+                <input type="text" class="form-control" id="message_field" placeholder="Escriba su mensaje">
+                <button id="send_message" type="button" class="btn btn-primary">Enviar</button>
+            </div>
+            </div>
+        </div>
+    </div>
+
+    {% endblock %} 
+
+    {% block javascripts %}
+
+    {{ form_javascript(form) }}
+
+   <script type="text/javascript">  
+
+$(document).ready(function(){  
+    
+    var cargando = $("#loading_div");
+
+    $('#inputGroupSelect04').val(0);
+
+    cargando.show();
+    $('#div_dinamico').load(Routing.generate('groups_json', { id_platform: 0 }));
+    cargando.hide();
+  
+    $('#inputGroupSelect04').on('change', function() {
+        var platform = $('#inputGroupSelect04').val();
+
+        $('#div_dinamico').hide();
+        cargando.show();
+        
+        $.ajax({  
+            url: Routing.generate('groups_json', { id_platform: platform }),  
+            success: function(data) {  
+                cargando.hide();
+                $('#div_dinamico').html(data); 
+                $('#div_dinamico').show();
+            }  
+        });  
+    });  
+    
+});
+
+$('#group_modal').on('show.bs.modal', function (event) {
+    var $modal = $(this);
+    var game = $(event.relatedTarget).data('game');
+    var user = $(event.relatedTarget).data('user');
+    var datetime = $(event.relatedTarget).data('datetime');
+    var platform = $(event.relatedTarget).data('platform');
+    var id_group = $(event.relatedTarget).data('id');
+    var participants = $(event.relatedTarget).data('users');
+    var loggedUser = "{{ app.user.username }}";
+    var btn_signin = document.getElementById('group_signUp');
+    var btn_groupdelete = document.getElementById('group_delete');
+    var group_delete_accept = document.getElementById('group_delete_accept');
+
+    var participants_array = participants.split(",");
+
+    $modal.find('.modal-title').html('<i class="fab fa-'+platform.toLowerCase()+'"></i> '+game);
+    $('#group_id_value').val(id_group);
+
+    if(loggedUser == user) {
+        $modal.find('.modal-body .group_leader').html('<b>Líder:</b> '+user+' (tú)');
+        btn_signin.style.display = "none";
+        btn_signin.disabled = true;
+        btn_groupdelete.style.display = "inline";
+        btn_groupdelete.disabled = false;
+    }
+    else {
+        $modal.find('.modal-body .group_leader').html('<b>Líder:</b> '+user);
+        btn_groupdelete.style.display = "none";
+        btn_groupdelete.disabled = true;
+    }
+
+    var string_participants="";
+
+    for(var i = 0; i < participants_array.length; i++) {
+        if(i == 0)
+            string_participants += "<ul>";
+        string_participants += "<li>"+participants_array[i]+"</li>";
+        if(i == participants_array.length - 1)
+            string_participants +="</ul>";
+    }
+
+    $modal.find('.modal-body .group_participants').html('<b>Participantes: </b>' +string_participants);
+    $modal.find('.modal-footer .group_date').html('<b>Comienzo: </b><br>'+datetime);
+});
+
+$('#group_modal').on('hide.bs.modal', function(event) {
+    group_delete.style.display = "inline";
+    confirm_delete.style.display = "none";
+    group_chat.style.display = "inline";
+});
+
+$('#group_delete').on('click',function(event) {
+    var group_delete = document.getElementById('group_delete');
+    var confirm_delete = document.getElementById('confirm_delete');
+    var group_chat = document.getElementById('group_chat');
+    group_delete.style.display = "none";
+    confirm_delete.style.display = "inline";
+    group_chat.style.display = "none";  
+});
+
+$('#group_delete_accept').on('click',function(event) {
+    var id_group = $('#group_id_value').val();
+
+    $('#group_modal').modal('hide');
+
+    $.ajax({
+        url: Routing.generate('close_group', { id_group: id_group }),
+        success: function(data) {
+            location.href= "{{ path("group") }}";
+        }
+    });
+});
+
+$('#group_delete_cancel').on('click', function(event) {
+    group_delete.style.display = "inline";
+    confirm_delete.style.display = "none";
+    group_chat.style.display = "inline";
+});
+
+$('#group_signUp').on('click', function(event) {
+    var id_group = $('#group_id_value').val();
+    var loggedUser = "{{ app.user.id }}";
+
+    $.ajax({
+        url: Routing.generate('register_group', { id_group: id_group, id_user: loggedUser }),
+        success: function(data) {
+            alert("Perfe");
+        }
+    });
+});
+
+$('#group_chat').on('click', function(event) {
+    var id_group = $('#group_id_value').val();
+    $('#div_messages').load(Routing.generate('get_messages', { id_group: id_group }));
+    var intervalrepeat = setInterval(charge_messages, 5000);
+
+    $('#modalChat').modal('show');
+
+    function charge_messages() {
+        $.ajax({  
+            url: Routing.generate('get_messages', { id_group: id_group }),  
+            success: function(data) {  
+                $('#div_messages').html(data); 
+            }
+        });
+    }
+
+    $('#close_chat_btn').on('click', function(event) {
+        clearInterval(intervalrepeat);
+        $('#message_field').val("");
+    });
+
+    $('#send_message').on('click', function(event) {
+        var data = {}
+        var msg;
+        msg = $('#message_field').val();
+        data['id_group'] = id_group;
+        data['id_user'] = "{{ app.user.id }}";
+        data['message'] = msg;
+        $.ajax({
+            url: Routing.generate('add_message', { id_group: id_group}),
+            type: "POST",
+            data: data,
+            success: function(data) {
+                $('#message_field').val("");
+            }
+        });
+    });
+
+});
+
+</script>        
+    {% endblock %}

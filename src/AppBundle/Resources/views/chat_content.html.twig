@@ -1,0 +1,8 @@
+<div class="messages_list">
+    {% for message in messages %}
+    <b>[{{ message.datetime }}] {{ message.username }}
+        {% if message.username == app.user.username %} (tú)
+        {% endif %}
+    </b>: {{ message.message }} <br>
+    {% endfor %}
+</div>

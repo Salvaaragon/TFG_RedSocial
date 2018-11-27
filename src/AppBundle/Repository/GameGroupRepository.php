@@ -10,4 +10,13 @@ namespace AppBundle\Repository;
  */
 class GameGroupRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function getNumGroupsUser($id_user) {
+        return $query = $this->getEntityManager()
+            ->createQuery(
+                'SELECT count(g.id) FROM AppBundle:GameGroup g 
+                WHERE g.user = :id_user and g.isActive = 1'
+            )->setParameter('id_user', $id_user)
+            ->getSingleScalarResult()
+        ;
+    }
 }

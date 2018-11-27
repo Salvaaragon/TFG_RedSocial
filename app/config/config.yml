@@ -30,6 +30,8 @@ framework:
     assets: ~
     php_errors:
         log: true
+    templating:
+        engines: ['twig']
 
 # Twig Configuration
 twig:
@@ -64,10 +66,12 @@ swiftmailer:
     host: '%mailer_host%'
     username: '%mailer_user%'
     password: '%mailer_password%'
-    encryption: '%mailer_encryption%'
-    auth_mode: '%mailer_auth_mode%'
     spool: { type: memory }
 
 sensio_framework_extra:
    router:
         annotations: false
+
+sc_datetimepicker:
+    picker: ~
+        

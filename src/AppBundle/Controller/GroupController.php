@@ -8,6 +8,10 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 use AppBundle\Form\GameGroupType;
 use AppBundle\Entity\GameGroup;
+use AppBundle\Entity\Platform;
+use AppBundle\Entity\User;
+use AppBundle\Entity\Message;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 class GroupController extends Controller
 {
@@ -16,7 +20,75 @@ class GroupController extends Controller
      */
     public function indexAction(Request $request)
     {
-                // 1) build the form
+        date_default_timezone_set('Europe/Madrid');
+        $repository_gamegroup = $this->getDoctrine()->getRepository(GameGroup::class);
+        $repository_platform = $this->getDoctrine()->getRepository(Platform::class);
+
+        $group_query = $repository_gamegroup->findByIsActive(1);
+        $platform_query = $repository_platform->findAll();
+
+        $num_groups = $repository_gamegroup->getNumGroupsUser(
+            $this->container->get('security.token_storage')->getToken()->getUser()
+        );
+        
+        foreach($group_query as $group) {
+
+            $participants = $this->format_group_participants($group);
+
+            $groups[] = array(
+                'id' => $group->getId(),
+                'game' => $group->getGame(),
+                'platform' => $group->getPlatform()->getName(),
+                'user' => $group->getUser()->getUsername(),
+                'max_participants' => $group->getMaxParticipants(),
+                'datetime' => $group->getDatetime()->format('d-m-Y H:i'),
+                'participants' => $participants
+            );
+        }
+
+        $group = new GameGroup();
+        $form = $this->createForm(GameGroupType::class, $group);
+
+        $form->handleRequest($request);
+        
+            $validator = $this->get('validator');
+            $errors = $validator->validate($group);
+    
+            if($form->isSubmitted()) {
+                $form_datetime = strtotime(($form->get('datetime')->getData())->format('d-m-Y H:i'));
+                $min_datetime = strtotime(date("d-m-Y H:i", strtotime('+ 1 hour')));
+                
+                if (count($errors) > 0) {
+                    return $this->render('@App/groups.html.twig', array(
+                        'errors' => $errors, 'form' => $form->createView()
+                    ));
+                } else {
+                    if($form_datetime < $min_datetime) {
+                        $this->get('session')->getFlashBag()->add('error', 'Fecha introducida no válida');
+                        return $this->redirectToRoute('group');
+                    }
+                    else {
+                        $user = $this->getUser();
+                        $group->setUser($user);
+                        $entityManager = $this->getDoctrine()->getManager();
+                        $entityManager->persist($group);
+                        $entityManager->flush();
+                        $this->get('session')->getFlashBag()->add('notice', 'Grupo creado correctamente');
+                        return $this->redirectToRoute('group');
+                    }
+                }
+            }
+            if(isset($groups))
+                return $this->render('@App/groups.html.twig', array(
+                    "groups" => $groups,
+                    "num_groups_user" => $num_groups,
+                    "platforms" => $platform_query,
+                    "form" => $form->createView()));
+            else 
+                return $this->render('@App/groups.html.twig', array(
+                    "platforms" => $platform_query,
+                    "form" => $form->createView()));
+            /*// 1) build the form
                 $group = new GameGroup();
                 $form = $this->createForm(GameGroupType::class, $group);
         
@@ -28,8 +100,15 @@ class GroupController extends Controller
         
                 if($form->isSubmitted()) {
                     if (count($errors) > 0) {
-                        
+                        return $this->render('@App/group.html.twig', array(
+                            'errors' => $errors, 'form' => $form->createView()
+                        ));
                     } else {
+                        $user = $this->getUser();
+                        $group->setUser($user);
+                        $entityManager = $this->getDoctrine()->getManager();
+                        $entityManager->persist($group);
+                        $entityManager->flush();
                         return $this->redirectToRoute('index');
                     }
                 }
@@ -37,6 +116,174 @@ class GroupController extends Controller
                 return $this->render(
                     '@App/groups.html.twig',
                     array('form' => $form->createView())
+                );*/
+    }
+
+    /**
+     * @Route("/group/get_groups/{id_platform}", name="groups_json", options={"expose"=true})
+     */
+    public function get_groups($id_platform) {
+        /*$group_repository = $this->getDoctrine()->getRepository(GameGroup::class);
+        $em = $this->getDoctrine()->getManager();
+        $group_query = $em
+            ->getRepository(GameGroup::class)
+            ->createQueryBuilder('g')
+            ->getQuery()
+            ->execute()
+        ;
+
+        foreach ($group_query as $group) {
+            $groups['data'][] = array(
+                'id' => $group->getId(),
+                'game' => $group->getGame(),
+                'platform' => $group->getPlatform()->getName(),
+                'user' => $group->getUser()->getUsername(),
+                'date' => $group->getDatetime()->format('d-m-Y H:i'),
+                'max_participants' => "1/".$group->getMaxParticipants()
                 );
+        }
+        return new Response("Hola");*/
+
+        $repository_gamegroup = $this->getDoctrine()->getRepository(GameGroup::class);
+        //$repository_platform = $this->getDoctrine()->getRepository(Platform::class);
+
+        if($id_platform != 0) $group_query = $repository_gamegroup->findBy(
+            array('platform' => $id_platform, 'isActive' => 1));
+        else $group_query = $repository_gamegroup->findByIsActive(1);
+        //$platform_query = $repository_platform->findAll();
+        
+        foreach($group_query as $group) {
+            $participants = $this->format_group_participants($group);
+
+            $groups[] = array(
+                'id' => $group->getId(),
+                'game' => $group->getGame(),
+                'platform' => $group->getPlatform()->getName(),
+                'user' => $group->getUser()->getUsername(),
+                'max_participants' => $group->getMaxParticipants(),
+                'datetime' => $group->getDatetime()->format('d-m-Y H:i'),
+                'participants' => $participants
+            );
+        }
+
+        if(isset($groups))
+            return $this->render('@App/group_list.html.twig', array(
+                "groups" => $groups));  
+        else
+                return $this->render('@App/group_list.html.twig');
+    }
+
+    /**
+     * @Route("/group/close_group/{id_group}", name="close_group", options={"expose"=true})
+     */
+    public function close_group($id_group) {
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $group = $entityManager->getRepository(GameGroup::class)->find($id_group);
+
+        $group->setIsActive(false);
+        $entityManager->flush();
+        $this->get('session')->getFlashBag()->add('notice', 'Grupo cerrado correctamente');
+
+        return $this->redirectToRoute('group');
+    }
+    
+    /**
+     * @Route("/group/register_group/{id_group}/{id_user}", name="register_group", options={"expose"=true})
+     */
+    public function register_group($id_group, $id_user) {
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $group = $entityManager->getRepository(GameGroup::class)->find($id_group);
+        $user = $entityManager->getRepository(User::class)->find($id_user);
+
+        $group->addParticipant($user);
+        $entityManager->flush();
+
+        return new Response();
+    }
+
+    public function format_group_participants($group) {
+        $participants = $group->getParticipants()->toArray();
+        
+        $format_participants = "";
+
+        foreach($participants as $user) {
+            $format_participants = $format_participants . $user->getUsername() . ",";
+        }
+
+        return substr($format_participants, 0, strlen($format_participants) -1);
+    }
+
+    /**
+     * @Route("/group/chat/{id_group}", name="chat", options={"expose"=true})
+     */
+    public function chat_group($id_group) {
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $group = $entityManager->getRepository(GameGroup::class)->find($id_group);
+
+        $game_group = array(
+            'id' => $group->getId(),
+            'game' => $group->getGame(),
+            'platform' => $group->getPlatform(),
+            'user' => $group->getUser()->getUsername(),
+            'max_participants' => $group->getMaxParticipants(),
+            'datetime' => $group->getDatetime()->format('d-m-Y H:i')
+        );
+
+        return $this->render('@App/chat_prueba.html.twig', array("group" => $game_group));
+    }
+
+    /**
+     * @Route("/group/chat/{id_group}/get_messages", name="get_messages", options={"expose"=true})
+     */
+    public function get_messages($id_group) {
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $group = $entityManager->getRepository(GameGroup::class)->find($id_group);
+
+        $message_query = $entityManager->getRepository(Message::class)->getLastMessagesGroup($group);
+
+        foreach($message_query as $msg) {
+            $messages[] = array(
+                'datetime' => $msg->getDatetime()->format('d-m-Y H:i'),
+                'username' => $msg->getUser()->getUsername(),
+                'message' => $msg->getMessage()
+            );
+        }
+        if(isset($messages))
+            return $this->render('@App/chat_content.html.twig', array(
+                "messages" => $messages));  
+        else
+            return new Response("No existen mensajes en este grupo");
+    }
+
+    /**
+     * @Route("/group/chat/{id_group}/add_message", name="add_message", options={"expose"=true})
+     */
+    public function add_message(Request $request) {
+        date_default_timezone_set('Europe/Madrid');
+        
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $id_group = $request->request->get('id_group');
+        $id_user = $request->request->get('id_user');
+        $message = $request->request->get('message');
+
+        $group = $entityManager->getRepository(GameGroup::class)->find($id_group);
+        $user = $entityManager->getRepository(User::class)->find($id_user);
+
+        $chat_message = new Message();
+
+        $chat_message->setGameGroup($group);
+        $chat_message->setUser($user);
+        $chat_message->setDatetime(new \Datetime('now'));
+        $chat_message->setMessage($message);
+
+        $entityManager->persist($chat_message);
+        $entityManager->flush();
+
+        return new Response();
     }
 }

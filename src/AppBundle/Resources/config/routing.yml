@@ -25,3 +25,27 @@ active_account:
 group:
   path: /group
   defaults: { _controller:AppBundle:Group:index }
+
+groups_json:
+  path: /group/groups_json/{id_platform}
+  defaults: { _controller:AppBundle:Group:get_groups }
+
+close_group:
+  path: /group/close_group/{id_group}
+  defaults: { _controller:AppBundle:Group:close_group }
+
+register_group:
+  path: /group/register_group/{id_group}/{id_user}
+  defaults: { _controller:AppBundle:Group:register_group }
+
+chat:
+  path: /group/chat/{id_group}
+  defaults: { _controller:AppBundle:Group:chat_group }
+
+get_messages:
+  path: /group/chat/get_messages
+  defaults: { _controller:AppBundle:Group:get_messages }
+
+add_message:
+  path: /group/chat/{id_group}/add_message
+  defaults: { _controller:AppBundle:Group:add_message }

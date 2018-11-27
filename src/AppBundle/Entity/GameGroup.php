@@ -48,16 +48,9 @@ class GameGroup
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="date", type="date")
+     * @ORM\Column(name="datetime", type="datetime")
      */
-    private $date;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="hour", type="time")
-     */
-    private $hour;
+    private $datetime;
 
     /**
      * @var int
@@ -67,10 +60,34 @@ class GameGroup
     private $maxParticipants;
 
     /**
-    * @ORM\OneToMany(targetEntity="Message", mappedBy="gamegroup")
+    * @ORM\OneToMany(targetEntity="Message", mappedBy="gameGroup")
     */
     private $messages;
 
+    /**
+     * @ORM\Column(name="isActive", type="boolean")
+     */
+    private $isActive;
+
+    /**
+     * 
+     * @ORM\ManyToMany(targetEntity="User")
+     * @ORM\JoinTable(name="groups_users",
+     *      joinColumns={@ORM\JoinColumn(name="id_group", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="id_user", referencedColumnName="id", unique=true)}
+     *      )
+     */
+    private $participants;
+
+    /**
+    * Constructor
+    */
+    public function __construct()
+    {
+        $this->messages = new ArrayCollection();
+        $this->participants = new ArrayCollection();
+        $this->isActive = true;
+    }
 
     /**
      * Get id
@@ -155,75 +172,27 @@ class GameGroup
     }
 
     /**
-     * Set idUserCreator
-     *
-     * @param integer $idUserCreator
+     * Set datetime
+     * 
+     * @param \DateTime $datetime
      *
      * @return GameGroup
      */
-    public function setIdUserCreator($idUserCreator)
+    public function setDatetime($datetime)
     {
-        $this->idUserCreator = $idUserCreator;
+        $this->datetime = $datetime;
 
         return $this;
     }
 
     /**
-     * Get idUserCreator
-     *
-     * @return int
-     */
-    public function getIdUserCreator()
-    {
-        return $this->idUserCreator;
-    }
-
-    /**
-     * Set date
-     *
-     * @param \DateTime $date
-     *
-     * @return GameGroup
-     */
-    public function setDate($date)
-    {
-        $this->date = $date;
-
-        return $this;
-    }
-
-    /**
-     * Get date
+     * Get datetime
      *
      * @return \DateTime
      */
-    public function getDate()
+    public function getDatetime()
     {
-        return $this->date;
-    }
-
-    /**
-     * Set hour
-     *
-     * @param \DateTime $hour
-     *
-     * @return GameGroup
-     */
-    public function setHour($hour)
-    {
-        $this->hour = $hour;
-
-        return $this;
-    }
-
-    /**
-     * Get hour
-     *
-     * @return \DateTime
-     */
-    public function getHour()
-    {
-        return $this->hour;
+        return $this->datetime;
     }
 
     /**
@@ -248,6 +217,52 @@ class GameGroup
     public function getMaxParticipants()
     {
         return $this->maxParticipants;
+    }
+
+    /**
+     * Set isActive
+     * 
+     * @param boolean $isActive
+     * 
+     * @return GameGroup
+     */
+    public function setIsActive($isActive)
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    /**
+     * Get isActive
+     * 
+     * @return bool
+     */
+    public function getIsActive()
+    {
+        return $this->isActive;
+    }
+
+    /**
+     * Add Participant to group
+     * 
+     * @param User $user
+     * 
+     * @return GameGroup
+     */
+    public function addParticipant($user)
+    {
+        $this->participants->add($user);
+    }
+
+    /**
+     * Get participants
+     * 
+     * @return ArrayCollection
+     */
+    public function getParticipants()
+    {
+        return $this->participants;
     }
 }
 

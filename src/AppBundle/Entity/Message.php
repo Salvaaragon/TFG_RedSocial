@@ -27,7 +27,7 @@ class Message
      * @ORM\ManyToOne(targetEntity="GameGroup", inversedBy="messages")
      * @ORM\JoinColumn(name="id_game_group", referencedColumnName="id", nullable=false)
      */
-    private $GameGroup;
+    private $gameGroup;
 
     /**
      * @var User
@@ -35,21 +35,14 @@ class Message
      * @ORM\ManyToOne(targetEntity="User", inversedBy="messages")
      * @ORM\JoinColumn(name="id_user", referencedColumnName="id", nullable=false)
      */
-    private $User;
+    private $user;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="date", type="date")
+     * @ORM\Column(name="datetime", type="datetime")
      */
-    private $date;
-
-    /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="hour", type="time")
-     */
-    private $hour;
+    private $datetime;
 
     /**
      * @var string
@@ -70,99 +63,75 @@ class Message
     }
 
     /**
-     * Set idGameGroup
+     * Set GameGroup
      *
-     * @param integer $idGameGroup
+     * @param GameGroup $gameGroup
      *
      * @return Message
      */
-    public function setIdGameGroup($idGameGroup)
+    public function setGameGroup($gameGroup)
     {
-        $this->idGameGroup = $idGameGroup;
+        $this->gameGroup = $gameGroup;
 
         return $this;
     }
 
     /**
-     * Get idGameGroup
+     * Get GameGroup
      *
-     * @return int
+     * @return GameGroup
      */
-    public function getIdGameGroup()
+    public function getGameGroup()
     {
-        return $this->idGameGroup;
+        return $this->gameGroup;
     }
 
     /**
-     * Set idUser
+     * Set User
      *
-     * @param integer $idUser
+     * @param User $user
      *
      * @return Message
      */
-    public function setIdUser($idUser)
+    public function setUser($user)
     {
-        $this->idUser = $idUser;
+        $this->user = $user;
 
         return $this;
     }
 
     /**
-     * Get idUser
+     * Get User
      *
-     * @return int
+     * @return User
      */
-    public function getIdUser()
+    public function getUser()
     {
-        return $this->idUser;
+        return $this->user;
     }
 
     /**
-     * Set date
+     * Set datetime
+     * 
+     * @param \DateTime $datetime
      *
-     * @param \DateTime $date
-     *
-     * @return Message
+     * @return GameGroup
      */
-    public function setDate($date)
+    public function setDatetime($datetime)
     {
-        $this->date = $date;
+        $this->datetime = $datetime;
 
         return $this;
     }
 
     /**
-     * Get date
+     * Get datetime
      *
      * @return \DateTime
      */
-    public function getDate()
+    public function getDatetime()
     {
-        return $this->date;
-    }
-
-    /**
-     * Set hour
-     *
-     * @param \DateTime $hour
-     *
-     * @return Message
-     */
-    public function setHour($hour)
-    {
-        $this->hour = $hour;
-
-        return $this;
-    }
-
-    /**
-     * Get hour
-     *
-     * @return \DateTime
-     */
-    public function getHour()
-    {
-        return $this->hour;
+        return $this->datetime;
     }
 
     /**

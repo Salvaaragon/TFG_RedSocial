@@ -19,4 +19,89 @@ class GameGroupRepository extends \Doctrine\ORM\EntityRepository
             ->getSingleScalarResult()
         ;
     }
+
+    public function getGroupsPlatformUserpart($id_platform, $id_user) {
+        $query = $this->getEntityManager()
+                ->createQueryBuilder();
+
+        $query->select('g, p')
+              ->from('AppBundle:GameGroup', 'g')
+              ->innerJoin('g.participants', 'p')
+              ->where('g.platform = :id_platform')
+              ->andWhere('g.isActive = 1')
+              ->andWhere('p.id = :id_user')
+              ->setParameters(array('id_platform' => $id_platform, 'id_user' => $id_user));
+
+        return $query->getQuery()->getResult();
+    }
+
+    public function getGroupsUserpart($id_user) {
+        $query = $this->getEntityManager()
+                ->createQueryBuilder();
+
+        $query->select('g, p')
+              ->from('AppBundle:GameGroup', 'g')
+              ->innerJoin('g.participants', 'p')
+              ->where('g.isActive = 1')
+              ->andWhere('p.id = :id_user')
+              ->setParameter('id_user', $id_user);
+
+        return $query->getQuery()->getResult();
+    }
+
+    public function getAllGroupsPlatformUser($id_platform, $id_user) {
+        $query = $this->getEntityManager()
+        ->createQueryBuilder();
+
+        $query->select('g')
+            ->from('AppBundle:GameGroup', 'g')
+            ->where('g.platform = :id_platform')
+            ->andWhere('g.isActive = 0')
+            ->andWhere('g.user = :id_user')
+            ->setParameters(array('id_platform' => $id_platform, 'id_user' => $id_user));
+
+        return $query->getQuery()->getResult();
+    }
+
+    public function getAllGroupsUser($id_user) {
+        $query = $this->getEntityManager()
+        ->createQueryBuilder();
+
+        $query->select('g')
+            ->from('AppBundle:GameGroup', 'g')
+            ->where('g.isActive = 0')
+            ->andWhere('g.user = :id_user')
+            ->setParameter('id_user', $id_user);
+
+        return $query->getQuery()->getResult();
+    }
+
+    public function getAllPartPlatformUser($id_platform, $id_user) {
+        $query = $this->getEntityManager()
+        ->createQueryBuilder();
+
+        $query->select('g, p')
+            ->from('AppBundle:GameGroup', 'g')
+            ->innerJoin('g.participants', 'p')
+            ->where('g.platform = :id_platform')
+            ->andWhere('g.isActive = 0')
+            ->andWhere('p.id = :id_user')
+            ->setParameters(array('id_platform' => $id_platform, 'id_user' => $id_user));
+
+        return $query->getQuery()->getResult();
+    }
+
+    public function getAllPartUser($id_user) {
+        $query = $this->getEntityManager()
+        ->createQueryBuilder();
+
+        $query->select('g, p')
+            ->from('AppBundle:GameGroup', 'g')
+            ->join('g.participants', 'p')
+            ->where('g.isActive = 0')
+            ->andWhere('p.id = :id_user')
+            ->setParameter('id_user', $id_user);
+
+        return $query->getQuery()->getResult();
+    }
 }

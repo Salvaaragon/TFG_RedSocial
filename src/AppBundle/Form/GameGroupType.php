@@ -22,14 +22,17 @@ class GameGroupType extends AbstractType
     {
         date_default_timezone_set('Europe/Madrid');
 
+        $user = $options['user'];
+
         $builder
-            ->add('game', TextType::class, array(
+            ->add('game', ChoiceType::class, array(
                 "attr" => array(
                     'class' => 'form-control',
                     'placeholder' => 'Juego',
                     'maxlength' => 128),
                 "label" => false,
-                "required" => "required"))
+                "required" => "required",
+                "choices" => $user->getSteamGames()))
             ->add('platform', EntityType::class, array(
                 'class' => 'AppBundle:Platform',
                 'query_builder' => function (PlatformRepository $pr) {
@@ -93,6 +96,7 @@ class GameGroupType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => GameGroup::class,
+            'user' => null
         ));
     }
 

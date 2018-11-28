@@ -42,12 +42,14 @@ class GroupController extends Controller
                 'user' => $group->getUser()->getUsername(),
                 'max_participants' => $group->getMaxParticipants(),
                 'datetime' => $group->getDatetime()->format('d-m-Y H:i'),
-                'participants' => $participants
+                'participants' => $participants,
+                'isActive' => $group->getIsActive(),
+                'num_part' => $group->getParticipants()->count()
             );
         }
 
         $group = new GameGroup();
-        $form = $this->createForm(GameGroupType::class, $group);
+        $form = $this->createForm(GameGroupType::class, $group, array('user' => $this->getUser()));
 
         $form->handleRequest($request);
         
@@ -120,37 +122,46 @@ class GroupController extends Controller
     }
 
     /**
-     * @Route("/group/get_groups/{id_platform}", name="groups_json", options={"expose"=true})
+     * @Route("/group/get_groups/{filter_group}/{id_platform}", name="groups_json", options={"expose"=true})
      */
-    public function get_groups($id_platform) {
-        /*$group_repository = $this->getDoctrine()->getRepository(GameGroup::class);
-        $em = $this->getDoctrine()->getManager();
-        $group_query = $em
-            ->getRepository(GameGroup::class)
-            ->createQueryBuilder('g')
-            ->getQuery()
-            ->execute()
-        ;
-
-        foreach ($group_query as $group) {
-            $groups['data'][] = array(
-                'id' => $group->getId(),
-                'game' => $group->getGame(),
-                'platform' => $group->getPlatform()->getName(),
-                'user' => $group->getUser()->getUsername(),
-                'date' => $group->getDatetime()->format('d-m-Y H:i'),
-                'max_participants' => "1/".$group->getMaxParticipants()
-                );
-        }
-        return new Response("Hola");*/
-
+    public function get_groups($filter_group, $id_platform) {
         $repository_gamegroup = $this->getDoctrine()->getRepository(GameGroup::class);
-        //$repository_platform = $this->getDoctrine()->getRepository(Platform::class);
 
-        if($id_platform != 0) $group_query = $repository_gamegroup->findBy(
-            array('platform' => $id_platform, 'isActive' => 1));
-        else $group_query = $repository_gamegroup->findByIsActive(1);
-        //$platform_query = $repository_platform->findAll();
+        switch($filter_group) {
+            case "all": 
+                if($id_platform != 0) 
+                    $group_query = $repository_gamegroup->findBy(
+                        array('platform' => $id_platform, 'isActive' => 1));
+                else
+                    $group_query = $repository_gamegroup->findByIsActive(1);
+                break;        
+            case "mygroups":
+                if($id_platform != 0) 
+                    $group_query = $repository_gamegroup->findBy(
+                        array('platform' => $id_platform, 'isActive' => 1, 'user' => $this->getUser()));
+                else
+                    $group_query = $repository_gamegroup->findBy(
+                        array('isActive' => 1, 'user' => $this->getUser()));
+                break;    
+            case "myregister":
+                if($id_platform != 0) 
+                    $group_query = $repository_gamegroup->getGroupsPlatformUserpart($id_platform, $this->getUser()->getId());
+                else
+                   $group_query = $repository_gamegroup->getGroupsUserpart($this->getUser()->getId());
+                break;    
+            case "history_mygroups":
+                if($id_platform != 0) 
+                    $group_query = $repository_gamegroup->getAllGroupsPlatformUser($id_platform, $this->getUser()->getId());
+                else
+                    $group_query = $repository_gamegroup->getAllGroupsUser($this->getUser()->getId());
+                break;
+            case "history_myregister":
+                if($id_platform != 0) 
+                    $group_query = $repository_gamegroup->getAllPartPlatformUser($id_platform, $this->getUser()->getId());
+                else
+                    $group_query = $repository_gamegroup->getAllPartUser($this->getUser()->getId());
+                break;
+        }
         
         foreach($group_query as $group) {
             $participants = $this->format_group_participants($group);
@@ -162,7 +173,9 @@ class GroupController extends Controller
                 'user' => $group->getUser()->getUsername(),
                 'max_participants' => $group->getMaxParticipants(),
                 'datetime' => $group->getDatetime()->format('d-m-Y H:i'),
-                'participants' => $participants
+                'participants' => $participants,
+                'isActive' => $group->getIsActive(),
+                'num_part' => $group->getParticipants()->count()
             );
         }
 
@@ -199,8 +212,27 @@ class GroupController extends Controller
 
         $group->addParticipant($user);
         $entityManager->flush();
+        $this->get('session')->getFlashBag()->add('notice', 'Se ha registrado en el grupo de forma correcta');
 
-        return new Response();
+        return $this->redirectToRoute('group');
+    }
+
+    /**
+     * @Route("/group/signdown_group/{id_group}", name="signdown_group", options={"expose"=true})
+     */
+    public function signdown_group($id_group) {
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $group = $entityManager->getRepository(GameGroup::class)->find($id_group);
+
+        $user = $this->getUser();
+
+        $group->getParticipants()->removeElement($user);
+
+        $entityManager->flush();
+        $this->get('session')->getFlashBag()->add('notice', 'Ha abandonado el grupo correctamente');
+
+        return $this->redirectToRoute('group');
     }
 
     public function format_group_participants($group) {
@@ -286,4 +318,5 @@ class GroupController extends Controller
 
         return new Response();
     }
+    
 }

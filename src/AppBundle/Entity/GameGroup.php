@@ -74,7 +74,7 @@ class GameGroup
      * @ORM\ManyToMany(targetEntity="User")
      * @ORM\JoinTable(name="groups_users",
      *      joinColumns={@ORM\JoinColumn(name="id_group", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="id_user", referencedColumnName="id", unique=true)}
+     *      inverseJoinColumns={@ORM\JoinColumn(name="id_user", referencedColumnName="id")}
      *      )
      */
     private $participants;

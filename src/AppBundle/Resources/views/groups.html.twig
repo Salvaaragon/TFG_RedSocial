@@ -26,14 +26,24 @@
     {% endfor %}
  
     <div class="row platform_filter">
-        <div class="col-10">
-        <select class="custom-select" id="inputGroupSelect04" aria-label="Example select with button addon">
-            <option selected value="0">Todas las plataformas</option>
-            {% for platform in platforms %}
-                <option value="{{ platform.id }}">{{ platform.name }}</option>
-            {% endfor %}
-        </select>
+        <div class="col-3">
+            <select class="custom-select" id="select_filter_group">
+                <option selected value="all">Todos los grupos</option>
+                <option value="mygroups">Mis grupos</option>
+                <option value="myregister">Grupos registrados</option>
+                <option value="history_mygroups">Historial de grupos</option>
+                <option value="history_myregister">Historial de participaciones</option>
+            </select> 
         </div>
+        <div class="col-3">
+            <select class="custom-select" id="select_filter_platform">
+                <option selected value="0">Todas las plataformas</option>
+                {% for platform in platforms %}
+                    <option value="{{ platform.id }}">{{ platform.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-4"></div>
         <div class="col-2"><button class="btn btn-primary btn-block" id="new_group_btn" data-toggle="modal" data-target="#exampleModal">Nuevo grupo</button></div>
     </div>
       
@@ -56,14 +66,22 @@
             <div class="modal-body">
                 <div class="group_leader"></div>
                 <div class="group_participants"></div>
-                <div class="group_part_require"><b>Huecos restantes:</b> 2</div>
+                <div class="group_part_require"></div>
             </div>
             <div class="modal-footer">
                 <div class="group_date mr-auto"></div>
                 <button id="group_signUp" type="button" class="btn btn-primary">Inscribirse</button>
-                <button id="group_delete" type="button" class="btn btn-primary">Eliminar</button>
+                <button id="group_signDown" type="button" class="btn btn-primary">Darse de baja</button>
+                <div id="confirm_signdown" style="display:none;">
+                    <input type="hidden" id="group_id_value" name="group_id_value" readonly/>
+                    <div style="text-align:center;"><b>¿Está seguro?</b></div>
+                    <button id="group_signdown_accept" type="button" class="btn btn-success btn-sm">Aceptar</button>
+                    <button id="group_signdown_cancel" type="button" class="btn btn-danger btn-sm">Cancelar</button>
+                </div>
+                <button id="group_delete" type="button" class="btn btn-primary">Cancelar grupo</button>
                 <div id="confirm_delete" style="display:none;">
                     <input type="hidden" id="group_id_value" name="group_id_value" readonly/>
+                    <input type="hidden" id="active_group" name="active_group" readonly/>
                     <div style="text-align:center;"><b>¿Está seguro?</b></div>
                     <button id="group_delete_accept" type="button" class="btn btn-success btn-sm">Aceptar</button>
                     <button id="group_delete_cancel" type="button" class="btn btn-danger btn-sm">Cancelar</button>
@@ -109,7 +127,7 @@
         </div>
     </div>
 
-    <div class="modal fade" id="modalChat" tabindex="-1" role="dialog" aria-labelledby="modalChatLabel" aria-hidden="true">
+    <div class="modal fade" id="modalChat"  data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modalChatLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
             <div class="modal-header">
@@ -141,20 +159,38 @@ $(document).ready(function(){
     
     var cargando = $("#loading_div");
 
-    $('#inputGroupSelect04').val(0);
+    $('#select_filter_platform').val(0);
+    $('#select_filter_group').val('all');
 
     cargando.show();
-    $('#div_dinamico').load(Routing.generate('groups_json', { id_platform: 0 }));
+    $('#div_dinamico').load(Routing.generate('groups_json', { filter_group: 'all', id_platform: 0 }));
     cargando.hide();
-  
-    $('#inputGroupSelect04').on('change', function() {
-        var platform = $('#inputGroupSelect04').val();
+
+    $('#select_filter_group').on('change', function() {
+        var filter_group = $('#select_filter_group').val();
 
         $('#div_dinamico').hide();
         cargando.show();
         
         $.ajax({  
-            url: Routing.generate('groups_json', { id_platform: platform }),  
+            url: Routing.generate('groups_json', { filter_group: filter_group, id_platform: 0 }),  
+            success: function(data) {  
+                cargando.hide();
+                $('#div_dinamico').html(data); 
+                $('#div_dinamico').show();
+            }  
+        });  
+    });  
+  
+    $('#select_filter_platform').on('change', function() {
+        var platform = $('#select_filter_platform').val();
+        var filter_group = $('#select_filter_group').val();
+
+        $('#div_dinamico').hide();
+        cargando.show();
+        
+        $.ajax({  
+            url: Routing.generate('groups_json', { filter_group: filter_group, id_platform: platform }),  
             success: function(data) {  
                 cargando.hide();
                 $('#div_dinamico').html(data); 
@@ -173,15 +209,22 @@ $('#group_modal').on('show.bs.modal', function (event) {
     var platform = $(event.relatedTarget).data('platform');
     var id_group = $(event.relatedTarget).data('id');
     var participants = $(event.relatedTarget).data('users');
+    var max_part = $(event.relatedTarget).data('part');
+    var numpart = $(event.relatedTarget).data('numpart');
+    var isActive = $(event.relatedTarget).data('active');
     var loggedUser = "{{ app.user.username }}";
     var btn_signin = document.getElementById('group_signUp');
+    var btn_signdown = document.getElementById('group_signDown');
     var btn_groupdelete = document.getElementById('group_delete');
     var group_delete_accept = document.getElementById('group_delete_accept');
+    var group_signdown_accept = document.getElementById('group_signdown_accept');
+    var btn_chat = document.getElementById('group_chat');
 
     var participants_array = participants.split(",");
 
     $modal.find('.modal-title').html('<i class="fab fa-'+platform.toLowerCase()+'"></i> '+game);
     $('#group_id_value').val(id_group);
+    $('#active_group').val(isActive);
 
     if(loggedUser == user) {
         $modal.find('.modal-body .group_leader').html('<b>Líder:</b> '+user+' (tú)');
@@ -197,15 +240,63 @@ $('#group_modal').on('show.bs.modal', function (event) {
     }
 
     var string_participants="";
+    var bUserIsParticipant = false;
 
     for(var i = 0; i < participants_array.length; i++) {
         if(i == 0)
             string_participants += "<ul>";
-        string_participants += "<li>"+participants_array[i]+"</li>";
+        if(participants_array[i] != "")
+            string_participants += "<li>"+participants_array[i]+"</li>";
         if(i == participants_array.length - 1)
             string_participants +="</ul>";
+        if(loggedUser == participants_array[i])
+            bUserIsParticipant = true;
     }
 
+    var rest_part = max_part - numpart;
+
+    $modal.find('.modal-body .group_part_require').html('<b>Huecos restantes:</b> '+rest_part);
+
+    if(bUserIsParticipant) {
+        btn_chat.style.display = "inline";
+        btn_chat.disabled = false;
+        btn_signin.style.display = "none";
+        btn_signin.disabled = true;
+        btn_signdown.style.display = "inline";
+        btn_signdown.disabled = false;
+    }
+    else {
+        if(loggedUser == user) {
+            btn_chat.style.display = "inline";
+            btn_chat.disabled = false;
+            btn_signin.style.display = "none";
+            btn_signin.disabled = true; 
+            btn_signdown.style.display = "none";
+            btn_signdown.disabled = true;          
+        }
+        else {
+            btn_chat.style.display = "none";
+            btn_chat.disabled = true;
+            if(rest_part != 0) {
+                btn_signin.style.display = "inline";
+                btn_signin.disabled = false;
+            }
+            btn_signdown.style.display = "none";
+            btn_signdown.disabled = true;
+        }
+    }
+
+    if(isActive == 0) {
+        btn_signin.style.display = "none";
+        btn_signin.disabled = true;
+        btn_signdown.style.display = "none";
+        btn_signdown.disabled = true;
+        btn_groupdelete.style.display = "none";
+        btn_groupdelete.disabled = true;
+    }
+
+    if(numpart == 0)
+        string_participants = "No existen participantes inscritos";
     $modal.find('.modal-body .group_participants').html('<b>Participantes: </b>' +string_participants);
     $modal.find('.modal-footer .group_date').html('<b>Comienzo: </b><br>'+datetime);
 });
@@ -213,6 +304,8 @@ $('#group_modal').on('show.bs.modal', function (event) {
 $('#group_modal').on('hide.bs.modal', function(event) {
     group_delete.style.display = "inline";
     confirm_delete.style.display = "none";
+    group_signDown.style.display = "inline";
+    confirm_signdown.style.display="none";
     group_chat.style.display = "inline";
 });
 
@@ -248,18 +341,60 @@ $('#group_signUp').on('click', function(event) {
     var id_group = $('#group_id_value').val();
     var loggedUser = "{{ app.user.id }}";
 
+    $('#group_modal').modal('hide');
+
     $.ajax({
         url: Routing.generate('register_group', { id_group: id_group, id_user: loggedUser }),
         success: function(data) {
-            alert("Perfe");
+            location.href="{{ path("group") }}";
         }
     });
 });
 
+$('#group_signDown').on('click',function(event) {
+    var group_signDown = document.getElementById('group_signDown');
+    var confirm_signdown = document.getElementById('confirm_signdown');
+    var group_chat = document.getElementById('group_chat');
+    group_signDown.style.display = "none";
+    confirm_signdown.style.display = "inline";
+    group_chat.style.display = "none";  
+});
+
+$('#group_signdown_accept').on('click',function(event) {
+    var id_group = $('#group_id_value').val();
+
+    $('#group_modal').modal('hide');
+
+    $.ajax({
+        url: Routing.generate('signdown_group', { id_group: id_group }),
+        success: function(data) {
+            location.href= "{{ path("group") }}";
+        }
+    });
+});
+
+$('#group_signdown_cancel').on('click', function(event) {
+    group_signDown.style.display = "inline";
+    confirm_signdown.style.display = "none";
+    group_chat.style.display = "inline";
+});
+
 $('#group_chat').on('click', function(event) {
     var id_group = $('#group_id_value').val();
+    var group_active = $('#active_group').val();
+    var btn_send = document.getElementById('send_message');
+    var field_msg = document.getElementById('message_field');
     $('#div_messages').load(Routing.generate('get_messages', { id_group: id_group }));
-    var intervalrepeat = setInterval(charge_messages, 5000);
+    if(group_active == 1) {
+        var intervalrepeat = setInterval(charge_messages, 5000);
+        btn_send.disabled = false;
+        field_msg.disabled = false;
+    }
+    else {
+        btn_send.disabled = true;
+        field_msg.disabled = true;
+        field_msg.placeholder = "No puede enviar mensajes en un grupo cerrado";
+    }
 
     $('#modalChat').modal('show');
 

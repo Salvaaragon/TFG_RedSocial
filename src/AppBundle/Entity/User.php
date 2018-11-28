@@ -366,5 +366,33 @@ class User implements AdvancedUserInterface
     {
         return $this->isActive;
     }
+
+    public function getSteamGames() {
+        if(isset($this->steamId)) {
+            $json_userapikey = file_get_contents("http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=B04E1EB884D3702EBB032D4B90E97166&vanityurl=".$this->steamId);
+            $decode_json_userapikey = json_decode($json_userapikey, true);
+            $userapikey = $decode_json_userapikey['response']['steamid'];
+            
+            $json_gamesuser = file_get_contents("http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=B04E1EB884D3702EBB032D4B90E97166&steamid=".$userapikey."&format=json");
+            $decode_json_gamesuser = json_decode($json_gamesuser, true);
+
+            $num_games_user = $decode_json_gamesuser['response']['game_count'];
+
+            for($i = 0; $i < $num_games_user; $i++)
+                $games_id[$i] = $decode_json_gamesuser['response']['games'][$i]['appid'];
+
+            for($j = 0; $j < $num_games_user; $j++) {
+                $json_game = file_get_contents("http://api.steampowered.com/ISteamUserStats/GetSchemaForGame/v2/?key=B04E1EB884D3702EBB032D4B90E97166&appid=".$games_id[$j]);
+                $decode_json_game = json_decode($json_game, true);
+                if(isset($decode_json_game['game']['gameName'])) {
+                    $name_game = $decode_json_game['game']['gameName'];
+                    if($name_game != "" && substr($name_game, 0, 9) != "ValveTest") {
+                        $games_name[$name_game] = $name_game;
+                    }
+                }
+            }
+            return $games_name;
+        }
+    }
 }
 

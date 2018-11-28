@@ -27,7 +27,7 @@ group:
   defaults: { _controller:AppBundle:Group:index }
 
 groups_json:
-  path: /group/groups_json/{id_platform}
+  path: /group/groups_json/{filter_group}/{id_platform}
   defaults: { _controller:AppBundle:Group:get_groups }
 
 close_group:
@@ -37,6 +37,10 @@ close_group:
 register_group:
   path: /group/register_group/{id_group}/{id_user}
   defaults: { _controller:AppBundle:Group:register_group }
+
+signdown_group:
+  path: /group/signdown_group/{id_group}
+  defaults: { _controller:AppBundle:Group:signdown_group }
 
 chat:
   path: /group/chat/{id_group}

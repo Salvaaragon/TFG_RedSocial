@@ -31,7 +31,7 @@
                     </div>
                     <div class="col-lg-2">
                         <h5><b>Participantes</b></h5>
-                        5
+                        {{ group.num_part }}
                     </div>
                     <div class="col-lg-2">
                         <h5><b>Comienzo</b></h5>
@@ -46,7 +46,9 @@
                             data-platform="{{ group.platform }}" 
                             data-id="{{ group.id }}" 
                             data-part="{{ group.max_participants }}"
-                            data-users="{{ group.participants }}">
+                            data-users="{{ group.participants }}" 
+                            data-numpart="{{ group.num_part }}" 
+                            data-active="{{ group.isActive }}">
                             <i class="fas fa-info-circle" style="color:white;"></i>
                         </button>
                         {% elseif group.platform == "Steam" %}
@@ -57,7 +59,9 @@
                             data-platform="{{ group.platform }}" 
                             data-id="{{ group.id }}" 
                             data-part="{{ group.max_participants }}" 
-                            data-users="{{ group.participants }}">
+                            data-users="{{ group.participants }}" 
+                            data-numpart="{{ group.num_part }}" 
+                            data-active="{{ group.isActive }}">
                             <i class="fas fa-info-circle" style="color:white;"></i>
                         </button>
                         {% elseif group.platform == "PlayStation" %}
@@ -68,7 +72,9 @@
                             data-platform="{{ group.platform }}" 
                             data-id="{{ group.id }}" 
                             data-part="{{ group.max_participants }}" 
-                            data-users="{{ group.participants }}">
+                            data-users="{{ group.participants }}" 
+                            data-numpart="{{ group.num_part }}" 
+                            data-active="{{ group.isActive }}">
                             <i class="fas fa-info-circle" style="color:white;"></i>
                         </button>
                         {% endif %}

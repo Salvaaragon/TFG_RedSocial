@@ -1,395 +1,44 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-<div class="paneles">
-    <div class="card profile-panel">
-        <div class="img_and_name">
-            <div>
-                <img class="profile_img", src="{{ asset('bundles/app/image/default_profile.png') }}">
-            </div>
-            <div class="profile_data">
-                Nombre<br>
-                Nombre de usuario
-            </div>
-        </div>
-        <div class="data_numbers">
-            <a href="#">Publicaciones: 500</a> |
-            <a href="#">Puntuación: 288</a>
-        </div>
-    </div>
 
-    <div class="panel panel-success timeline-panel"> 
-        <ul class="list-group">
-            <li class="list-group-item">
-            <div class="post_profile">
-                <img class="post_img", src="{{ asset('bundles/app/image/default_profile.png') }}">
-                <div class="post_data">
-                    NombreCuenta NombreUsuario HoraPublicación
-                    <br>
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
+    <!-- Header with Background Image -->
+    <header class="business-header">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12">
+           <div class="row justify-content-center">
+            <div class="col-lg-12 col-sm-6 text-center mb-3 user_info">
+                <img class="rounded-circle img-fluid d-block mx-auto profile_img" src="{{ asset('bundles/app/image/default_profile.png') }}" alt="">
+                <h2>{{ app.user.profileName}}</h2>
+                <small>{{ app.user.username }}</small>
+                <div class="row justify-content-center">
+                    <div class="user_data_element"><a href="#">Seguidores<br><b>0</b></a></div>
+                    <div class="user_data_element"><a href="#">Siguiendo<br><b>0</b></a></div>
+                    <div class="user_data_element"><a href="#">Publicaciones<br><b>0</b></a></div>
+                    <div class="user_data_element"><a href="#">Me gusta<br><b>0</b></a></div>
+                    <div class="user_data_element"><a href="#">Puntuación<br><b>0</b></a></div>
                 </div>
             </div>
-            <div class="post_panel">
-                <a href="#">Comentarios: 500</a> |
-                <a href="#">Likes: 288</a>
             </div>
-            </li>
-            <li class="list-group-item">
-            <div class="post_profile">
-                <img class="post_img", src="{{ asset('bundles/app/image/default_profile.png') }}">
-                <div class="post_data">
-                    NombreCuenta NombreUsuario HoraPublicación
-                    <br>
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                </div>
-            </div>
-            <div class="post_panel">
-                <a>Comentarios: 500</a> |
-                <a>Likes: 288</a>
-            </div>
-            </li>
-            <li class="list-group-item">
-            <div class="post_profile">
-                <img class="post_img", src="{{ asset('bundles/app/image/default_profile.png') }}">
-                <div class="post_data">
-                    NombreCuenta NombreUsuario HoraPublicación
-                    <br>
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                </div>
-            </div>
-            <div class="post_panel">
-                <a>Comentarios: 500</a> |
-                <a>Likes: 288</a>
-            </div>
-            </li>
-            <li class="list-group-item">
-            <div class="post_profile">
-                <img class="post_img", src="{{ asset('bundles/app/image/default_profile.png') }}">
-                <div class="post_data">
-                    NombreCuenta NombreUsuario HoraPublicación
-                    <br>
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                </div>
-            </div>
-            <div class="post_panel">
-                <a>Comentarios: 500</a> |
-                <a>Likes: 288</a>
-            </div>
-            </li>
-            <li class="list-group-item">
-            <div class="post_profile">
-                <img class="post_img", src="{{ asset('bundles/app/image/default_profile.png') }}">
-                <div class="post_data">
-                    NombreCuenta NombreUsuario HoraPublicación
-                    <br>
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                </div>
-            </div>
-            <div class="post_panel">
-                <a>Comentarios: 500</a> |
-                <a>Likes: 288</a>
-            </div>
-            </li>
-            <li class="list-group-item">
-            <div class="post_profile">
-                <img class="post_img", src="{{ asset('bundles/app/image/default_profile.png') }}">
-                <div class="post_data">
-                    NombreCuenta NombreUsuario HoraPublicación
-                    <br>
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                </div>
-            </div>
-            <div class="post_panel">
-                <a>Comentarios: 500</a> |
-                <a>Likes: 288</a>
-            </div>
-            </li>
-            <li class="list-group-item">
-            <div class="post_profile">
-                <img class="post_img", src="{{ asset('bundles/app/image/default_profile.png') }}">
-                <div class="post_data">
-                    NombreCuenta NombreUsuario HoraPublicación
-                    <br>
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                </div>
-            </div>
-            <div class="post_panel">
-                <a>Comentarios: 500</a> |
-                <a>Likes: 288</a>
-            </div>
-            </li>
-            <li class="list-group-item">
-            <div class="post_profile">
-                <img class="post_img", src="{{ asset('bundles/app/image/default_profile.png') }}">
-                <div class="post_data">
-                    NombreCuenta NombreUsuario HoraPublicación
-                    <br>
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                </div>
-            </div>
-            <div class="post_panel">
-                <a>Comentarios: 500</a> |
-                <a>Likes: 288</a>
-            </div>
-            </li>
-            <li class="list-group-item">
-            <div class="post_profile">
-                <img class="post_img", src="{{ asset('bundles/app/image/default_profile.png') }}">
-                <div class="post_data">
-                    NombreCuenta NombreUsuario HoraPublicación
-                    <br>
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                </div>
-            </div>
-            <div class="post_panel">
-                <a>Comentarios: 500</a> |
-                <a>Likes: 288</a>
-            </div>
-            </li>
-            <li class="list-group-item">
-            <div class="post_profile">
-                <img class="post_img", src="{{ asset('bundles/app/image/default_profile.png') }}">
-                <div class="post_data">
-                    NombreCuenta NombreUsuario HoraPublicación
-                    <br>
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                </div>
-            </div>
-            <div class="post_panel">
-                <a>Comentarios: 500</a> |
-                <a>Likes: 288</a>
-            </div>
-            </li>
-            <li class="list-group-item">
-            <div class="post_profile">
-                <img class="post_img", src="{{ asset('bundles/app/image/default_profile.png') }}">
-                <div class="post_data">
-                    NombreCuenta NombreUsuario HoraPublicación
-                    <br>
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                </div>
-            </div>
-            <div class="post_panel">
-                <a>Comentarios: 500</a> |
-                <a>Likes: 288</a>
-            </div>
-            </li>
-            <li class="list-group-item">
-            <div class="post_profile">
-                <img class="post_img", src="{{ asset('bundles/app/image/default_profile.png') }}">
-                <div class="post_data">
-                    NombreCuenta NombreUsuario HoraPublicación
-                    <br>
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                </div>
-            </div>
-            <div class="post_panel">
-                <a>Comentarios: 500</a> |
-                <a>Likes: 288</a>
-            </div>
-            </li>
-            <li class="list-group-item">
-            <div class="post_profile">
-                <img class="post_img", src="{{ asset('bundles/app/image/default_profile.png') }}">
-                <div class="post_data">
-                    NombreCuenta NombreUsuario HoraPublicación
-                    <br>
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                </div>
-            </div>
-            <div class="post_panel">
-                <a>Comentarios: 500</a> |
-                <a>Likes: 288</a>
-            </div>
-            </li>
-            <li class="list-group-item">
-            <div class="post_profile">
-                <img class="post_img", src="{{ asset('bundles/app/image/default_profile.png') }}">
-                <div class="post_data">
-                    NombreCuenta NombreUsuario HoraPublicación
-                    <br>
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                </div>
-            </div>
-            <div class="post_panel">
-                <a>Comentarios: 500</a> |
-                <a>Likes: 288</a>
-            </div>
-            </li>
-            <li class="list-group-item">
-            <div class="post_profile">
-                <img class="post_img", src="{{ asset('bundles/app/image/default_profile.png') }}">
-                <div class="post_data">
-                    NombreCuenta NombreUsuario HoraPublicación
-                    <br>
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                </div>
-            </div>
-            <div class="post_panel">
-                <a>Comentarios: 500</a> |
-                <a>Likes: 288</a>
-            </div>
-            </li>
-            <li class="list-group-item">
-            <div class="post_profile">
-                <img class="post_img", src="{{ asset('bundles/app/image/default_profile.png') }}">
-                <div class="post_data">
-                    NombreCuenta NombreUsuario HoraPublicación
-                    <br>
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                </div>
-            </div>
-            <div class="post_panel">
-                <a>Comentarios: 500</a> |
-                <a>Likes: 288</a>
-            </div>
-            </li>
-            <li class="list-group-item">
-            <div class="post_profile">
-                <img class="post_img", src="{{ asset('bundles/app/image/default_profile.png') }}">
-                <div class="post_data">
-                    NombreCuenta NombreUsuario HoraPublicación
-                    <br>
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                </div>
-            </div>
-            <div class="post_panel">
-                <a>Comentarios: 500</a> |
-                <a>Likes: 288</a>
-            </div>
-            </li>
-            <li class="list-group-item">
-            <div class="post_profile">
-                <img class="post_img", src="{{ asset('bundles/app/image/default_profile.png') }}">
-                <div class="post_data">
-                    NombreCuenta NombreUsuario HoraPublicación
-                    <br>
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                </div>
-            </div>
-            <div class="post_panel">
-                <a>Comentarios: 500</a> |
-                <a>Likes: 288</a>
-            </div>
-            </li>
-            <li class="list-group-item">
-            <div class="post_profile">
-                <img class="post_img", src="{{ asset('bundles/app/image/default_profile.png') }}">
-                <div class="post_data">
-                    NombreCuenta NombreUsuario HoraPublicación
-                    <br>
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                </div>
-            </div>
-            <div class="post_panel">
-                <a>Comentarios: 500</a> |
-                <a>Likes: 288</a>
-            </div>
-            </li>
-            <li class="list-group-item">
-            <div class="post_profile">
-                <img class="post_img", src="{{ asset('bundles/app/image/default_profile.png') }}">
-                <div class="post_data">
-                    NombreCuenta NombreUsuario HoraPublicación
-                    <br>
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                </div>
-            </div>
-            <div class="post_panel">
-                <a>Comentarios: 500</a> |
-                <a>Likes: 288</a>
-            </div>
-            </li>
-            <li class="list-group-item">
-            <div class="post_profile">
-                <img class="post_img", src="{{ asset('bundles/app/image/default_profile.png') }}">
-                <div class="post_data">
-                    NombreCuenta NombreUsuario HoraPublicación
-                    <br>
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablabla
-                    Esto es un texto aleatorio blablablaEsto es un texto aleatorio blablabla
-                </div>
-            </div>
-            <div class="post_panel">
-                <a>Comentarios: 500</a> |
-                <a>Likes: 288</a>
-            </div>
-            </li>
+          </div>
+        </div>
+      </div>
+    </header>
 
-        </ul>
-    </div>
-    <div class="notification-panel">
-        <div class="panel panel-success">
-            <ul class="list-group">
-                <li class="list-group-item">
-                    Nuevos mensajes
-                    <span class="badge badge-pill badge-dark">14</span>
-                </li>
-                <li class="list-group-item">
-                    Nuevos me gusta
-                    <span class="badge badge-pill badge-dark">5</span>
-                </li>
-                <li class="list-group-item">
-                    Nuevos seguidores
-                    <span class="badge badge-pill badge-dark">3</span> 
-                </li>
-                <li class="list-group-item">
-                    <a href="#">Ver todas las notificaciones</a>
-                </li>
-            </ul>
-        </div>
-        <div class="card new_post_card">
-            <div class="card-header">
-                Nueva publicación
-            </div>
-            <div class="card-body">
-                <div class="form-group">
-                    <textarea class="form-control new_post" maxlength='140' rows="3"></textarea>
-                </div>
-                <a href="#" class="btn btn-primary btn_new_post">Enviar</a>
-            </div>
-        </div>
-    </div>
+
+
+<div class="paneles">    
+    <div class="col-md-6">
+        <div class="widget-area no-padding blank">
+            <div class="status-upload">
+                <form>
+                    <textarea placeholder="What are you doing right now?" ></textarea>
+                    <a title="" data-toggle="tooltip" data-placement="bottom" data-original-title="Picture"><i class="far fa-image"></i></a>
+                    <button type="submit" class="btn btn-success green"><i class="fa fa-share"></i> Share</button>
+                </form>
+            </div><!-- Status Upload  -->
+        </div><!-- Widget Area -->
+    </div>  
 </div>
 {% endblock %}

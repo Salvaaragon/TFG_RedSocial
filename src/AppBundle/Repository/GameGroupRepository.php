@@ -26,10 +26,11 @@ class GameGroupRepository extends \Doctrine\ORM\EntityRepository
 
         $query->select('g, p')
               ->from('AppBundle:GameGroup', 'g')
-              ->innerJoin('g.participants', 'p')
+              ->join('g.participants', 'p')
               ->where('g.platform = :id_platform')
               ->andWhere('g.isActive = 1')
               ->andWhere('p.id = :id_user')
+              ->orderBy('g.datetime', 'ASC')
               ->setParameters(array('id_platform' => $id_platform, 'id_user' => $id_user));
 
         return $query->getQuery()->getResult();
@@ -41,9 +42,10 @@ class GameGroupRepository extends \Doctrine\ORM\EntityRepository
 
         $query->select('g, p')
               ->from('AppBundle:GameGroup', 'g')
-              ->innerJoin('g.participants', 'p')
+              ->join('g.participants', 'p')
               ->where('g.isActive = 1')
               ->andWhere('p.id = :id_user')
+              ->orderBy('g.datetime', 'ASC')
               ->setParameter('id_user', $id_user);
 
         return $query->getQuery()->getResult();
@@ -58,6 +60,7 @@ class GameGroupRepository extends \Doctrine\ORM\EntityRepository
             ->where('g.platform = :id_platform')
             ->andWhere('g.isActive = 0')
             ->andWhere('g.user = :id_user')
+            ->orderBy('g.datetime', 'ASC')
             ->setParameters(array('id_platform' => $id_platform, 'id_user' => $id_user));
 
         return $query->getQuery()->getResult();
@@ -71,6 +74,7 @@ class GameGroupRepository extends \Doctrine\ORM\EntityRepository
             ->from('AppBundle:GameGroup', 'g')
             ->where('g.isActive = 0')
             ->andWhere('g.user = :id_user')
+            ->orderBy('g.datetime', 'ASC')
             ->setParameter('id_user', $id_user);
 
         return $query->getQuery()->getResult();
@@ -82,10 +86,11 @@ class GameGroupRepository extends \Doctrine\ORM\EntityRepository
 
         $query->select('g, p')
             ->from('AppBundle:GameGroup', 'g')
-            ->innerJoin('g.participants', 'p')
+            ->join('g.participants', 'p')
             ->where('g.platform = :id_platform')
             ->andWhere('g.isActive = 0')
             ->andWhere('p.id = :id_user')
+            ->orderBy('g.datetime', 'ASC')
             ->setParameters(array('id_platform' => $id_platform, 'id_user' => $id_user));
 
         return $query->getQuery()->getResult();
@@ -100,6 +105,7 @@ class GameGroupRepository extends \Doctrine\ORM\EntityRepository
             ->join('g.participants', 'p')
             ->where('g.isActive = 0')
             ->andWhere('p.id = :id_user')
+            ->orderBy('g.datetime', 'ASC')
             ->setParameter('id_user', $id_user);
 
         return $query->getQuery()->getResult();

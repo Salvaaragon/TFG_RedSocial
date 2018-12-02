@@ -24,7 +24,9 @@ class GroupController extends Controller
         $repository_gamegroup = $this->getDoctrine()->getRepository(GameGroup::class);
         $repository_platform = $this->getDoctrine()->getRepository(Platform::class);
 
-        $group_query = $repository_gamegroup->findByIsActive(1);
+        $group_query = $repository_gamegroup->findBy(
+            array('isActive' => 1),
+            array('datetime' => 'ASC'));
         $platform_query = $repository_platform->findAll();
 
         $num_groups = $repository_gamegroup->getNumGroupsUser(
@@ -131,17 +133,19 @@ class GroupController extends Controller
             case "all": 
                 if($id_platform != 0) 
                     $group_query = $repository_gamegroup->findBy(
-                        array('platform' => $id_platform, 'isActive' => 1));
+                        array('platform' => $id_platform, 'isActive' => 1), array('datetime' => 'ASC'));
                 else
-                    $group_query = $repository_gamegroup->findByIsActive(1);
+                    $group_query = $repository_gamegroup->findBy(
+                        array('isActive' => 1), array('datetime' => 'ASC'));
                 break;        
             case "mygroups":
                 if($id_platform != 0) 
                     $group_query = $repository_gamegroup->findBy(
-                        array('platform' => $id_platform, 'isActive' => 1, 'user' => $this->getUser()));
+                        array('platform' => $id_platform, 'isActive' => 1, 'user' => $this->getUser()),
+                        array('datetime' => 'ASC'));
                 else
                     $group_query = $repository_gamegroup->findBy(
-                        array('isActive' => 1, 'user' => $this->getUser()));
+                        array('isActive' => 1, 'user' => $this->getUser()), array('datetime' => 'ASC'));
                 break;    
             case "myregister":
                 if($id_platform != 0) 

@@ -10,4 +10,12 @@ namespace AppBundle\Repository;
  */
 class UserRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function getUsersByUsername($username) {
+        $query = $this->getEntityManager()
+                ->createQuery(
+                    'SELECT u FROM AppBundle:user u WHERE u.username LIKE :username'
+                )->setParameter('username', '%'.$username.'%');
+        
+        return $query->getResult();
+    }
 }

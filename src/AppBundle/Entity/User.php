@@ -318,7 +318,7 @@ class User implements AdvancedUserInterface
     {
         return $this->psnId;
     }
-    
+
     /**
      * Get roles
      */

@@ -20,6 +20,10 @@ class ComposerStaticInitd52ade434dbf9c84e2cdda1ed29c43db
     );
 
     public static $prefixLengthsPsr4 = array (
+        'k' => 
+        array (
+            'kartik\\plugins\\fileinput\\' => 25,
+        ),
         'T' => 
         array (
             'Twig\\' => 5,
@@ -89,6 +93,10 @@ class ComposerStaticInitd52ade434dbf9c84e2cdda1ed29c43db
     );
 
     public static $prefixDirsPsr4 = array (
+        'kartik\\plugins\\fileinput\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/kartik-v/bootstrap-fileinput',
+        ),
         'Twig\\' => 
         array (
             0 => __DIR__ . '/..' . '/twig/twig/src',

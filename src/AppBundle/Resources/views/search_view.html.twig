@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    
+    <div class="col-lg-8 offset-lg-2" style="margin-top:70px";>
+        <div class="card followers_panel">
+            <div class="card-header">
+                <h5><i class="fas fa-user-friends"></i> Búsqueda 
+                ({% if numUsers is defined and numUsers is not null %}{{numUsers}}
+                    {% else %}0 {% endif %} coincidencias)</h5>
+            </div>
+            <div class="card-body">
+                {% if users is defined and users is not null %}
+                    {% for user in users %}
+                    <div>
+                        <div class="pull-left">
+                            <img class="rounded-circle img-fluid d-block mx-auto follower_img" src="{{ asset('bundles/app/image/default_profile.png') }}" alt="">
+                        </div>
+                        <div class="follower_data"><b>{{ user.profileName }}</b><br> {{ user.username }}</div>
+                        
+                        <div class="row">
+                            <div class="follower_accounts col-lg-8 col-xs-1">
+                                {% if user.steam_id is defined and user.steam_id is not null %}
+                                    <i class="fab fa-steam"></i>
+                                {% endif %}
+                                {% if user.xbox_id is defined and user.xbox_id is not null %}
+                                    <i class="fab fa-xbox"></i>
+                                {% endif %}
+                                {% if user.psn_id is defined and user.psn_id is not null %}
+                                    <i class="fab fa-playstation"></i>
+                                {% endif %}
+                            </div>
+                            {% if user.username != app.user.username %}
+                            <div class="pull-right">
+                                <button type="button" 
+                                    {% if user.isFollowed == 'followed' %}
+                                        aria-pressed="true" class="btn btn-outline-info btn-sm btn_follow active"
+                                    {% else %} 
+                                        aria-pressed="false" class="btn btn-outline-info btn-sm btn_follow"
+                                    {% endif %} 
+                                    data-toggle="button" 
+                                    data-followed="{{ user.isFollowed }}" 
+                                    data-user="{{ user.id }}">
+                                    {% if user.isFollowed == 'followed' %}
+                                        Siguiendo
+                                    {% else %}
+                                        Seguir
+                                    {% endif %}
+                                </button>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if loop.index != numUsers %}<hr>{% endif %}
+                    {% endfor %}
+                {% else %}
+                    No se han encontrado coincidencias
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+<script type="text/javascript">
+
+    $(".btn_follow").on('click', function() {
+        var followed = $(this).attr('data-followed');
+        var follower_id = $(this).attr('data-user');
+        var $btn_follow = $(this);
+        var loggedUser_id = "{{ app.user.id }}";
+
+        if(followed == 'followed') {
+            $btn_follow.html('Seguir');
+            $(this).attr('data-followed', 'unfollowed');
+            $.ajax({
+                url: Routing.generate('unfollow_user', { id_user: loggedUser_id, id_follower: follower_id }),
+                success: function(data) {  
+                    console.log("User unfollow");
+                }
+            });
+        }
+        else {
+            $btn_follow.html('Siguiendo');
+            $(this).attr('data-followed', 'followed');
+            $.ajax({
+                url: Routing.generate('follow_user', { id_user: loggedUser_id, id_follower: follower_id }),
+                success: function(data) {  
+                    console.log("User follow");
+                }
+            });
+        }
+    });
+
+</script>
+{% endblock %}

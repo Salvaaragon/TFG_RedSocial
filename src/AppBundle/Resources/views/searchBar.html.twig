@@ -1,0 +1,11 @@
+{{
+    form_start(form, {
+        'attr': { 'class': 'form-inline my-2 my-lg-0 mr-auto', 'action': path('handleSearch') }
+    })
+}}
+
+    {{ form_widget(form.search, {
+        'attr': { 'class': 'form-control mr-sm-2', 'placeholder': 'Buscar usuario' }
+    }) }}
+
+{{ form_end(form) }}

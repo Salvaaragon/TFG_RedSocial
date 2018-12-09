@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <!-- Header with Background Image -->
+    <header class="business-header">
+        <div class="container">
+            <div class="row">
+            <div class="col-lg-12">
+                <div class="row justify-content-center">
+                <div class="col-lg-12 col-sm-6 text-center mb-3 user_info">
+                    <img class="rounded-circle img-fluid d-block mx-auto profile_img" src="{{ asset('bundles/app/image/default_profile.png') }}" alt="">
+                    <h2>{{ user.profileName }}</h2>
+                    <small>{{ user.username }}</small>
+                    <div class="row col-xs-6 justify-content-center">
+                        <div class="user_data_element"><a href="{{ path('followers_user', { 'username' : user.username }) }}">Seguidores<br><b>{% if numfollowers is defined %} {{ numfollowers }} {% else %} 0 {% endif %}</b></a></div>
+                        <div class="user_data_element"><a href="{{ path('followings_user', { 'username' : user.username }) }}">Siguiendo<br><b>{% if numfollowing is defined %} {{ numfollowing }} {% else %} 0 {% endif %}</b></a></div>
+                        <div class="user_data_element"><a href="{{ path('profile', { 'username' : user.username }) }}">Publicaciones<br><b>{% if numposts is defined %} {{ numposts }} {% else %} 0 {% endif %}</b></a></div>
+                        <div class="user_data_element"><a class="current_page">Me gusta<br><b>{% if numlikes is defined %} {{ numlikes }} {% else %} 0 {% endif %}</b></a></div>
+                        <div class="user_data_element"><a href="#">Puntuación<br><b>0</b></a></div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="card user_accounts">
+                <div class="card-header">
+                    <h5><i class="fas fa-gamepad"></i> Cuentas de {{ user.username }}</h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% if user.steamId is defined and user.steamId is not null %}
+                        <li class="list-group-item"><i class="fab fa-steam"></i> {{ user.steamId }}</li>
+                    {% endif %}
+                    {% if user.xboxId is defined and user.xboxId is not null %}
+                        <li class="list-group-item"><i class="fab fa-xbox"></i> {{ user.xboxId }}</li>
+                    {% endif %}
+                    {% if user.psnId is defined and user.psnId is not null %}
+                        <li class="list-group-item"><i class="fab fa-playstation"></i> {{ user.psnId }}</li>
+                    {% endif %}
+                    {% if user.steamId is null and user.xboxId is null 
+                        and user.psnId is null %}
+                        <li class="list-group-item">Este usuario no posee cuentas de juego registradas</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+
+    <div class="col-lg-6">
+                <div class="card followers_panel">
+                <div class="card-header">
+                    <h5><i class="fas fa-user-friends"></i> Likes de {{ user.username }}</h5>
+                </div>
+        {% if posts is defined and posts is not null %}
+            {% for post in posts %}
+                <div class="card-body">
+                    <div class="post">
+                        <div class="pull-left">
+                            <img class="rounded-circle img-fluid d-block mx-auto post_user_img" src="{{ asset('bundles/app/image/default_profile.png') }}" alt="">
+                        </div>
+                        <div class="post_user_datetime"><b>{{ post.user.profileName }}</b> - {{ post.user.username }} - {{ post.datetime }}</div>
+                        <div class="post_text"><p>{{ post.text }}</p></div>
+                        <div class="post_buttons">
+                            <span data-likes={{ post.likes }} data-liked="{{ post.hasLike }}" data-post="{{ post.id }}" class="btn far fa-thumbs-up btn_like 
+                            {% if post.hasLike == 'liked' %}post_liked{% else %}post_unliked{% endif %}"> {{ post.likes }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="card">
+                <div class="card-body">
+                    <div class="post">
+                        El usuario no ha dado like a ninguna publicación
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

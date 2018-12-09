@@ -1,0 +1,140 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <!-- Header with Background Image -->
+    <header class="business-header">
+        <div class="container">
+            <div class="row">
+            <div class="col-lg-12">
+                <div class="row justify-content-center">
+                <div class="col-lg-12 col-sm-6 text-center mb-3 user_info">
+                    <img class="rounded-circle img-fluid d-block mx-auto profile_img" src="{{ asset('bundles/app/image/default_profile.png') }}" alt="">
+                    <h2>{{ user.profileName }}</h2>
+                    <small>{{ user.username }}</small>
+                    <div class="row col-xs-6 justify-content-center">
+                        <div class="user_data_element"><a class="current_page">Seguidores<br><b>{% if numfollowers is defined %} {{ numfollowers }} {% else %} 0 {% endif %}</b></a></div>
+                        <div class="user_data_element"><a href="{{ path('followings_user', { 'username' : user.username }) }}">Siguiendo<br><b>{% if numfollowings is defined %} {{ numfollowings }} {% else %} 0 {% endif %}</b></a></div>
+                        <div class="user_data_element"><a href="{{ path('profile', { 'username' : user.username }) }}">Publicaciones<br><b>{% if numposts is defined %} {{ numposts }} {% else %} 0 {% endif %}</b></a></div>
+                        <div class="user_data_element"><a href="{{ path('likes_user', { 'username' : user.username }) }}">Me gusta<br><b>{% if numlikes is defined %} {{ numlikes }} {% else %} 0 {% endif %}</b></a></div>
+                        <div class="user_data_element"><a href="#">Puntuación<br><b>0</b></a></div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="row">
+        <div class="col-lg-3">
+            <div class="card user_accounts">
+                <div class="card-header">
+                    <h5><i class="fas fa-gamepad"></i> Cuentas de {{ user.username }}</h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% if user.steamId is defined and user.steamId is not null %}
+                        <li class="list-group-item"><i class="fab fa-steam"></i> {{ user.steamId }}</li>
+                    {% endif %}
+                    {% if user.xboxId is defined and user.xboxId is not null %}
+                        <li class="list-group-item"><i class="fab fa-xbox"></i> {{ user.xboxId }}</li>
+                    {% endif %}
+                    {% if user.psnId is defined and user.psnId is not null %}
+                        <li class="list-group-item"><i class="fab fa-playstation"></i> {{ user.psnId }}</li>
+                    {% endif %}
+                    {% if user.steamId is null and user.xboxId is null 
+                        and user.psnId is null %}
+                        <li class="list-group-item">Este usuario no posee cuentas de juego registradas</li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card followers_panel">
+                <div class="card-header">
+                    <h5><i class="fas fa-user-friends"></i> Seguidores de {{ user.username }}</h5>
+                </div>
+                <div class="card-body">
+                    {% if followers is defined and followers is not null %}
+                        {% for follower in followers %}
+                        <div>
+                            <div class="pull-left">
+                                <img class="rounded-circle img-fluid d-block mx-auto follower_img" src="{{ asset('bundles/app/image/default_profile.png') }}" alt="">
+                            </div>
+                            <div class="follower_data"><b>{{ follower.profileName }}</b><br> {{ follower.username }}</div>
+                            
+                            <div class="row">
+                                <div class="follower_accounts col-lg-8 col-xs-1">
+                                    {% if follower.steam_id is defined and follower.steam_id is not null %}
+                                        <i class="fab fa-steam"></i>
+                                    {% endif %}
+                                    {% if follower.xbox_id is defined and follower.xbox_id is not null %}
+                                        <i class="fab fa-xbox"></i>
+                                    {% endif %}
+                                    {% if follower.psn_id is defined and follower.psn_id is not null %}
+                                        <i class="fab fa-playstation"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="pull-right">
+                                    <button type="button" 
+                                        {% if follower.isFollowed == 'followed' %}
+                                            aria-pressed="true" class="btn btn-outline-info btn-sm btn_follow active"
+                                        {% else %} 
+                                            aria-pressed="false" class="btn btn-outline-info btn-sm btn_follow"
+                                        {% endif %} 
+                                        data-toggle="button" 
+                                        data-followed="{{ follower.isFollowed }}" 
+                                        data-user="{{ follower.id }}">
+                                        {% if follower.isFollowed == 'followed' %}
+                                            Siguiendo
+                                        {% else %}
+                                            Seguir
+                                        {% endif %}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% if loop.index != numfollowers %}<hr>{% endif %}
+                        {% endfor %}
+                    {% else %}
+                        Este usuario aún no tiene seguidores
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+<script type="text/javascript">
+
+    $(".btn_follow").on('click', function() {
+        var followed = $(this).attr('data-followed');
+        var follower_id = $(this).attr('data-user');
+        var $btn_follow = $(this);
+        var loggedUser_id = "{{ app.user.id }}";
+
+        if(followed == 'followed') {
+            $btn_follow.html('Seguir');
+            $(this).attr('data-followed', 'unfollowed');
+            $.ajax({
+                url: Routing.generate('unfollow_user', { id_user: loggedUser_id, id_follower: follower_id }),
+                success: function(data) {  
+                    console.log("User unfollow");
+                }
+            });
+        }
+        else {
+            $btn_follow.html('Siguiendo');
+            $(this).attr('data-followed', 'followed');
+            $.ajax({
+                url: Routing.generate('follow_user', { id_user: loggedUser_id, id_follower: follower_id }),
+                success: function(data) {  
+                    console.log("User follow");
+                }
+            });
+        }
+    });
+
+</script>
+{% endblock %}

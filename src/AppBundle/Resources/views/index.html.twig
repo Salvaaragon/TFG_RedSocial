@@ -13,9 +13,9 @@
                 <h2>{{ app.user.profileName}}</h2>
                 <small>{{ app.user.username }}</small>
                 <div class="row justify-content-center">
-                    <div class="user_data_element"><a href="#">Seguidores<br><b>0</b></a></div>
-                    <div class="user_data_element"><a href="#">Siguiendo<br><b>0</b></a></div>
-                    <div class="user_data_element"><a href="#">Publicaciones<br><b>0</b></a></div>
+                    <div class="user_data_element"><a href="{{ path('followers_user', { 'username' : app.user.username }) }}">Seguidores<br><b>{% if numfollowers is defined %} {{ numfollowers }} {% else %} 0 {% endif %}</b></a></div>
+                    <div class="user_data_element"><a href="{{ path('followings_user', { 'username' : app.user.username }) }}">Siguiendo<br><b>{% if numfollowing is defined %} {{ numfollowing }} {% else %} 0 {% endif %}</b></a></div>
+                    <div class="user_data_element"><a href="#">Publicaciones<br><b>{% if numposts is defined %} {{ numposts }} {% else %} 0 {% endif %}</b></a></div>
                     <div class="user_data_element"><a href="#">Me gusta<br><b>0</b></a></div>
                     <div class="user_data_element"><a href="#">Puntuación<br><b>0</b></a></div>
                 </div>
@@ -26,19 +26,114 @@
       </div>
     </header>
 
+<div class="col-lg-12 col-sm-12">
+    <div class="row">
+        <div class="col-lg-3 col-sm-12">
+            <div class="card notification_card">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">Cras justo odio</li>
+                    <li class="list-group-item">Dapibus ac facilisis in</li>
+                    <li class="list-group-item">Vestibulum at eros</li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-lg-6 col-sm-12">
+            <div class="card new_post_card">
+                <div class="card-body">
+                    <div class="form-group">
+                    {{ form_start(form, {'enctype': 'multipart/form-data'}) }}
+                        <div class="textarea_div">
+                            {{ form_widget(form.text) }}
+                        </div>
+                        <div class="float-lg-left">{{ form_widget(form.image) }}</div>
+                        <div class="float-lg-right">{{ form_widget(form.submit) }}</div>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2"></div>
+    </div>
 
-
-<div class="paneles">    
-    <div class="col-md-6">
-        <div class="widget-area no-padding blank">
-            <div class="status-upload">
-                <form>
-                    <textarea placeholder="What are you doing right now?" ></textarea>
-                    <a title="" data-toggle="tooltip" data-placement="bottom" data-original-title="Picture"><i class="far fa-image"></i></a>
-                    <button type="submit" class="btn btn-success green"><i class="fa fa-share"></i> Share</button>
-                </form>
-            </div><!-- Status Upload  -->
-        </div><!-- Widget Area -->
-    </div>  
+    <div class="row">
+        <div class="col-lg-6 offset-lg-3 col-sm-12 timeline_panel">
+        {% if posts is defined and posts is not null %}
+            {% for post in posts %}
+            {% if numposts == 1 %}
+            <div class="card">
+            {% elseif loop.index == 1 %}
+            <div class="card first_post">
+            {% elseif loop.index == numposts %}
+            <div class="card last_post">
+            {% else %}
+            <div class="card post_card">
+            {% endif %}
+                <div class="card-body">
+                    <div class="post">
+                        <div class="pull-left">
+                            <img class="rounded-circle img-fluid d-block mx-auto post_user_img" src="{{ asset('bundles/app/image/default_profile.png') }}" alt="">
+                        </div>
+                        <div class="post_user_datetime"><b>{{ post.user.profileName }}</b> - {{ post.user.username }} - {{ post.datetime }}</div>
+                        <div class="post_text"><p>{{ post.text }}</p></div>
+                        <div class="post_buttons">
+                            <span data-likes={{ post.likes }} data-liked="{{ post.hasLike }}" data-post="{{ post.id }}" class="btn far fa-thumbs-up btn_like 
+                            {% if post.hasLike == 'liked' %}post_liked{% else %}post_unliked{% endif %}"> {{ post.likes }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="card">
+                <div class="card-body">
+                    <div class="post">
+                        No existen publicaciones
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+<script type="text/javascript">
+
+    $(".btn_like").on('click', function() {
+        var hasliked = $(this).attr('data-liked');
+        var likes = parseInt($(this).attr('data-likes'));
+        var id_post = $(this).attr('data-post');
+        var $btn_like = $(this);
+
+        if(hasliked == 'liked') {
+            $(this).addClass('post_unliked');
+            $(this).removeClass('post_liked');
+            $(this).attr('data-liked', 'unliked');
+            likes = likes - 1;
+            $(this).attr('data-likes', likes);
+            $btn_like.html(" "+likes);
+            $.ajax({
+                url: Routing.generate('unlike_post', { id_post: id_post }),
+                success: function(data) {  
+                    console.log("Post unliked");
+                }
+            });
+        }
+        else {
+            $(this).addClass('post_liked');
+            $(this).removeClass('post_unliked');
+            $(this).attr('data-liked', 'liked');
+            likes = likes + 1;
+            $(this).attr('data-likes', likes);
+            $btn_like.html(" "+likes);
+            $.ajax({
+                url: Routing.generate('like_post', { id_post: id_post }),
+                success: function(data) {  
+                    console.log("Post liked");
+                }
+            });
+        }
+    });
+
+</script>
 {% endblock %}

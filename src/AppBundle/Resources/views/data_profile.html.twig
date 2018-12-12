@@ -1,0 +1,140 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="col-lg-8 offset-lg-2" style="margin-top:70px";>
+{% for flashMessage in app.session.flashbag.get('notice') %}
+
+    <div class="alert alert-success alert-dismissible flash_error_group" role="alert">
+        <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        {{ flashMessage }}
+    </div>
+
+    {% endfor %}
+        <div class="card data_profile_panel">
+            <div class="card-header">
+                <h5><i class="fas fa-user"></i> Datos de usuario
+            </div>
+            <div class="card-body">
+            
+            <div class="col-md-12">
+                <div class="profile_primary_data">
+                    <div class="row">
+                        <div class="col-sm-3 offset-sm-1">
+                            <img class="profile_image" src="{{ asset('uploads/profile_images/' ~ user_image) }}"></img>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">Nombre de usuario: </label>
+                                <div class="col-sm-7">
+                                    <input class="form-control" value="{{ user.username }}" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">Nombre de perfil: </label>
+                                <div class="col-sm-7">
+                                    <input class="form-control" value="{{ user.profileName }}" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">Correo electrónico: </label>
+                                <div class="col-sm-7">
+                                    <input class="form-control" value="{{ user.email }}" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>    
+                <div class="profile_secondary_data">
+                    <div class="row">
+                        <div class="col-sm-8 offset-sm-1">
+                            <div class="form-group row">
+                                <label class="col-sm-6 col-form-label">Cuenta de PlayStation: </label>
+                                <div class="col-sm-6">
+                                    <input class="form-control" value="{{ user.psnId }}" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-8 offset-sm-1">
+                            <div class="form-group row">
+                                <label class="col-sm-6 col-form-label">Cuenta de Steam: </label>
+                                <div class="col-sm-6">
+                                    <input class="form-control" value="{{ user.steamId }}" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-8 offset-sm-1">
+                            <div class="form-group row">
+                                <label class="col-sm-6 col-form-label">Cuenta de Xbox: </label>
+                                <div class="col-sm-6">
+                                    <input class="form-control" value="{{ user.xboxId }}" readonly>
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+                <div class="btn_user_data_div">
+                    <div class="row">
+                        <div class="col-sm-6 offset-sm-1">
+                            <a style="margin-top:5px" href={{path('modify_profile')}} class="btn btn-primary">Modificar datos</a>
+                            <button style="margin-top:5px" data-toggle="modal" data-target="#exampleModal" class="btn btn-primary">Cambiar imagen</button>
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+
+        <!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Cambiar imagen</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="kv-avatar">
+                <div class="file-loading">
+                    <input id="avatar-1" name="avatar-1" type="file" required>
+                </div>
+            </div>
+            <div class="kv-avatar-hint"><small>Select file < 1500 KB</small></div>
+            <div id="kv-avatar-errors-1" class="center-block" style="display:none"></div>
+      </div>
+      <div class="modal-footer">
+        <button id="submit_image" type="submit" class="btn btn-primary">Subir</button>
+        <button type="submit" data-dismiss="modal" class="btn btn-secondary">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+$("#avatar-1").fileinput({
+    overwriteInitial: true,
+    maxFileSize: 1500,
+    showClose: false,
+    showCaption: false,
+    browseLabel: '',
+    removeLabel: '',
+    browseIcon: '<i class="fas fa-folder-open"></i>',
+    removeIcon: '<i class="far fa-trash-alt"></i>',
+    removeTitle: 'Cancel or reset changes',
+    elErrorContainer: '#kv-avatar-errors-1',
+    msgErrorClass: 'alert alert-block alert-danger',
+    defaultPreviewContent: '<img src="{{ asset('uploads/profile_images/' ~ user_image) }}" alt="Tu avatar">',
+    layoutTemplates: {main2: '{preview} {remove} {browse}'},
+    allowedFileExtensions: ["jpg", "png", "jpeg"]
+});
+
+$('#submit_image').click(function() {
+    var data = {}
+    var image = $('#avatar-1).val();
+});
+
+</script>
+{% endblock %}

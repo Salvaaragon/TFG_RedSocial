@@ -11,9 +11,11 @@ use AppBundle\Entity\PostLike;
 use AppBundle\Entity\Following;
 use AppBundle\Entity\User;
 use AppBundle\Form\PostType;
+use AppBundle\Form\UserType;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class ProfileController extends Controller
 {
@@ -293,5 +295,70 @@ class ProfileController extends Controller
 
             else 
                 return $this->render('@App/search_view.html.twig');
+    }
+
+    /**
+     * @Route("/my_data_profile", name="my_data_profile")
+     */
+    public function myDataProfileAction(Request $request) {
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+
+        return $this->render('@App/data_profile.html.twig', array('user' => $user,
+            'user_image' => $user->getImage()));
+    }
+
+    /**
+     * @Route("/modify_profile", name="modify_profile")
+     */
+    public function modifyDataAction(Request $request, UserPasswordEncoderInterface $passwordEncoder) {
+
+        // 1) build the form
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        $form = $this->createForm(UserType::class, $user, array('type' => 'show'));
+
+        // 2) handle the submit (will only happen on POST)
+        $form->handleRequest($request);
+
+        $validator = $this->get('validator');
+        $errors = $validator->validate($user);
+
+        if($form->isSubmitted()) {
+            if (count($errors) > 0) {
+                return $this->render('@App/modify_profile.html.twig', array(
+                    'errors' => $errors, 'form' => $form->createView(),
+                    'user_image' => $user->getImage()
+                ));
+            } else {
+                // 3) Encode the password (you could also do this via Doctrine listener)
+                $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
+                $user->setPassword($password);
+                if($user->getProfileName() == null) $user->setProfileName($user->getUsername());
+
+                // 4) save the User!
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->flush();
+
+                $this->addFlash(
+                    'notice',
+                    'Sus datos se han modificado correctamente.'
+                );
+
+                return $this->redirectToRoute('my_data_profile');
+            }
+        }
+
+        return $this->render('@App/modify_profile.html.twig', array('form' => $form->createView(),
+            'user_image' => $user->getImage()));
+    }
+
+    public function changeImage(Request $request = null) {
+        $user = $this->container->get('security.token_storage')->getToken()->getUser();
+        $entityManager = $this->getDoctrine()->getManager();
+        
+        $image = $request->request->get('image_file');
+        $user->setImage($image);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('my_data_profile');
     }
 }

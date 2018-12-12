@@ -111,6 +111,13 @@ class User implements AdvancedUserInterface
     */
     private $messages;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="image", type="string", length=255, nullable=true)
+     */
+    private $image;
+
     public function __construct()
     {
         $this->roles = 'ROLE_USER';
@@ -317,6 +324,30 @@ class User implements AdvancedUserInterface
     public function getPsnId()
     {
         return $this->psnId;
+    }
+
+    /**
+     * Set image
+     *
+     * @param string $image
+     *
+     * @return Post
+     */
+    public function setImage($image)
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    /**
+     * Get image
+     *
+     * @return string
+     */
+    public function getImage()
+    {
+        return $this->image;
     }
 
     /**

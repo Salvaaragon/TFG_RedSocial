@@ -45,7 +45,7 @@
                         <div class="textarea_div">
                             {{ form_widget(form.text) }}
                         </div>
-                        <div class="float-lg-left">{{ form_widget(form.image) }}</div>
+                        <div id="submit_image_post" class="float-lg-left">{{ form_widget(form.image) }}</div>
                         <div class="float-lg-right">{{ form_widget(form.submit) }}</div>
                         {{ form_end(form) }}
                     </div>
@@ -75,6 +75,11 @@
                         </div>
                         <div class="post_user_datetime"><b>{{ post.user.profileName }}</b> - {{ post.user.username }} - {{ post.datetime }}</div>
                         <div class="post_text"><p>{{ post.text }}</p></div>
+                        {% if post.image is defined and post.image is not null %}
+                        <div class="post_image_div">
+                            <img  class="post_image myImag" src="{{ asset('uploads/' ~ post.image) }}"></img>
+                        </div>
+                        {% endif %}
                         <div class="post_buttons">
                             <span data-likes={{ post.likes }} data-liked="{{ post.hasLike }}" data-post="{{ post.id }}" class="btn far fa-thumbs-up btn_like 
                             {% if post.hasLike == 'liked' %}post_liked{% else %}post_unliked{% endif %}"> {{ post.likes }}</span>
@@ -94,6 +99,17 @@
         {% endif %}
     </div>
 </div>
+
+<!-- Modal Post Image -->
+<div id="myModal" class="modal-img" style="margin-top:50px;">
+  <!-- The Close Button -->
+  <span class="close-modal-img btn" id="close">&times;</span>
+  <!-- Modal Content (The Image) -->
+  <img class="modal-img-content" id="img01">
+  <!-- Modal Caption (Image Text) -->
+  <div id="modal-img-caption"></div>
+</div>
+
 {% endblock %}
 
 {% block javascripts %}
@@ -134,6 +150,29 @@
             });
         }
     });
+
+// Get the modal
+var modal = document.getElementById('myModal');
+
+// Get the image and insert it inside the modal - use its "alt" text as a caption
+var modalImg = document.getElementById("img01");
+var captionText = document.getElementById("modal-img-caption");
+var submitImage = document.getElementById("submit_image_post");
+$(".myImag").on("click", function(){
+    submitImage.style.display= "none";
+  modal.style.display = "block";
+  modalImg.src = this.src;
+  captionText.innerHTML = this.alt;
+});
+
+// Get the <span> element that closes the modal
+var span = document.getElementById('close-modal-img');
+
+// When the user clicks on <span> (x), close the modal
+$(span).on('click' ,function() {
+  modal.style.display = "none";
+  submitImage.style.display="inline";
+});
 
 </script>
 {% endblock %}

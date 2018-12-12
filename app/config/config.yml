@@ -9,6 +9,8 @@ parameters:
     locale: es
     post_images: 
         '%kernel.project_dir%/web/uploads/posts'
+    profile_images:
+        '%kernel.project_dir%\web\uploads\profile_images'
 
 framework:
     #esi: ~
@@ -39,6 +41,9 @@ framework:
 twig:
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
+    globals:
+        post_images: '%post_images%'
+        profile_images: '%profile_images%'
 
 # Doctrine Configuration
 doctrine:

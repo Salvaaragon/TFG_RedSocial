@@ -1,0 +1,105 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="col-lg-8 offset-lg-2" style="margin-top:70px";>
+{% if errors is defined %}
+        <div class="card text-white bg-danger mb-12 register_error_card">
+            <div class="card-header">Se han encontrado los siguientes errores</div>
+            <div class="card-body register_error_body">
+                <ul class="register_error_list">
+                    {% for error in errors %}
+                        <li>{{ error.message }}</li>
+                    {% endfor %}
+                </ul>
+            </div> 
+        </div>
+        {% endif %}
+        <div class="card data_profile_panel">
+            <div class="card-header">
+                <h5><i class="fas fa-user"></i> Datos de usuario
+            </div>
+            <div class="card-body">
+            
+            <div class="col-md-12">
+            {{ form_start(form) }}
+                <div class="profile_primary_data">
+                    <div class="row">
+                        <div class="col-sm-3 offset-sm-1">
+                            <img class="profile_image" src="{{ asset('uploads/profile_images/' ~ user_image) }}"></img>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">Nombre de usuario: </label>
+                                <div class="col-sm-7">
+                                    {{ form_widget(form.username, { 'id': 'username_input'}) }}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">Nombre de perfil: </label>
+                                <div class="col-sm-7">
+                                    {{ form_widget(form.profileName, { 'id': 'profilename_input'}) }}
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-4 col-form-label">Coreo electrónico: </label>
+                                <div class="col-sm-7">
+                                    {{ form_widget(form.email, { 'id': 'email_input'}) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>    
+                <div class="profile_secondary_data">
+                    <div class="col-sm-6">
+                        <div class="form-group row">
+                            <label class="col-sm-6 col-form-label">Cuenta de PlayStation: </label>
+                            <div class="col-sm-6">
+                                {{ form_widget(form.psn_id, { 'id': 'psn_input'}) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group row">
+                            <label class="col-sm-6 col-form-label">Cuenta de Steam: </label>
+                            <div class="col-sm-6">
+                                {{ form_widget(form.steam_id, { 'id': 'steam_input'}) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group row">
+                            <label class="col-sm-6 col-form-label">Cuenta de Xbox: </label>
+                            <div class="col-sm-6">
+                                {{ form_widget(form.xbox_id, { 'id': 'xbox_input'}) }}
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+                <div id="profile_password_data">
+                    <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-4 col-form-label">Contraseña: </label>
+                                    <div class="col-sm-6">
+                                        {{ form_widget(form.plainPassword.first, { 'id': 'passfirst_input'}) }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group row">
+                                    <label class="col-sm-5 col-form-label">Repetir contraseña: </label>
+                                    <div class="col-sm-6">
+                                        {{ form_widget(form.plainPassword.second, { 'id': 'passsecond_input'}) }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                           
+                </div>
+            <div class="col-sm-8">
+                {{ form_widget(form.submit, { 'id': 'btn_submit_changes'}) }}
+                {{ form_end(form) }}
+                <button id="btn_change_cancel" class="btn btn-primary" hterf="path('my_data_profile')" style="display:none;">Cancelar</button>
+            </div>
+    </div>
+{% endblock %}

@@ -25,6 +25,9 @@ security:
                 login_path: index
                 check_path: index
                 default_target_path: /home
+            logout:
+                path: /logout
+                target: /
 
             # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
             #http_basic: ~

@@ -9,7 +9,7 @@
                 <a class="nav-link" href=""><i class="fas fa-home"></i> INICIO<span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ path('tournaments') }}"><i class="fas fa-trophy"></i> TORNEOS</a>
+                <a class="nav-link" href="{{ path('tournaments', {'platform':'todos'}) }}"><i class="fas fa-trophy"></i> TORNEOS</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href=""><i class="fas fa-list-ol"></i> RANKINGS</a>
@@ -35,7 +35,7 @@
                     <a class="dropdown-item" href="#"><i class="fas fa-user-circle"></i> Mi perfil</a>
                     <a class="dropdown-item" href="{{path('my_data_profile')}}"><i class="fas fa-cog"></i> Mis datos</a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
+                    <a class="dropdown-item" href="{{ path('logout') }}"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
                 </div>
             </li>
         </ul>

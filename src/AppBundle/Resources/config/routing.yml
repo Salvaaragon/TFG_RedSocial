@@ -11,12 +11,12 @@ home:
   defaults: { _controller:AppBundle:Home:index }
 
 tournaments:
-  path: /tournaments
+  path: /tournaments/{platform}
   defaults: { _controller:AppBundle:Tournaments:index }
 
-clash_royale:
-  path: /tournaments/clash_royale
-  defaults: { _controller:AppBundle:Tournaments:clash_royale }
+game:
+  path: /tournaments_game
+  defaults: { _controller:AppBundle:Tournaments:game }
 
 active_account:
   path: /active_account/{username}
@@ -93,3 +93,8 @@ my_data_profile:
 modify_profile:
   path: /modify_profile
   defaults: { _controller:AppBundle:Profile:modifyData }
+
+tournaments_json:
+  path: /tournaments_json
+  defaults: { _controller:AppBundle:Tournaments:getJsonTournaments }
+

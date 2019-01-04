@@ -2,53 +2,87 @@
 
 {% block body %}
 <div class="games_panel">
-    <div class="jumbotron jumbotron-fluid prueba">
+    <div class="jumbotron jumbotron_tournaments_games">
         <div class="container">
-            <h1 class="display-4">TORNEOS<small>Juegos con torneos disponibles</small></h1>
+            <h1 class="display-4">JUEGOS</h1>
+            <h3>Juegos con torneos disponibles</h3>
             <p class="lead"><b>En esta sección se encuentra la lista de juegos para los cuales hay disponibles torneos en los que los
         usuarios pueden participar.</b></p>
+        {% if is_granted('ROLE_MOD') %}
+        <p class="lead">    
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Añadir juego</button>
+        </p>
+        {% endif %}
         </div>
     </div>
-    <nav class="nav">
-        <a class="nav-link menu_games_active">Todos</a>
-        <a class="nav-link"><i class="fas fa-mobile-alt"></i> Móvil</a>
-        <a class="nav-link"><i class="fab fa-xbox"></i> Xbox</a>
-        <a class="nav-link"><i class="fab fa-playstation"></i> PlayStation</a>
-        <a class="nav-link"><i class="fab fa-steam"></i> Steam</a>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand offset-lg-1">Plataformas</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+            <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                {% if platform_selected == "todos" %}
+                <li class="nav-item active">
+                {% else %}
+                <li class="nav-item">
+                {% endif %}
+                    <a class="nav-link" href="{{ path('tournaments', {'platform':'todos'}) }}">Todas</a>
+                </li>
+                {% for platform in platforms %}
+                {% if platform_selected == platform.name %}
+                <li class="nav-item active">
+                {% else %}
+                <li class="nav-item">
+                {% endif %}
+                    <a class="nav-link" href="{{ path('tournaments', {'platform':platform.name}) }}"><i class="fab fa-{{ platform.name|lower}}"></i> {{ platform.name}}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
     </nav>
     <div class="games_elements">
-        <div class="games_row">
-            <a href="{{ path('clash_royale') }}"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
-            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
-            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
-            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
-            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
-            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
+        <br>
+        <div class="row col-sm-1 col-lg-11 offset-lg-1">
+        {% for game in games %}
+            <div class="col-lg-2">
+            <a href="{{ path('game') }}" class="game_tournament_link">
+                <img class="img_hola" src="{{ asset('uploads/games/' ~ game.image) }}">
+                <div class="game_tournament_name"><b>{{ game.name }}</b></div>
+                <div class="game_tournament_data">{{ game.platform }} - 0 activos</div>
+            </a>
+            </div>
+        {% endfor %}         
         </div>
-        <div class="games_row">
-            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
-            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
-            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
-            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
-            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
-            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
-        </div>
-        <div class="games_row">
-            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
-            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
-            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
-            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
-            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
-            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
-        </div>
-        <div class="games_row">
-            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
-            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
-            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
-            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
-            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
-            <a href="google.es"><img class="img_hola" src="{{ asset('bundles/app/image/clashroyale_logo.png') }}"></a>
-        </div>
+        <br>
     </div>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Añadir juego</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {{ form_start(form) }}
+        {{ form_widget(form.name) }}
+        <br>
+        {{ form_widget(form.image) }}
+        <br>
+        {{ form_widget(form.platform) }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        {{ form_widget(form.submit) }}
+        {{ form_end(form) }}
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}

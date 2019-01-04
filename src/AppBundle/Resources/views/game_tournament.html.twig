@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div style="margin-top: 60px;">
+<table id="example" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Juego</th>
+                <th>Fecha y hora</th>
+                <th>Participantes requeridos</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th>Id</th>
+                <th>Juego</th>
+                <th>Fecha y hora</th>
+                <th>Participantes requeridos</th>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+
+
+   <script type="text/javascript"> 
+$(document).ready(function() {
+    $('#example').DataTable( {
+        ajax: {
+            url: Routing.generate('tournaments_json'),
+            dataSrc: 'data'
+        },
+        columns: [
+            { data: 'id' },
+            { data: 'game' },
+            { data: 'datetime' },
+            { data: 'participants' }
+        ]
+    } );
+} );
+
+</script>
+{% endblock %}

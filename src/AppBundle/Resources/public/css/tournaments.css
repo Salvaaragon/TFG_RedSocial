@@ -2,10 +2,6 @@
     margin-top: 56px;
 }
 
-.jumbotron_tournaments_games {
-    margin-bottom: 0;
-}
-
 .menu_games{
     list-style-type: none;
     margin: 0;
@@ -57,4 +53,34 @@
 
 .game_tournament_link:hover {
     text-decoration: none;
+}
+
+.div_tournaments {
+    margin-top:60px;
+    margin-bottom:60px;
+}
+
+.div_table {
+    margin-left:50px;
+    margin-right: 50px;
+}
+
+.tournaments_table_head {
+    border:1px #32383e solid;
+}
+
+.tournaments_table_body {
+    border:1px #dee2e6 solid;
+}
+
+.center_column {
+    text-align:center;
+}
+
+.vertical_align_column {
+    vertical-align : middle;
+}
+
+.new_rule_tournament {
+    margin-top:2px;
 }

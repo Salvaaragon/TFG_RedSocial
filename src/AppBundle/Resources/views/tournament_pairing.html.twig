@@ -1,0 +1,272 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="div_tournaments">
+    <div class="jumbotron">
+        <div class="container">
+            <h1 class="display-4">{{game.name}}</h1>
+            <h2><i class="fab fa-{{ game.platform|lower}}"></i> {{game.platform}}</h2>
+            <h3>{{ tournament.name }} - {{ tournament.datetime }} - {{ tournament.type }}</h3>
+            <h5>Participantes permitidos: {{ tournament.participants_min }} - {{ tournament.participants_max }}</h5>
+            <h5>Participantes por juego: {{ tournament.match_part }}</h5>
+            {% if tournament.limit_checkin_object|date('Y-m-d H:i') <= "now"|date('Y-m-d H:i') %}
+                <h5>Inscripciones cerradas</h5>
+            {% else %}
+                <h5>Inscripción abierta hasta: {{ tournament.limit_checkin }}</h5>
+            {% endif %}
+            {% if tournament.winner is defined and tournament.winner is not null %}
+            <h3>Ganador: {{ tournament.winner }}</h3>
+            {% endif %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-10 offset-lg-1">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Emparejamientos</h5>
+                </div>
+                <div class="card-body">
+                    {% if pairings is defined and pairings is not null %}                        
+                        {% for rondas in pairings['Ronda'] %}
+                        <h1>
+                        {% if tournament.num_rounds == loop.index %}
+                        Ronda final{% if tournament.winner is defined and tournament.winner is not null %} (finalizada){% endif %}
+                        {% else %}
+                        Ronda {{loop.index}}{% if tournament.current_round != loop.index %} (finalizada){% endif %}
+                        {% endif %}
+                        </h1>
+                            <table class="table table-responsive-sm">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th scope="col">Emparejamiento</th>
+                                        <th scope="col">Ganador</th>
+                                        <th scope="col">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for partida in pairings['Ronda'][loop.index] %}
+                                    <tr>
+                                        <td><b>{{ partida['playerOne'] }}</b> vs <b>{{ partida['playerTwo'] }}</b></td>
+                                        <td>
+                                            {% if partida['winner'] is defined and partida['winner'] is not null %}
+                                            {{ partida['winner'] }}
+                                            {% else %}
+                                            No se ha definido un ganador aún 
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if partida['playerOne'] == app.user.username %}
+                                                {% if partida['resultPOne'] is not defined or partida['resultPOne'] is null %}
+                                                <button id="btn_send_result" data-one="{{ partida['playerOne'] }}" data-two="{{ partida['playerTwo'] }}" data-tournament="{{ tournament.id }}" data-pairing="{{ partida['id'] }}" type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal">Enviar resultado</button>
+                                                {% else %}
+                                                Ya ha enviado un resultado de este emparejamiento
+                                                {% endif %}
+                                            {% endif %}
+                                            {% if partida['playerTwo'] == app.user.username %}
+                                                {% if partida['resultPTwo'] is not defined or partida['resultPTwo'] is null %}
+                                                <button id="btn_send_result" data-one="{{ partida['playerOne'] }}" data-two="{{ partida['playerTwo'] }}" data-tournament="{{ tournament.id }}" data-pairing="{{ partida['id'] }}" type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal">Enviar resultado</button>
+                                                {% else %}
+                                                Ya ha enviado un resultado de este emparejamiento
+                                                {% endif %}
+                                            {% endif %}
+                                            {% if is_granted('ROLE_MOD') %}
+                                                {% if partida['winner'] is defined and partida['winner'] is not null %}
+                                                    No hay acciones disponibles para este emparejamiento
+                                                {% else %}
+                                                    <button id="btn_show_results" data-one="{{ partida['playerOne'] }}" data-two="{{ partida['playerTwo'] }}" data-one_result="{{ partida['resultPOne'] }}" data-two_result="{{ partida['resultPTwo'] }}" data-one_img="{{ partida['resultImgPOne'] }}" data-two_img="{{ partida['resultImgPTwo'] }}" type="button" class="btn btn-success btn-sm btn_show_results" data-toggle="modal" data-target="#modalShowResults">Ver resultados</button>
+                                                    <button id="btn_select_winner" data-one="{{ partida['playerOne'] }}" data-two="{{ partida['playerTwo'] }}" data-tournament="{{ tournament.id }}" data-pairing="{{ partida['id'] }}" type="button" class="btn btn-danger btn-sm btn_select_winner" data-toggle="modal" data-target="#modalSelectWinner">Elegir ganador</button>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endfor %}
+                        {% if last_round_generated == false and tournament.current_round != tournament.num_rounds %}
+                        <h1>Ronda {{ tournament.current_round }} </h1>
+                        <a class="btn btn-primary btn-sm" href="{{ path('prueba',{'id_tournament':tournament.id}) }}">Generar emparejamientos</a>
+                        {% endif %}
+                    {% else %}
+                        Aún no existen emparejamientos
+                        {% if is_granted('ROLE_MOD') %}
+                            <a type="button" class="btn btn-primary" href="{{ path('prueba',{'id_tournament':tournament.id}) }}">Generar emparejamientos</a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal send result -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Enviar resultado</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="form_upload_result" action="{{path('tournament_upload_result')}}" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <input id="tournament_id_player" name="tournament_id_player" type="hidden" value="" readonly>
+                <input id="pairing_id_player" name="pairing_id_player" type="hidden" value="" readonly>
+                <label for="select_winner_player">Ganador</label>
+                <select name="select_winner_player" class="form-control" id="select_winner_player" required>
+                </select><br>
+                <label for="input_result">Imagen con resultado</label>
+                <input id="input_result" name="input_result" type="file" class="file" data-language='es' data-allowed-file-extensions= '["jpg", "gif", "png"]' data-show-upload="false" data-show-cancel="false" data-show-preview="false" data-msg-placeholder="Añadir imagen con resultado..." required>
+            </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Enviar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal show results -->
+<div class="modal fade" id="modalShowResults" tabindex="-1" role="dialog" aria-labelledby="modalShowResultsLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalShowResultsLabel">Ver resultados</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="div_results"></div>
+        <div id="div_buttons_results">
+            <a href="{{ path('download_img_pairing', {'image_name': 'nombre_imagen'}) }}" id="download_img_one" class="btn btn-primary download_img_one">Descargar resultado POne</a>
+            <a href="{{ path('download_img_pairing', {'image_name': 'nombre_imagen'}) }}" id="download_img_two" class="btn btn-primary download_img_two">Descargar resultado PTwo</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal select winner -->
+<div class="modal fade" id="modalSelectWinner" tabindex="-1" role="dialog" aria-labelledby="modalSelectWinnerLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalSelectWinnerLabel">Resolver emparejamiento</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="form_select_winner" action="{{path('tournament_solve_pairing')}}" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <input id="tournament_id_mod" name="tournament_id_mod" type="hidden" value="" readonly>
+                <input id="pairing_id_mod" name="pairing_id_mod" type="hidden" value="" readonly>
+                <label for="select_winner_mod">Ganador</label>
+                <select name="select_winner_mod" class="form-control" id="select_winner_mod" required>
+                </select><br>
+            </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Enviar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript"> 
+    $(document).ready(function(){  
+
+        $("#btn_send_result").click(function() {
+            
+            var playerOne = $(this).data('one');
+            var playerTwo = $(this).data('two');
+            var select_winner_player = document.getElementById('select_winner_player');
+            var tournament_id = $(this).data('tournament');
+            var pairing_id = $(this).data('pairing');
+
+            select_winner_player.options.length = 0;
+            var option1 = document.createElement('option');
+            var option2 = document.createElement('option');
+            option1.value = playerOne;
+            option1.innerHTML = playerOne;
+            select_winner_player.appendChild(option1);
+            option2.value = playerTwo;
+            option2.innerHTML = playerTwo;
+            select_winner_player.appendChild(option2);
+
+            $('#tournament_id_player').val(tournament_id);
+            $('#pairing_id_player').val(pairing_id);
+        });
+
+        $(".btn_show_results").click(function() {
+            
+            var playerOne = $(this).data('one');
+            var playerTwo = $(this).data('two');
+            var playerOneResult = $(this).data('one_result');
+            var playerTwoResult = $(this).data('two_result');
+            var playerOneImgResult = $(this).data('one_img');
+            var playerTwoImgResult = $(this).data('two_img');
+            var btn_pOne = document.getElementById('download_img_one');
+            var btn_pTwo = document.getElementById('download_img_two');
+
+            if(playerOneResult == null && playerTwoResult == null)
+                $('#div_results').html("Aún no se han recibido resultados");
+            else {
+                var string_resultados = "Ganador definido por "+playerOne+": ";
+                if(playerOneResult == "") {
+                    string_resultados += " No definido aún<br>";
+                    btn_pOne.style.display = 'none';
+                }
+                else {
+                    string_resultados += "<b>"+playerOneResult+"</b><br>";
+                    btn_pOne.style.display = '';
+                    $('.download_img_one').attr("href",$('.download_img_one').attr("href").replace('nombre_imagen',playerOneImgResult));
+                }
+                string_resultados += "Ganador definido por "+playerTwo+": ";
+                if(playerTwoResult == "") {
+                    string_resultados += " No definido aún<br>";
+                    btn_pTwo.style.display = 'none';
+                }
+                else {
+                    string_resultados += "<b>"+playerTwoResult+"</b><br>";
+                    btn_pTwo.style.display = '';
+                    $('.download_img_two').attr("href",$('.download_two_one').attr("href").replace('nombre_imagen',playerTwoImgResult));
+                }
+                $('#div_results').html(string_resultados);
+            }
+        });
+
+        $(".btn_select_winner").click(function() {
+            
+            var playerOne = $(this).data('one');
+            var playerTwo = $(this).data('two');
+            var select_winner = document.getElementById('select_winner_mod');
+            var tournament_id = $(this).data('tournament');
+            var pairing_id = $(this).data('pairing');
+
+            select_winner.options.length = 0;
+            var option1 = document.createElement('option');
+            var option2 = document.createElement('option');
+            option1.value = playerOne;
+            option1.innerHTML = playerOne;
+            select_winner.appendChild(option1);
+            option2.value = playerTwo;
+            option2.innerHTML = playerTwo;
+            select_winner.appendChild(option2);
+
+            $('#tournament_id_mod').val(tournament_id);
+            $('#pairing_id_mod').val(pairing_id);
+        });
+
+    });
+        
+    </script>
+{% endblock %}

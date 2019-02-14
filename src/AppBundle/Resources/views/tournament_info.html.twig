@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="div_tournaments">
+    <div class="jumbotron">
+        <div class="container">
+            <h1 class="display-4">{{game.name}}</h1>
+            <h2><i class="fab fa-{{ game.platform|lower}}"></i> {{game.platform}}</h2>
+            <h3>{{ tournament.name }} - {{ tournament.datetime }} - {{ tournament.type }}</h3>
+            <h5>Participantes permitidos: {{ tournament.participants_min }} - {{ tournament.participants_max }}</h5>
+            <h5>Participantes por juego: {{ tournament.match_part }}</h5>
+            {% if tournament.limit_checkin_object|date('Y-m-d H:i') <= "now"|date('Y-m-d H:i') %}
+                <h5>Inscripciones cerradas</h5>
+            {% else %}
+                <h5>Inscripción abierta hasta: {{ tournament.limit_checkin }}</h5>
+            {% endif %}
+
+            {% if is_granted('ROLE_MOD') %}
+                {% if tournament.limit_checkin_object|date('Y-m-d H:i') <= "now"|date('Y-m-d H:i') 
+                and (tournament.datetime_object|date('Y-m-d') > "now"|date('Y-m-d')) %}
+                    {% if tournament.num_participants > tournament.participants_min or
+                        tournament.num_participants == tournament.participants_min %}
+                    <p class="lead">    
+                        Accede a los emparejamientos para gestionarlos
+                    </p>
+                    {% else %}
+                    No se han inscrito los jugadores necesarios para realizar el torneo
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-5 offset-lg-1">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Reglas del torneo</h5>
+                </div>
+                <div class="card-body">
+                    <ol>
+                    {% for rule in rules %}
+                        <h4><li>{{rule.rule}}</li></h4>
+                    {% endfor %}
+                    </ol>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 offset-lg-1">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Acciones</h5>
+                </div>
+                <div class="card-body">
+                    <button type="button" class="btn btn-primary">Inscribirse</button>
+                    <button type="button" class="btn btn-success">Ver clasificación</button>
+                    <button type="button" class="btn btn-danger">Ver emparejamientos</button>
+                </div>
+            </div>
+            <br>
+            <div class="card">
+                <div class="card-header">
+                    <h5>Lista de participantes</h5>
+                </div>
+                <div class="card-body">
+                    {% if participants is defined and participants is not null %}
+                        {% for participant in participants %}
+                            {{ participant.username }}<br>
+                        {% endfor %}
+                    {% else %}
+                        Este torneo aún no posee participantes
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript"> 
+
+    </script>
+{% endblock %}

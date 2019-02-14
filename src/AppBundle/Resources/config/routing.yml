@@ -15,7 +15,7 @@ tournaments:
   defaults: { _controller:AppBundle:Tournaments:index }
 
 game:
-  path: /tournaments_game
+  path: /tournaments_game/{game_name}
   defaults: { _controller:AppBundle:Tournaments:game }
 
 active_account:
@@ -94,7 +94,34 @@ modify_profile:
   path: /modify_profile
   defaults: { _controller:AppBundle:Profile:modifyData }
 
-tournaments_json:
-  path: /tournaments_json
-  defaults: { _controller:AppBundle:Tournaments:getJsonTournaments }
+new_tournament:
+  path: /tournaments_game/{game_name}/new_tournament
+  defaults: { _controller:AppBundle:Tournaments:newTournament }
 
+create_tournament:
+  path: /tournaments_new/create_tournament
+  defaults: { _controller:AppBundle:Tournaments:createTournament }
+
+tournament_info:
+  path: /tournament_info/{game_name}/{id_tournament}
+  defaults: { _controller:AppBundle:Tournaments:tournamentInfo }
+
+tournament_pairing:
+  path: /tournament_pairing/{game_name}/{id_tournament}
+  defaults: { _controller:AppBundle:Tournaments:tournamentPairing }
+
+prueba:
+  path: /prueba/{id_tournament}
+  defaults: { _controller:AppBundle:Tournaments:emparejamiento }
+
+tournament_upload_result:
+  path: /tournament_upload_result
+  defaults: { _controller:AppBundle:Tournaments:uploadResult }
+
+download_img_pairing:
+  path: /download_image_pairing/{image_name}
+  defaults: { _controller:AppBundle:Tournaments:downloadImageResult }
+
+tournament_solve_pairing:
+  path: /solve_pairing
+  defaults: { _controller:AppBundle:Tournaments:solvePairing }

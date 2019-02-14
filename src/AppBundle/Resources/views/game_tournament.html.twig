@@ -1,46 +1,50 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-<div style="margin-top: 60px;">
-<table id="example" class="display" style="width:100%">
-        <thead>
+<div class="div_tournaments">
+    <div class="jumbotron">
+        <div class="container">
+            <h1 class="display-4">{{game.name}}</h1>
+            <h2><i class="fab fa-{{ game.platform|lower}}"></i> {{game.platform}}</h2>
+        {% if is_granted('ROLE_MOD') %}
+        <p class="lead">    
+            <a type="button" class="btn btn-primary" href="{{ path('new_tournament',{'game_name':game.name}) }}">Nuevo torneo</a>
+        </p>
+        {% endif %}
+        </div>
+    </div>
+    <div class="div_table">
+    <table id="example" class="table table-hover table-responsive-sm" style="width:100%">
+        <thead class="thead-dark tournaments_table_head">
             <tr>
-                <th>Id</th>
-                <th>Juego</th>
-                <th>Fecha y hora</th>
-                <th>Participantes requeridos</th>
+                <th scope="col">Nombre</th>
+                <th class="center_column" scope="col">Fecha y hora</th>
+                <th class="center_column" scope="col">Participantes</th>
+                <th scope="col"></th>
             </tr>
         </thead>
-        <tfoot>
+        <tbody class="tournaments_table_body">
+            {% if tournaments is defined and tournaments is not null %}
+            {% for tournament in tournaments %}
             <tr>
-                <th>Id</th>
-                <th>Juego</th>
-                <th>Fecha y hora</th>
-                <th>Participantes requeridos</th>
+                <td class="vertical_align_column">{{ tournament.name }}</td>
+                <td class="center_column vertical_align_column">{{ tournament.datetime }}</td>
+                <td class="center_column vertical_align_column">{{ tournament.participants }}</td>
+                <td class="center_column"><a type="button" href="{{ path('tournament_info', {'game_name': game.name, 'id_tournament': tournament.id}) }}" class="btn btn-primary">Ver detalles</a></td>
             </tr>
-        </tfoot>
+            {% endfor %}
+            {% else %}
+            No existen torneos para este juego
+            {% endif %}
+        </tbody>
     </table>
+    </div>
 </div>
+
 {% endblock %}
 
 {% block javascripts %}
+    <script type="text/javascript"> 
 
-
-   <script type="text/javascript"> 
-$(document).ready(function() {
-    $('#example').DataTable( {
-        ajax: {
-            url: Routing.generate('tournaments_json'),
-            dataSrc: 'data'
-        },
-        columns: [
-            { data: 'id' },
-            { data: 'game' },
-            { data: 'datetime' },
-            { data: 'participants' }
-        ]
-    } );
-} );
-
-</script>
+    </script>
 {% endblock %}

@@ -107,6 +107,11 @@ class User implements AdvancedUserInterface
     private $game_groups;
 
     /**
+     * @ORM\OneToMany(targetEntity="Post", mappedBy="user")
+     */
+    private $posts;
+
+    /**
     * @ORM\OneToMany(targetEntity="Message", mappedBy="user")
     */
     private $messages;
@@ -124,6 +129,7 @@ class User implements AdvancedUserInterface
         $this->isActive = false;
         $this->game_groups = new ArrayCollection();
         $this->messages = new ArrayCollection();
+        $this->posts = new ArrayCollection();
     }
 
     /**

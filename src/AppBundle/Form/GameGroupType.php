@@ -31,8 +31,8 @@ class GameGroupType extends AbstractType
                     'placeholder' => 'Juego',
                     'maxlength' => 128),
                 "label" => false,
-                "required" => "required",
-                "choices" => $user->getSteamGames()))
+                "required" => "required"))/*,
+                "choices" => $user->getSteamGames()))*/
             ->add('platform', EntityType::class, array(
                 'class' => 'AppBundle:Platform',
                 'query_builder' => function (PlatformRepository $pr) {

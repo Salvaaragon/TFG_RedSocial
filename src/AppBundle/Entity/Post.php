@@ -46,7 +46,7 @@ class Post
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="User", inversedBy="game_groups")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="posts")
      * @ORM\JoinColumn(name="id_user", referencedColumnName="id", nullable=false)
      */
     private $user;

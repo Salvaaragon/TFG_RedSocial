@@ -36,6 +36,7 @@ class GameType extends AbstractType
                     'data-max-image-height' => '200',
                     'data-min-image-width' => '150',
                     'data-min-image-height' => '200',
+                    'data-show-cancel' => 'false',
                     'required' => 'required'
                     )))
             ->add('platform', EntityType::class, array(

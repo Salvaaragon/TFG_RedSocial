@@ -4,7 +4,7 @@
 <div class="div_tournaments">
     <div class="jumbotron">
         <div class="container">
-            <h1 class="display-4">{{game.name}}</h1>
+            <h1 class="display-4"><a style="text-decoration:none" href="{{ path('tournaments',{'platform':'todos'})}}">Juegos:</a> {{game.name_normalized}}</h1>
             <h2><i class="fab fa-{{ game.platform|lower}}"></i> {{game.platform}}</h2>
         {% if is_granted('ROLE_MOD') %}
         <p class="lead">    
@@ -18,8 +18,9 @@
         <thead class="thead-dark tournaments_table_head">
             <tr>
                 <th scope="col">Nombre</th>
+                <th class="center_column" scope="col">Tipo</th>
                 <th class="center_column" scope="col">Fecha y hora</th>
-                <th class="center_column" scope="col">Participantes</th>
+                <th class="center_column" scope="col">Participantes requeridos</th>
                 <th scope="col"></th>
             </tr>
         </thead>
@@ -28,8 +29,9 @@
             {% for tournament in tournaments %}
             <tr>
                 <td class="vertical_align_column">{{ tournament.name }}</td>
-                <td class="center_column vertical_align_column">{{ tournament.datetime }}</td>
-                <td class="center_column vertical_align_column">{{ tournament.participants }}</td>
+                <td class="center_column vertical_align_column">{{ tournament.type|capitalize }}</td>
+                <td class="center_column vertical_align_column">{{ tournament.datetime|date('d-m-Y h:i') }}</td>
+                <td class="center_column vertical_align_column">{{ tournament.participantsMin }}</td>
                 <td class="center_column"><a type="button" href="{{ path('tournament_info', {'game_name': game.name, 'id_tournament': tournament.id}) }}" class="btn btn-primary">Ver detalles</a></td>
             </tr>
             {% endfor %}
@@ -38,6 +40,36 @@
             {% endif %}
         </tbody>
     </table>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-end">
+            {% if currentPage == 1 %}
+            <li class="page-item disabled">
+            {% else %}
+            <li class="page-item">
+            {% endif %}
+            <a class="page-link" href="{{ path('game', {'game_name':game.name, 'page': (currentPage -1)}) }}" aria-label="Previous">
+                Anterior
+            </a>
+            </li>
+            {% for i in 1..pagesCount %}
+                {% if currentPage == i %}
+                <li class="page-item active">
+                {% else %}
+                <li class="page-item">
+                {% endif %}
+                <a class="page-link" href="{{ path('game', {'game_name':game.name, 'page': i}) }}">{{ i }}</a></li>
+            {% endfor %}
+            {% if currentPage == pagesCount %}
+            <li class="page-item disabled">
+            {% else %}
+            <li class="page-item">
+            {% endif %}
+            <a class="page-link" href="{{ path('game', {'game_name':game.name, 'page': (currentPage +1)}) }}" aria-label="Next">
+                Siguiente
+            </a>
+            </li>
+        </ul>
+    </nav>
     </div>
 </div>
 

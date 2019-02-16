@@ -66,13 +66,6 @@ class Tournament
     private $type;
 
     /**
-     * @var int
-     * 
-     * @ORM\Column(name="match_part", type="integer")
-     */
-    private $participantsMatch;
-
-    /**
      * @ORM\OneToMany(targetEntity="TournamentRule", mappedBy="tournament")
      */
     private $rules;
@@ -108,11 +101,17 @@ class Tournament
     private $participants;
 
     /**
+     * @ORM\Column(name="is_active", type="boolean")
+     */
+    private $isActive;
+
+    /**
      * Constructor
      */
-    public function construct() {
+    public function __construct() {
         $this->rules = new ArrayCollection();
         $this->participants = new ArrayCollection();
+        $this->setIsActive(true);
     }
 
     /**
@@ -270,30 +269,6 @@ class Tournament
     }
 
     /**
-     * Set participantsMatch
-     *
-     * @param integer $participantsMatch
-     *
-     * @return Tournament
-     */
-    public function setParticipantsMatch($participantsMatch)
-    {
-        $this->participantsMatch = $participantsMatch;
-
-        return $this;
-    }
-
-    /**
-     * Get participantsMatch
-     *
-     * @return int
-     */
-    public function getParticipantsMatch()
-    {
-        return $this->participantsMatch;
-    }
-
-    /**
      * Set currentRound
      * 
      * @param integer $currentRound
@@ -358,6 +333,30 @@ class Tournament
     public function getWinner(): ?User
     {
         return $this->winner;
+    }
+
+    /**
+     * Set isActive
+     * 
+     * @param boolean $isActive
+     * 
+     * @return Tournament
+     */
+    public function setIsActive($isActive)
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    /**
+     * Get isActive
+     * 
+     * @return bool
+     */
+    public function getIsActive()
+    {
+        return $this->isActive;
     }
 }
 

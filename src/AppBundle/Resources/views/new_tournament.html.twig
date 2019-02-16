@@ -4,7 +4,7 @@
 <div class="div_tournaments">
     <div class="jumbotron">
         <div class="container">
-            <h1 class="display-4">{{game.name}}</h1>
+            <h1 class="display-4"><a style="text-decoration:none" href="{{ path('tournaments',{'platform':'todos'})}}">Juegos:</a> {{game.name_normalized}}</h1>
             <h2><i class="fab fa-{{ game.platform|lower}}"></i> {{game.platform}}</h2>
         </div>
     </div>
@@ -18,7 +18,8 @@
                 <div class="form-group row">
                     <label for="game_name" class="col-sm-2 col-form-label">Juego</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="game_name" value="{{game.name}}" readonly>
+                        <input type="text" class="form-control" id="game_name" value="{{game.name_normalized}}" readonly>
+                        <input type="hidden" class="form-control" id="game_no_normalized" value="{{game.name}}" readonly>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -71,32 +72,29 @@
                     </select>
                     </div>
                 </div>
-                <div class="form-group row" id="div_match_type" style="display:none;">
-                    <label for="tournament_match_type" class="col-sm-2 col-form-label">Tipo de juego</label>
-                    <div class="col-sm-10">
-                    <select class="form-control" id="tournament_match_type">
-                        <option value="1">1v1</option>
-                        <option value="2">2v2</option>
-                        <option value="3">3v3</option>
-                        <option value="4">4v4</option>
-                        <option value="5">5v5</option>
-                    </select>
-                    </div>
-                </div>
                 <div class="form-group row" id="div_match_part" style="display:none; disbled:true">
                     <label for="tournament_match_part" class="col-sm-2 col-form-label">Participantes requeridos</label>
                     <div class="col-sm-10">
                     <select class="form-control" id="tournament_match_part">
-                        <option value="1">2</option>
-                        <option value="2">4</option>
-                        <option value="3">6</option>
-                        <option value="4">8</option>
-                        <option value="5">10</option>
-                        <option value="6">12</option>
-                        <option value="7">14</option>
-                        <option value="8">16</option>
-                        <option value="9">18</option>
-                        <option value="10">20</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                        <option value="18">18</option>
+                        <option value="19">19</option>
+                        <option value="20">20</option>
                     </select>
                     </div>
                 </div>
@@ -120,7 +118,7 @@
                 </div>
 
                 <button type="button" id="create_new_tournament" class="btn btn-primary">Crear torneo</button>
-                <a href="{{ path('game', {'game_name':game.name}) }}" class="btn btn-danger">Cancelar</a>
+                <a href="{{ path('game', {'game_name':game.name, 'page':1}) }}" class="btn btn-danger">Cancelar</a>
         </div>
     </div>
     </div>
@@ -135,66 +133,36 @@
 $(document).ready(function(){  
 
     $('#tournament_type').val('liga');
-    $('#tournament_match_type').val(1);
-    $('#tournament_match_part').val(1);
+    $('#tournament_match_part').val(2);
     
     $('#tournament_type').on('change', function() {
         var tournament_type = $('#tournament_type').val();
-        var div_match_type = document.getElementById('div_match_type');
         var div_match_part = document.getElementById('div_match_part');
         var div_league_min_part = document.getElementById('div_league_min_part');
         var div_league_max_part = document.getElementById('div_league_max_part');
 
         if(tournament_type == 'liga') {
-            div_match_type.style.display = "none";
-            div_match_type.disabled = true;
             div_match_part.style.display = "none";
             div_match_part.disabled = true;
             div_league_min_part.style.display = "flex";
             div_league_min_part.disabled = false;
             div_league_max_part.style.display = "flex";
             div_league_max_part.disabled = false;
-            $('#tournament_match_type').val(1);
             $('#tournament_match_part').val(1);
             div_league_min_part.val(5);
             div_league_max_part.val(15);
         }
         if(tournament_type == 'eliminatoria') {
-            div_match_type.style.display = "flex";
-            div_match_type.disabled = false;
             div_match_part.style.display = "flex";
             div_match_part.disabled = false;
             div_league_min_part.style.display = "none";
             div_league_min_part.disabled = true;
             div_league_max_part.style.display = "none";
             div_league_max_part.disabled = true;
-            $('#tournament_match_type').val(1);
             div_league_min_part.val(5);
             div_league_max_part.val(15);
         }
     }); 
-
-    $('#tournament_match_type').on('change', function() {
-        var tournament_match_type = $('#tournament_match_type').val();//1,2,3,4 o 5
-        var tournament_match_part = document.getElementById('tournament_match_part');
-        var div_match_part = document.getElementById('div_match_part');
-
-        tournament_match_part.options.length = 0;
-
-        var last_value = tournament_match_type * 2;
-        var max_length = 10;
-
-        if(tournament_match_type > 2)
-            max_length = 5;
-        
-        for(var index = 0; index < max_length; index++) {
-            var option = document.createElement('option');
-            option.value = last_value;
-            option.innerHTML = last_value;
-            last_value = parseInt(last_value) + parseInt(tournament_match_type);
-            tournament_match_part.appendChild(option);
-        }
-    });
 
     var date = new Date();
     var minDate_start = new Date(date.getFullYear(), date.getMonth(), date.getDate()+14);
@@ -207,7 +175,8 @@ $(document).ready(function(){
         endDate: maxDate_start,
         autoclose: "true",
         pickerPosition: "top-right",
-        setDate: minDate_start
+        setDate: minDate_start,
+        language: 'es'
     });
 
     $(".league_date_start").datetimepicker('setDate', minDate_start);
@@ -242,11 +211,13 @@ $(document).ready(function(){
         if(!empty_rules) {
             var data = {}
             var game_name;
+            var game_no_normalized;
             var tournament_type;
             var tournament_start;
             var tournament_start_formatted;
 
             game_name = $('#game_name').val();
+            game_no_normalized = $('#game_no_normalized').val();
             tournament_type = $('#tournament_type').val();
             tournament_start = $("#league_date_start").data('datetimepicker').getDate();
             tournament_start_formatted = tournament_start.getFullYear() + "-" + (tournament_start.getMonth() + 1) + "-" + tournament_start.getDate() + " " + tournament_start.getHours() + ":" + tournament_start.getMinutes() + ":" + tournament_start.getSeconds();
@@ -260,15 +231,12 @@ $(document).ready(function(){
                 data['max_part'] = league_max_part;
             }
             else {
-                var match_type;
                 var match_part;
-                match_type = $('#tournament_match_type').val();
                 match_part = $('#tournament_match_part').val();
-                data['match_type'] = match_type;
                 data['match_part'] = match_part;
             }
 
-            data['game_name'] = game_name;
+            data['game_name'] = game_no_normalized;
             data['tournament_type'] = tournament_type;
             data['tournament_date'] = tournament_start_formatted;
             data['num_rules'] = indexRules;
@@ -279,7 +247,7 @@ $(document).ready(function(){
                 data: { 'data':data, 'rules':rules},
                 success: function (data) {
                     console.log("Torneo creado correctamente");
-                    window.location.replace(window.location.origin.concat("/app_dev.php/tournaments_game/").concat(game_name));
+                    window.location.replace(window.location.origin.concat("/app_dev.php/tournaments_game/",game_no_normalized,"/1"));
                 },
                 error : function(xhr, status, errorMessage) {
                     alert("Algo ha salido mal: "+errorMessage);

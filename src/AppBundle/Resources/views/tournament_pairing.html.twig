@@ -4,11 +4,16 @@
 <div class="div_tournaments">
     <div class="jumbotron">
         <div class="container">
-            <h1 class="display-4">{{game.name}}</h1>
+            <h1 class="display-4"><a style="text-decoration:none" href="{{ path('tournaments',{'platform':'todos'})}}">Juegos:</a> <a style="text-decoration:none" href="{{ path('game',{'game_name':game.name, 'page': 1})}}">{{game.name_normalized}}</a></h1>
             <h2><i class="fab fa-{{ game.platform|lower}}"></i> {{game.platform}}</h2>
-            <h3>{{ tournament.name }} - {{ tournament.datetime }} - {{ tournament.type }}</h3>
+            <h3><a style="text-decoration:none" href="{{ path('tournament_info',{'game_name':game.name, 'id_tournament':tournament.id})}}">{{ tournament.name }}</a></h3>
+            <h4>Fecha y hora: {{ tournament.datetime }}</h4>
+            <h4>{{ tournament.type|capitalize }}</h4>
+            {% if tournament.type == 'eliminatoria' %}
+            <h5>Participantes requeridos: {{ tournament.participants_min }}</h5>
+            {% else %}
             <h5>Participantes permitidos: {{ tournament.participants_min }} - {{ tournament.participants_max }}</h5>
-            <h5>Participantes por juego: {{ tournament.match_part }}</h5>
+            {% endif %}
             {% if tournament.limit_checkin_object|date('Y-m-d H:i') <= "now"|date('Y-m-d H:i') %}
                 <h5>Inscripciones cerradas</h5>
             {% else %}
@@ -82,6 +87,9 @@
                                     {% endfor %}
                                 </tbody>
                             </table>
+                            {% if direct_pass['Ronda'][loop.index][0] is defined and direct_pass['Ronda'][loop.index][0] is not null %}
+                            <h5>Pase de ronda directo: {{ direct_pass['Ronda'][loop.index][0] }}</h5>
+                            {% endif %}
                         {% endfor %}
                         {% if last_round_generated == false and tournament.current_round != tournament.num_rounds %}
                         <h1>Ronda {{ tournament.current_round }} </h1>
@@ -89,8 +97,10 @@
                         {% endif %}
                     {% else %}
                         Aún no existen emparejamientos
-                        {% if is_granted('ROLE_MOD') %}
-                            <a type="button" class="btn btn-primary" href="{{ path('prueba',{'id_tournament':tournament.id}) }}">Generar emparejamientos</a>
+                        {% if is_granted('ROLE_MOD') and tournament.is_active %}
+                            {% if tournament.limit_checkin_object|date('Y-m-d H:i') <= "now"|date('Y-m-d H:i') %}
+                                <a type="button" class="btn btn-primary" href="{{ path('prueba',{'id_tournament':tournament.id}) }}">Generar emparejamientos</a>
+                            {% endif %}
                         {% endif %}
                     {% endif %}
                 </div>

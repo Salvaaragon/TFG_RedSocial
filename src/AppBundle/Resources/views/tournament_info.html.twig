@@ -4,15 +4,23 @@
 <div class="div_tournaments">
     <div class="jumbotron">
         <div class="container">
-            <h1 class="display-4">{{game.name}}</h1>
+            <h1 class="display-4"><a style="text-decoration:none" href="{{ path('tournaments',{'platform':'todos'})}}">Juegos:</a> <a style="text-decoration:none" href="{{ path('game',{'game_name':game.name, 'page': 1})}}">{{game.name_normalized}}</a></h1>
             <h2><i class="fab fa-{{ game.platform|lower}}"></i> {{game.platform}}</h2>
-            <h3>{{ tournament.name }} - {{ tournament.datetime }} - {{ tournament.type }}</h3>
+            <h3>{{ tournament.name }}</h3>
+            <h4>Fecha y hora: {{ tournament.datetime }}</h4>
+            <h4>{{ tournament.type|capitalize }}</h4>
+            {% if tournament.type == 'eliminatoria' %}
+            <h5>Participantes requeridos: {{ tournament.participants_min }}</h5>
+            {% else %}
             <h5>Participantes permitidos: {{ tournament.participants_min }} - {{ tournament.participants_max }}</h5>
-            <h5>Participantes por juego: {{ tournament.match_part }}</h5>
+            {% endif %}
             {% if tournament.limit_checkin_object|date('Y-m-d H:i') <= "now"|date('Y-m-d H:i') %}
                 <h5>Inscripciones cerradas</h5>
             {% else %}
                 <h5>Inscripción abierta hasta: {{ tournament.limit_checkin }}</h5>
+            {% endif %}
+            {% if tournament.is_active == false %}
+            <h5>Torneo finalizado</h5>
             {% endif %}
 
             {% if is_granted('ROLE_MOD') %}
@@ -27,6 +35,10 @@
                     No se han inscrito los jugadores necesarios para realizar el torneo
                     {% endif %}
                 {% endif %}
+            {% endif %}
+
+            {% if tournament.winner is defined and tournament.winner is not null %}
+            <h3>Ganador: {{ tournament.winner }}</h3>
             {% endif %}
         </div>
     </div>
@@ -51,9 +63,14 @@
                     <h5>Acciones</h5>
                 </div>
                 <div class="card-body">
-                    <button type="button" class="btn btn-primary">Inscribirse</button>
-                    <button type="button" class="btn btn-success">Ver clasificación</button>
-                    <button type="button" class="btn btn-danger">Ver emparejamientos</button>
+                    {% if is_granted('ROLE_USER') %}
+                        <button type="button" class="btn btn-primary">Inscribirse</button>
+                    {% endif %}
+                    {% if tournament.type == "liga" %}
+                        <button type="button" class="btn btn-success">Ver clasificación</button>
+                    {% else %}
+                        <a type="button" href="{{ path('tournament_pairing', {'game_name': tournament.game, 'id_tournament': tournament.id }) }}" class="btn btn-danger">Ver emparejamientos</a>
+                    {% endif %}
                 </div>
             </div>
             <br>

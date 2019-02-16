@@ -15,8 +15,8 @@ tournaments:
   defaults: { _controller:AppBundle:Tournaments:index }
 
 game:
-  path: /tournaments_game/{game_name}
-  defaults: { _controller:AppBundle:Tournaments:game }
+  path: /tournaments_game/{game_name}/{page}
+  defaults: { _controller:AppBundle:Tournaments:, page:1 }
 
 active_account:
   path: /active_account/{username}
@@ -95,7 +95,7 @@ modify_profile:
   defaults: { _controller:AppBundle:Profile:modifyData }
 
 new_tournament:
-  path: /tournaments_game/{game_name}/new_tournament
+  path: /new_tournament/{game_name}
   defaults: { _controller:AppBundle:Tournaments:newTournament }
 
 create_tournament:

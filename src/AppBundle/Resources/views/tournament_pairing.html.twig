@@ -9,15 +9,16 @@
             <h3><a style="text-decoration:none" href="{{ path('tournament_info',{'game_name':game.name, 'id_tournament':tournament.id})}}">{{ tournament.name }}</a></h3>
             <h4>Fecha y hora: {{ tournament.datetime }}</h4>
             <h4>{{ tournament.type|capitalize }}</h4>
-            {% if tournament.type == 'eliminatoria' %}
-            <h5>Participantes requeridos: {{ tournament.participants_min }}</h5>
-            {% else %}
-            <h5>Participantes permitidos: {{ tournament.participants_min }} - {{ tournament.participants_max }}</h5>
-            {% endif %}
+            <h5>Participantes requeridos: {{ tournament.participants_required }}</h5>
             {% if tournament.limit_checkin_object|date('Y-m-d H:i') <= "now"|date('Y-m-d H:i') %}
                 <h5>Inscripciones cerradas</h5>
             {% else %}
                 <h5>Inscripción abierta hasta: {{ tournament.limit_checkin }}</h5>
+            {% endif %}
+            {% if tournament.num_participants == tournament.participants_required %}
+            <p class="lead">    
+                Inscripciones completas
+            </p>
             {% endif %}
             {% if tournament.winner is defined and tournament.winner is not null %}
             <h3>Ganador: {{ tournament.winner }}</h3>
@@ -93,13 +94,13 @@
                         {% endfor %}
                         {% if last_round_generated == false and tournament.current_round != tournament.num_rounds %}
                         <h1>Ronda {{ tournament.current_round }} </h1>
-                        <a class="btn btn-primary btn-sm" href="{{ path('prueba',{'id_tournament':tournament.id}) }}">Generar emparejamientos</a>
+                            <button type="button" data-game="{{ game.name }}" data-tournament="{{ tournament.id }}" class="btn btn-primary btn-sm btn_generate_pairing">Generar emparejamientos</a>
                         {% endif %}
                     {% else %}
                         Aún no existen emparejamientos
                         {% if is_granted('ROLE_MOD') and tournament.is_active %}
                             {% if tournament.limit_checkin_object|date('Y-m-d H:i') <= "now"|date('Y-m-d H:i') %}
-                                <a type="button" class="btn btn-primary" href="{{ path('prueba',{'id_tournament':tournament.id}) }}">Generar emparejamientos</a>
+                                <button type="button" data-game="{{ game.name }}" data-tournament="{{ tournament.id }}" class="btn btn-primary btn_generate_pairing">Generar emparejamientos</a>
                             {% endif %}
                         {% endif %}
                     {% endif %}
@@ -274,6 +275,26 @@
 
             $('#tournament_id_mod').val(tournament_id);
             $('#pairing_id_mod').val(pairing_id);
+        });
+
+        $(".btn_generate_pairing").click(function() {
+            var data = {}
+            var id_tournament = $(this).data('tournament');
+            data['tournament_id'] = id_tournament;
+            game_no_normalized = $(this).data('game');
+            $.ajax({
+                url: Routing.generate('pairing_generate'),
+                type: "POST",
+                data: data ,
+                success: function (data) {
+                    console.log("Emparejamiento generado correctamente");
+                    window.location.replace(window.location.origin.concat("/app_dev.php/tournament_pairing/",game_no_normalized,"/", id_tournament));
+                },
+                error : function(xhr, status, errorMessage) {
+                    alert("Algo ha salido mal: "+errorMessage);
+                }
+            });
+
         });
 
     });

@@ -47,16 +47,9 @@ class Tournament
     /**
      * @var int
      *
-     * @ORM\Column(name="participants_min", type="integer")
+     * @ORM\Column(name="participants_required", type="integer")
      */
-    private $participantsMin;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="participants_max", type="integer")
-     */
-    private $participantsMax;
+    private $participantsRequired;
 
     /**
      * @var string
@@ -197,51 +190,27 @@ class Tournament
     }
 
     /**
-     * Set participants
+     * Set participantsRequired
      *
-     * @param integer $participantsMin
+     * @param integer $participantsRequired
      *
      * @return Tournament
      */
-    public function setParticipantsMin($participantsMin)
+    public function setParticipantsRequired($participantsRequired)
     {
-        $this->participantsMin = $participantsMin;
+        $this->participantsRequired = $participantsRequired;
 
         return $this;
     }
 
     /**
-     * Get participantsMin
+     * Get participantsRequired
      *
      * @return int
      */
-    public function getParticipantsMin()
+    public function getParticipantsRequired()
     {
-        return $this->participantsMin;
-    }
-
-    /**
-     * Set participantsMax
-     *
-     * @param integer $participantsMax
-     *
-     * @return Tournament
-     */
-    public function setParticipantsMax($participantsMax)
-    {
-        $this->participantsMax = $participantsMax;
-
-        return $this;
-    }
-
-    /**
-     * Get participantsMax
-     *
-     * @return int
-     */
-    public function getParticipantsMax()
-    {
-        return $this->participantsMax;
+        return $this->participantsRequired;
     }
 
     /**

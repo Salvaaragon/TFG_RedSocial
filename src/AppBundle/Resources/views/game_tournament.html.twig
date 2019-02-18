@@ -4,15 +4,25 @@
 <div class="div_tournaments">
     <div class="jumbotron">
         <div class="container">
-            <h1 class="display-4"><a style="text-decoration:none" href="{{ path('tournaments',{'platform':'todos'})}}">Juegos:</a> {{game.name_normalized}}</h1>
+            <h1 class="display-4"><a style="text-decoration:none" href="{{ path('tournaments',{'platform':'todos'})}}">Juegos:</a> 
+            {% if historical == true %} 
+            <a style="text-decoration:none" href="{{ path('game', {'game_name': game.name, 'page':1}) }}">{{game.name_normalized}}</a> (histórico)
+            {% else %}
+            {{game.name_normalized}}
+            {% endif %}
+            </h1>
             <h2><i class="fab fa-{{ game.platform|lower}}"></i> {{game.platform}}</h2>
-        {% if is_granted('ROLE_MOD') %}
+        {% if is_granted('ROLE_MOD') and historical == false %}
         <p class="lead">    
             <a type="button" class="btn btn-primary" href="{{ path('new_tournament',{'game_name':game.name}) }}">Nuevo torneo</a>
         </p>
         {% endif %}
+        {% if historical == false %}
+        <a type="button" class="btn btn-primary" href="{{ path('game_historical', {'game_name': game.name, 'page':1}) }}">Ver histórico</a>
+        {% endif %}
         </div>
     </div>
+
     <div class="div_table">
     <table id="example" class="table table-hover table-responsive-sm" style="width:100%">
         <thead class="thead-dark tournaments_table_head">
@@ -31,15 +41,16 @@
                 <td class="vertical_align_column">{{ tournament.name }}</td>
                 <td class="center_column vertical_align_column">{{ tournament.type|capitalize }}</td>
                 <td class="center_column vertical_align_column">{{ tournament.datetime|date('d-m-Y h:i') }}</td>
-                <td class="center_column vertical_align_column">{{ tournament.participantsMin }}</td>
+                <td class="center_column vertical_align_column">{{ tournament.participantsRequired }}</td>
                 <td class="center_column"><a type="button" href="{{ path('tournament_info', {'game_name': game.name, 'id_tournament': tournament.id}) }}" class="btn btn-primary">Ver detalles</a></td>
             </tr>
             {% endfor %}
             {% else %}
-            No existen torneos para este juego
+            <tr><td>No existen torneos para este juego</td></tr>
             {% endif %}
         </tbody>
     </table>
+    {% if tournaments is defined and tournaments is not null %}
     <nav aria-label="Page navigation example">
         <ul class="pagination justify-content-end">
             {% if currentPage == 1 %}
@@ -47,9 +58,15 @@
             {% else %}
             <li class="page-item">
             {% endif %}
+            {% if historical == true %}
+            <a class="page-link" href="{{ path('game_historical', {'game_name':game.name, 'page': (currentPage -1)}) }}" aria-label="Previous">
+                Anterior
+            </a>
+            {% else %}
             <a class="page-link" href="{{ path('game', {'game_name':game.name, 'page': (currentPage -1)}) }}" aria-label="Previous">
                 Anterior
             </a>
+            {% endif %}
             </li>
             {% for i in 1..pagesCount %}
                 {% if currentPage == i %}
@@ -57,19 +74,31 @@
                 {% else %}
                 <li class="page-item">
                 {% endif %}
-                <a class="page-link" href="{{ path('game', {'game_name':game.name, 'page': i}) }}">{{ i }}</a></li>
+                {% if historical == true %}
+                    <a class="page-link" href="{{ path('game_historical', {'game_name':game.name, 'page': i}) }}">{{ i }}</a></li>
+                {% else %}
+                    <a class="page-link" href="{{ path('game', {'game_name':game.name, 'page': i}) }}">{{ i }}</a></li>
+                {% endif %}
             {% endfor %}
             {% if currentPage == pagesCount %}
             <li class="page-item disabled">
             {% else %}
             <li class="page-item">
             {% endif %}
+
+            {% if historical == true %}
+            <a class="page-link" href="{{ path('game_historical', {'game_name':game.name, 'page': (currentPage +1)}) }}" aria-label="Next">
+                Siguiente
+            </a>
+            {% else %}
             <a class="page-link" href="{{ path('game', {'game_name':game.name, 'page': (currentPage +1)}) }}" aria-label="Next">
                 Siguiente
             </a>
+            {% endif %}
             </li>
         </ul>
     </nav>
+    {% endif %}
     </div>
 </div>
 

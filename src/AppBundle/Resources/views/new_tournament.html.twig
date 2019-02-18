@@ -25,54 +25,13 @@
                 <div class="form-group row">
                     <label for="tournament_type" class="col-sm-2 col-form-label">Tipo de torneo</label>
                     <div class="col-sm-10">
-                    <select class="form-control" id="tournament_type">
+                    <select class="form-control" id="tournament_type" disabled>
                         <option value="liga">Liga</option>
                         <option value="eliminatoria">Eliminatorias</option>
                     </select>
                     </div>
                 </div>
-                <div class="form-group row" id="div_league_min_part">
-                    <label for="tournament_league_min_part" class="col-sm-2 col-form-label">Participantes mínimos</label>
-                    <div class="col-sm-10">
-                    <select class="form-control" id="tournament_league_min_part">
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                        <option value="9">9</option>
-                        <option value="10">10</option>
-                        <option value="11">11</option>
-                        <option value="12">12</option>
-                        <option value="13">13</option>
-                        <option value="14">14</option>
-                        <option value="15">15</option>
-                    </select>
-                    </div>
-                </div>
-                <div class="form-group row" id="div_league_max_part">
-                    <label for="tournament_league_max_part" class="col-sm-2 col-form-label">Participantes máximo</label>
-                    <div class="col-sm-10">
-                    <select class="form-control" id="tournament_league_max_part">
-                        <option value="15">15</option>
-                        <option value="16">16</option>
-                        <option value="17">17</option>
-                        <option value="18">18</option>
-                        <option value="19">19</option>
-                        <option value="20">20</option>
-                        <option value="21">21</option>
-                        <option value="22">22</option>
-                        <option value="23">23</option>
-                        <option value="24">24</option>
-                        <option value="25">25</option>
-                        <option value="26">26</option>
-                        <option value="27">27</option>
-                        <option value="28">28</option>
-                        <option value="29">29</option>
-                        <option value="30">30</option>
-                    </select>
-                    </div>
-                </div>
-                <div class="form-group row" id="div_match_part" style="display:none; disbled:true">
+                <div class="form-group row" id="div_match_part">
                     <label for="tournament_match_part" class="col-sm-2 col-form-label">Participantes requeridos</label>
                     <div class="col-sm-10">
                     <select class="form-control" id="tournament_match_part">
@@ -132,37 +91,8 @@
 
 $(document).ready(function(){  
 
-    $('#tournament_type').val('liga');
+    $('#tournament_type').val('eliminatoria');
     $('#tournament_match_part').val(2);
-    
-    $('#tournament_type').on('change', function() {
-        var tournament_type = $('#tournament_type').val();
-        var div_match_part = document.getElementById('div_match_part');
-        var div_league_min_part = document.getElementById('div_league_min_part');
-        var div_league_max_part = document.getElementById('div_league_max_part');
-
-        if(tournament_type == 'liga') {
-            div_match_part.style.display = "none";
-            div_match_part.disabled = true;
-            div_league_min_part.style.display = "flex";
-            div_league_min_part.disabled = false;
-            div_league_max_part.style.display = "flex";
-            div_league_max_part.disabled = false;
-            $('#tournament_match_part').val(1);
-            div_league_min_part.val(5);
-            div_league_max_part.val(15);
-        }
-        if(tournament_type == 'eliminatoria') {
-            div_match_part.style.display = "flex";
-            div_match_part.disabled = false;
-            div_league_min_part.style.display = "none";
-            div_league_min_part.disabled = true;
-            div_league_max_part.style.display = "none";
-            div_league_max_part.disabled = true;
-            div_league_min_part.val(5);
-            div_league_max_part.val(15);
-        }
-    }); 
 
     var date = new Date();
     var minDate_start = new Date(date.getFullYear(), date.getMonth(), date.getDate()+14);
@@ -222,19 +152,9 @@ $(document).ready(function(){
             tournament_start = $("#league_date_start").data('datetimepicker').getDate();
             tournament_start_formatted = tournament_start.getFullYear() + "-" + (tournament_start.getMonth() + 1) + "-" + tournament_start.getDate() + " " + tournament_start.getHours() + ":" + tournament_start.getMinutes() + ":" + tournament_start.getSeconds();
 
-            if(tournament_type == 'liga') {
-                var league_min_part;
-                var league_max_part;
-                league_min_part = $('#tournament_league_min_part').val();
-                league_max_part = $('#tournament_league_max_part').val();
-                data['min_part'] = league_min_part;
-                data['max_part'] = league_max_part;
-            }
-            else {
-                var match_part;
-                match_part = $('#tournament_match_part').val();
-                data['match_part'] = match_part;
-            }
+            var match_part;
+            match_part = $('#tournament_match_part').val();
+            data['match_part'] = match_part;
 
             data['game_name'] = game_no_normalized;
             data['tournament_type'] = tournament_type;

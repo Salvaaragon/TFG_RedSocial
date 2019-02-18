@@ -4,16 +4,17 @@
 <div class="div_tournaments">
     <div class="jumbotron">
         <div class="container">
-            <h1 class="display-4"><a style="text-decoration:none" href="{{ path('tournaments',{'platform':'todos'})}}">Juegos:</a> <a style="text-decoration:none" href="{{ path('game',{'game_name':game.name, 'page': 1})}}">{{game.name_normalized}}</a></h1>
+            <h1 class="display-4"><a style="text-decoration:none" href="{{ path('tournaments',{'platform':'todos'})}}">Juegos:</a> 
+            {% if tournament.is_active == true %}
+                <a style="text-decoration:none" href="{{ path('game',{'game_name':game.name, 'page': 1})}}">{{game.name_normalized}}</a></h1>
+            {% else %}
+                <a style="text-decoration:none" href="{{ path('game_historical',{'game_name':game.name, 'page': 1})}}">{{game.name_normalized}}</a></h1>
+            {% endif %}     
             <h2><i class="fab fa-{{ game.platform|lower}}"></i> {{game.platform}}</h2>
             <h3>{{ tournament.name }}</h3>
             <h4>Fecha y hora: {{ tournament.datetime }}</h4>
             <h4>{{ tournament.type|capitalize }}</h4>
-            {% if tournament.type == 'eliminatoria' %}
-            <h5>Participantes requeridos: {{ tournament.participants_min }}</h5>
-            {% else %}
-            <h5>Participantes permitidos: {{ tournament.participants_min }} - {{ tournament.participants_max }}</h5>
-            {% endif %}
+            <h5>Participantes requeridos: {{ tournament.participants_required }}</h5>
             {% if tournament.limit_checkin_object|date('Y-m-d H:i') <= "now"|date('Y-m-d H:i') %}
                 <h5>Inscripciones cerradas</h5>
             {% else %}
@@ -26,17 +27,23 @@
             {% if is_granted('ROLE_MOD') %}
                 {% if tournament.limit_checkin_object|date('Y-m-d H:i') <= "now"|date('Y-m-d H:i') 
                 and (tournament.datetime_object|date('Y-m-d') > "now"|date('Y-m-d')) %}
-                    {% if tournament.num_participants > tournament.participants_min or
-                        tournament.num_participants == tournament.participants_min %}
+                    {% if tournament.num_participants == tournament.participants_required %}
                     <p class="lead">    
                         Accede a los emparejamientos para gestionarlos
                     </p>
                     {% else %}
                     No se han inscrito los jugadores necesarios para realizar el torneo
+                        {% if tournament.is_active %}
+                        <a type="button" href="{{ path('tournament_close', {'id_tournament': tournament.id}) }}" class="btn btn-danger">Cerrar torneo</a>
+                        {% endif %}
                     {% endif %}
                 {% endif %}
             {% endif %}
-
+            {% if tournament.num_participants == tournament.participants_required %}
+            <p class="lead">    
+                Inscripciones completas
+            </p>
+            {% endif %}
             {% if tournament.winner is defined and tournament.winner is not null %}
             <h3>Ganador: {{ tournament.winner }}</h3>
             {% endif %}
@@ -64,13 +71,20 @@
                 </div>
                 <div class="card-body">
                     {% if is_granted('ROLE_USER') %}
-                        <button type="button" class="btn btn-primary">Inscribirse</button>
+                        {% if tournament.num_participants != tournament.participants_required %}
+                            {% if registered == true %}
+                                {% if registered == false %}
+                                    <button id="register_button" data-tournament="{{ tournament.id }}" data-game_name="{{ game.name }}" type="button" class="btn btn-primary">Inscribirse</button>
+                                {% endif %}
+                            {% else %}
+                                Para inscribirse registre una cuenta de la plataforma requerida en su perfil<br> 
+                            {% endif %}
+                        {% endif %}
+                        {% if registered == true %}
+                            <button type="button" class="btn btn-primary disabled">Inscrito</button>
+                        {% endif %}
                     {% endif %}
-                    {% if tournament.type == "liga" %}
-                        <button type="button" class="btn btn-success">Ver clasificación</button>
-                    {% else %}
-                        <a type="button" href="{{ path('tournament_pairing', {'game_name': tournament.game, 'id_tournament': tournament.id }) }}" class="btn btn-danger">Ver emparejamientos</a>
-                    {% endif %}
+                    <a type="button" href="{{ path('tournament_pairing', {'game_name': tournament.game, 'id_tournament': tournament.id }) }}" class="btn btn-danger">Ver emparejamientos</a>
                 </div>
             </div>
             <br>
@@ -96,6 +110,26 @@
 
 {% block javascripts %}
     <script type="text/javascript"> 
-
+        $(document).ready(function() {
+            $('#register_button').click(function() {
+                var data = {}
+                var id_tournament = $(this).data('tournament');
+                data['tournament_id'] = id_tournament;
+                data['username'] = "{{ app.user.username }}";
+                game_no_normalized = $(this).data('game_name');
+                $.ajax({
+                    url: Routing.generate('tournament_register'),
+                    type: "POST",
+                    data: data ,
+                    success: function (data) {
+                        console.log("Inscripción realizada correctamente");
+                        window.location.replace(window.location.origin.concat("/app_dev.php/tournament_info/",game_no_normalized,"/", id_tournament));
+                    },
+                    error : function(xhr, status, errorMessage) {
+                        alert("Algo ha salido mal: "+errorMessage);
+                    }
+                });
+            });
+        });
     </script>
 {% endblock %}

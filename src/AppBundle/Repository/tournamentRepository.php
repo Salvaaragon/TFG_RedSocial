@@ -32,6 +32,26 @@ class TournamentRepository extends \Doctrine\ORM\EntityRepository
         return $paginator;
     }
 
+    public function findByPaginateHistoricalTournaments($pageSize=3,$currentPage, $id_game){
+
+        $query = $this->getEntityManager()
+        ->createQueryBuilder();
+
+        $query->select('t')
+            ->from('AppBundle:Tournament', 't')
+            ->where('t.game = :id_game')
+            ->andWhere('t.isActive = false')
+            ->orderBy('t.datetime', 'ASC')
+            ->orderBy('t.type', 'DESC')
+            ->setParameters(array('id_game' => $id_game))
+            ->setFirstResult($pageSize * ($currentPage - 1))
+            ->setMaxResults($pageSize);
+ 
+        $paginator = new Paginator($query, $fetchJoinCollection = true);
+ 
+        return $paginator;
+    }
+
     public function findCountActiveTournaments($id_game, $id_platform) {
         $query = $this->getEntityManager()
         ->createQueryBuilder();

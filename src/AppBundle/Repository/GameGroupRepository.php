@@ -20,6 +20,39 @@ class GameGroupRepository extends \Doctrine\ORM\EntityRepository
         ;
     }
 
+    public function getAllGroupsActiveNotPlaying() {
+        $query = $this->getEntityManager()
+                ->createQueryBuilder();
+
+        $now_date = new \Datetime('now');
+
+        $query->select('g')
+                ->from('AppBundle:GameGroup', 'g')
+                ->where('g.isActive = 1')
+                ->andWhere('g.datetime > :now_date')
+                ->orderBy('g.datetime', 'ASC')
+                ->setParameter('now_date', $now_date);
+
+        return $query->getQuery()->getResult();
+    }
+
+    public function getAllGroupsActivePlatformNotPlaying() {
+        $query = $this->getEntityManager()
+                ->createQueryBuilder();
+
+        $now_date = new \Datetime('now');
+
+        $query->select('g')
+                ->from('AppBundle:GameGroup', 'g')
+                ->where('g.isActive = 1')
+                ->andWhere('g.platform = :id_platform')
+                ->andWhere('g.datetime > :now_date')
+                ->orderBy('g.datetime', 'ASC')
+                ->setParameters(array('id_platform' => $id_platform,'now_date' => $now_date));
+
+        return $query->getQuery()->getResult();
+    }
+
     public function getGroupsPlatformUserpart($id_platform, $id_user) {
         $query = $this->getEntityManager()
                 ->createQueryBuilder();
@@ -107,6 +140,39 @@ class GameGroupRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere('p.id = :id_user')
             ->orderBy('g.datetime', 'ASC')
             ->setParameter('id_user', $id_user);
+
+        return $query->getQuery()->getResult();
+    }
+
+    public function getAllGroupsPlayingPlatform($id_platform) {
+        $query = $this->getEntityManager()
+        ->createQueryBuilder();
+
+        $now_date = new \Datetime('now');
+
+        $query->select('g')
+            ->from('AppBundle:GameGroup', 'g')
+            ->where('g.platform = :id_platform')
+            ->andWhere('g.isActive = 1')
+            ->andWhere('g.datetime <= :now_date')
+            ->orderBy('g.datetime', 'ASC')
+            ->setParameters(array('id_platform' => $id_platform, 'now_date' => $now_date));
+
+        return $query->getQuery()->getResult();
+    }
+
+    public function getAllGroupsPlaying() {
+        $query = $this->getEntityManager()
+        ->createQueryBuilder();
+
+        $now_date = new \Datetime('now');
+
+        $query->select('g')
+            ->from('AppBundle:GameGroup', 'g')
+            ->where('g.isActive = 1')
+            ->andWhere('g.datetime <= :now_date')
+            ->orderBy('g.datetime', 'ASC')
+            ->setParameters(array('now_date' => $now_date));
 
         return $query->getQuery()->getResult();
     }

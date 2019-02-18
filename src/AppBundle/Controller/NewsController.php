@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 class NewsController extends Controller
 {
     /**
-     * @Route("\news", name="news")
+     * @Route("/news", name="news")
      */
     public function indexAction(Request $request) {
 

@@ -10,7 +10,7 @@
         {% endif %}
             <div class="card-body">
                 <div class="row">
-                    <div class="col-lg-3">
+                    <div class="col-lg-2">
                         <h5><b>Juego</b></h5>
                         {{ group.game }}
                     </div>
@@ -35,7 +35,15 @@
                     </div>
                     <div class="col-lg-2">
                         <h5><b>Comienzo</b></h5>
+                        {% if group.datetime|date('Y-m-d H:i') < "now"|date('Y-m-d H:i') %}
+                            {% if group.isActive %}
+                                Grupo jugando
+                            {% else %}
+                                Grupo cerrado
+                            {% endif %}
+                        {% else %}
                         {{ group.datetime }}
+                        {% endif %}
                     </div>
                     <div class="col-lg-1">
                         {% if group.platform == "Xbox" %}
@@ -79,6 +87,17 @@
                         </button>
                         {% endif %}
                     </div>
+                    {% if group.user_is_participant %}
+                    <div class="col-lg-1">
+                        {% if group.datetime|date('Y-m-d H:i') < "now"|date('Y-m-d H:i') %}
+                            {% if group.isActive and group.user_is_participant %}
+                                {% if group.user_has_vote == false %}
+                                    <a type="button" href="{{ path('group_vote', {'id_group':group.id}) }}" class="btn btn-primary btn-lg btn-block">Votar</a>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

@@ -33,6 +33,7 @@
                 <option value="myregister">Grupos registrados</option>
                 <option value="history_mygroups">Historial de grupos</option>
                 <option value="history_myregister">Historial de participaciones</option>
+                <option value="groups_playing">Grupos en linea</option>
             </select> 
         </div>
         <div class="col-3">
@@ -54,11 +55,11 @@
     </section>
 
     <!-- Info group modal -->
-    <div class="modal" id="group_modal" tabindex="-1" role="dialog">
+    <div class="modal fade" id="group_modal" tabindex="-1" role="dialog" aria-labelledby="group_info_tittle" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title"></h5>
+                <h5 class="modal-title" id="group_info_tittle"></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>
@@ -414,6 +415,7 @@ $('#group_chat').on('click', function(event) {
     $('#close_chat_btn').on('click', function(event) {
         clearInterval(intervalrepeat);
         $('#message_field').val("");
+        $('#div_messages').html("");
     });
 
     $('#send_message').on('click', function(event) {

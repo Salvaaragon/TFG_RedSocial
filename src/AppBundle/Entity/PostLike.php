@@ -30,7 +30,7 @@ class PostLike
     private $user;
 
     /**
-     * @var User
+     * @var Post
      * 
      * @ORM\OneToOne(targetEntity="Post")
      * @ORM\JoinColumn(name="id_post", referencedColumnName="id", unique=false)

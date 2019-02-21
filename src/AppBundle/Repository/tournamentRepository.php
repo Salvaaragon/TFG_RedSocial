@@ -67,4 +67,18 @@ class TournamentRepository extends \Doctrine\ORM\EntityRepository
         return $query->getQuery()->getSingleScalarResult();
         
     }
+    
+    public function getMostTournamentsWinners($date_begin, $date_end) {
+        $query = $this->getEntityManager()
+            ->createQuery(
+                'SELECT IDENTITY(t.winner) AS id_user, count(t.winner) AS total 
+                 FROM AppBundle:Tournament t 
+                 WHERE t.winner is not null and t.datetime BETWEEN :from AND :to
+                 GROUP BY t.winner ORDER BY total DESC'
+            )->setParameters(array('from' => $date_begin, 'to' => $date_end))
+            ->setMaxResults(10)
+            ->getResult();
+ 
+        return $query;
+    }
 }

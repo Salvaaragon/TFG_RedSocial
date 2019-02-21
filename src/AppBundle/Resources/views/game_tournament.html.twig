@@ -42,7 +42,7 @@
                 <td class="center_column vertical_align_column">{{ tournament.type|capitalize }}</td>
                 <td class="center_column vertical_align_column">{{ tournament.datetime|date('d-m-Y h:i') }}</td>
                 <td class="center_column vertical_align_column">{{ tournament.participantsRequired }}</td>
-                <td class="center_column"><a type="button" href="{{ path('tournament_info', {'game_name': game.name, 'id_tournament': tournament.id}) }}" class="btn btn-primary">Ver detalles</a></td>
+                <td class="center_column"><a type="button" href="{{ path('tournament_info', {'id_tournament': tournament.id}) }}" class="btn btn-primary">Ver detalles</a></td>
             </tr>
             {% endfor %}
             {% else %}

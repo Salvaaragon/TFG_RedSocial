@@ -24,7 +24,7 @@ class PostLike
     /**
      * @var User
      * 
-     * @ORM\OneToOne(targetEntity="User")
+     * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumn(name="id_user", referencedColumnName="id", unique=false)
      */
     private $user;
@@ -32,10 +32,17 @@ class PostLike
     /**
      * @var Post
      * 
-     * @ORM\OneToOne(targetEntity="Post")
+     * @ORM\ManyToOne(targetEntity="Post")
      * @ORM\JoinColumn(name="id_post", referencedColumnName="id", unique=false)
      */
     private $post;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="datetime", type="datetime")
+     */
+    private $datetime;
 
 
     /**
@@ -94,6 +101,30 @@ class PostLike
     public function getPost()
     {
         return $this->post;
+    }
+
+    /**
+     * Set datetime
+     * 
+     * @param \DateTime $datetime
+     *
+     * @return PostLike
+     */
+    public function setDatetime($datetime)
+    {
+        $this->datetime = $datetime;
+
+        return $this;
+    }
+
+    /**
+     * Get datetime
+     *
+     * @return \DateTime
+     */
+    public function getDatetime()
+    {
+        return $this->datetime;
     }
 
 }

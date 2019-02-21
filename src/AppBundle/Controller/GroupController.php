@@ -169,31 +169,49 @@ class GroupController extends Controller
                 break;
         }
 
-        $now_date = new \Datetime('now');
-        $logged_user = $this->container->get('security.token_storage')->getToken()->getUser();
-        
-        foreach($group_query as $group) {
-            $participants = $this->format_group_participants($group);
+        if(isset($group_query)) {
 
-            $group_user_is_participant = false;
-            $user_participant_has_vote = false;
+            $now_date = new \Datetime('now');
+            $logged_user = $this->container->get('security.token_storage')->getToken()->getUser();
+            
+            foreach($group_query as $group) {
+                $participants = $this->format_group_participants($group);
 
-            if($logged_user->getUsername() == $group->getUser()->getUsername())
-                $group_user_is_participant = true;
-            if($this->user_is_participant($group->getParticipants(), $logged_user->getUsername()))
-                $group_user_is_participant = true;
+                $group_user_is_participant = false;
+                $user_participant_has_vote = false;
 
-            if($group_user_is_participant) {
-                $vote = $repository_gamegroup_vote->findOneBy(
-                    array(
-                        'user' => $logged_user->getId(),
-                        'gameGroup' => $group->getId()));
-                if($vote)
-                    $user_participant_has_vote = true;
-            }
+                if($logged_user->getUsername() == $group->getUser()->getUsername())
+                    $group_user_is_participant = true;
+                if($this->user_is_participant($group->getParticipants(), $logged_user->getUsername()))
+                    $group_user_is_participant = true;
 
-            if($filter_group == 'all') {
-                if($now_date < $group->getDatetime()) {
+                if($group_user_is_participant) {
+                    $vote = $repository_gamegroup_vote->findOneBy(
+                        array(
+                            'user' => $logged_user->getId(),
+                            'gameGroup' => $group->getId()));
+                    if($vote)
+                        $user_participant_has_vote = true;
+                }
+
+                if($filter_group == 'all') {
+                    if($now_date < $group->getDatetime()) {
+                        $groups[] = array(
+                            'id' => $group->getId(),
+                            'game' => $group->getGame(),
+                            'platform' => $group->getPlatform()->getName(),
+                            'user' => $group->getUser()->getUsername(),
+                            'max_participants' => $group->getMaxParticipants(),
+                            'datetime' => $group->getDatetime()->format('d-m-Y H:i'),
+                            'participants' => $participants,
+                            'isActive' => $group->getIsActive(),
+                            'num_part' => $group->getParticipants()->count(),
+                            'user_is_participant' => $group_user_is_participant,
+                            'user_has_vote' => $user_participant_has_vote
+                        );
+                    }
+                }
+                else {
                     $groups[] = array(
                         'id' => $group->getId(),
                         'game' => $group->getGame(),
@@ -209,28 +227,15 @@ class GroupController extends Controller
                     );
                 }
             }
-            else {
-                $groups[] = array(
-                    'id' => $group->getId(),
-                    'game' => $group->getGame(),
-                    'platform' => $group->getPlatform()->getName(),
-                    'user' => $group->getUser()->getUsername(),
-                    'max_participants' => $group->getMaxParticipants(),
-                    'datetime' => $group->getDatetime()->format('d-m-Y H:i'),
-                    'participants' => $participants,
-                    'isActive' => $group->getIsActive(),
-                    'num_part' => $group->getParticipants()->count(),
-                    'user_is_participant' => $group_user_is_participant,
-                    'user_has_vote' => $user_participant_has_vote
-                );
-            }
-        }
 
-        if(isset($groups))
-            return $this->render('@App/group_list.html.twig', array(
-                "groups" => $groups));  
+            if(isset($groups))
+                return $this->render('@App/group_list.html.twig', array(
+                    "groups" => $groups));  
+            else
+                    return $this->render('@App/group_list.html.twig');
+        }
         else
-                return $this->render('@App/group_list.html.twig');
+            return $this->render('@App/error_page.html.twig');
     }
 
     private function user_is_participant($participants, $username) {
@@ -252,11 +257,17 @@ class GroupController extends Controller
 
         $group = $entityManager->getRepository(GameGroup::class)->find($id_group);
 
-        $group->setIsActive(false);
-        $entityManager->flush();
-        $this->get('session')->getFlashBag()->add('notice', 'Grupo cerrado correctamente');
+        if($group && $group->getUser()->getUsername() == $this->getUser()->getUsername()) {
 
-        return $this->redirectToRoute('group');
+            if($group->getIsActive()) {
+                $group->setIsActive(false);
+                $entityManager->flush();
+                $this->get('session')->getFlashBag()->add('notice', 'Grupo cerrado correctamente');
+            }
+            return $this->redirectToRoute('group');
+        }
+        else
+            return $this->render('@App/error_page.html.twig');
     }
     
     /**
@@ -267,11 +278,11 @@ class GroupController extends Controller
 
         $group = $entityManager->getRepository(GameGroup::class)->find($id_group);
         $user = $entityManager->getRepository(User::class)->find($id_user);
-
-        $group->addParticipant($user);
-        $entityManager->flush();
-        $this->get('session')->getFlashBag()->add('notice', 'Se ha registrado en el grupo de forma correcta');
-
+        if($group && $user && $group->getUser()->getUsername() != $user->getUsername()) {
+            $group->addParticipant($user);
+            $entityManager->flush();
+            $this->get('session')->getFlashBag()->add('notice', 'Se ha registrado en el grupo de forma correcta');
+        }
         return $this->redirectToRoute('group');
     }
 
@@ -283,17 +294,18 @@ class GroupController extends Controller
 
         $group = $entityManager->getRepository(GameGroup::class)->find($id_group);
 
-        $user = $this->getUser();
+        if($group) {
+            $user = $this->getUser();
 
-        $group->getParticipants()->removeElement($user);
+            $group->getParticipants()->removeElement($user);
 
-        $entityManager->flush();
-        $this->get('session')->getFlashBag()->add('notice', 'Ha abandonado el grupo correctamente');
-
+            $entityManager->flush();
+            $this->get('session')->getFlashBag()->add('notice', 'Ha abandonado el grupo correctamente');
+        }
         return $this->redirectToRoute('group');
     }
 
-    public function format_group_participants($group) {
+    private function format_group_participants($group) {
         $participants = $group->getParticipants()->toArray();
         
         $format_participants = "";
@@ -306,26 +318,6 @@ class GroupController extends Controller
     }
 
     /**
-     * @Route("/group/chat/{id_group}", name="chat", options={"expose"=true})
-     */
-    public function chat_group($id_group) {
-        $entityManager = $this->getDoctrine()->getManager();
-
-        $group = $entityManager->getRepository(GameGroup::class)->find($id_group);
-
-        $game_group = array(
-            'id' => $group->getId(),
-            'game' => $group->getGame(),
-            'platform' => $group->getPlatform(),
-            'user' => $group->getUser()->getUsername(),
-            'max_participants' => $group->getMaxParticipants(),
-            'datetime' => $group->getDatetime()->format('d-m-Y H:i')
-        );
-
-        return $this->render('@App/chat_prueba.html.twig', array("group" => $game_group));
-    }
-
-    /**
      * @Route("/group/chat/{id_group}/get_messages", name="get_messages", options={"expose"=true})
      */
     public function get_messages($id_group) {
@@ -334,19 +326,29 @@ class GroupController extends Controller
         $group = $entityManager->getRepository(GameGroup::class)->find($id_group);
 
         $message_query = $entityManager->getRepository(Message::class)->getLastMessagesGroup($group);
-
-        foreach($message_query as $msg) {
-            $messages[] = array(
-                'datetime' => $msg->getDatetime()->format('d-m-Y H:i'),
-                'username' => $msg->getUser()->getUsername(),
-                'message' => $msg->getMessage()
-            );
+        
+        if($group) {
+            if($group->getUser()->getUsername() == $this->getUser()->getUsername()
+            || $this->user_is_participant($group->getParticipants(),$this->getUser()->getUsername())) {
+            foreach($message_query as $msg) {
+                $messages[] = array(
+                    'datetime' => $msg->getDatetime()->format('d-m-Y H:i'),
+                    'username' => $msg->getUser()->getUsername(),
+                    'message' => $msg->getMessage()
+                );
+            }
+            if(isset($messages))
+                return $this->render('@App/chat_content.html.twig', array(
+                    "messages" => $messages));  
+            else
+                return new Response("No existen mensajes en este grupo");
+            }
+            else
+                return new Response("No tiene acceso a este chat");
         }
-        if(isset($messages))
-            return $this->render('@App/chat_content.html.twig', array(
-                "messages" => $messages));  
-        else
-            return new Response("No existen mensajes en este grupo");
+        else 
+            return $this->render('@App/error_page.html.twig');
+
     }
 
     /**
@@ -357,24 +359,33 @@ class GroupController extends Controller
         
         $entityManager = $this->getDoctrine()->getManager();
 
-        $id_group = $request->request->get('id_group');
-        $id_user = $request->request->get('id_user');
-        $message = $request->request->get('message');
+        if($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id_group = $request->request->get('id_group');
+            $id_user = $request->request->get('id_user');
+            $message = $request->request->get('message');
 
-        $group = $entityManager->getRepository(GameGroup::class)->find($id_group);
-        $user = $entityManager->getRepository(User::class)->find($id_user);
+            $group = $entityManager->getRepository(GameGroup::class)->find($id_group);
+            $user = $entityManager->getRepository(User::class)->find($id_user);
 
-        $chat_message = new Message();
+            if($group && $user) {
+                if($group->getUser()->getUsername() == $user->getUsername()
+                || $this->user_is_participant($group->getParticipants(),$user->getUsername())) {
+                    $chat_message = new Message();
 
-        $chat_message->setGameGroup($group);
-        $chat_message->setUser($user);
-        $chat_message->setDatetime(new \Datetime('now'));
-        $chat_message->setMessage($message);
+                    $chat_message->setGameGroup($group);
+                    $chat_message->setUser($user);
+                    $chat_message->setDatetime(new \Datetime('now'));
+                    $chat_message->setMessage($message);
 
-        $entityManager->persist($chat_message);
-        $entityManager->flush();
+                    $entityManager->persist($chat_message);
+                    $entityManager->flush();
 
-        return new Response();
+                    return new Response();
+                }
+                else 
+                    return $this->render('@App/error_page.html.twig');
+            }
+        }
     }
 
     /**
@@ -441,7 +452,7 @@ class GroupController extends Controller
 
         $logged_user = $this->container->get('security.token_storage')->getToken()->getUser();
 
-        if($group) {
+        if($_SERVER['REQUEST_METHOD'] === 'POST' && $group) {
             if($logged_user->getUsername() == $group->getUser()->getUsername()) {
                 $participants = $group->getParticipants()->toArray();
                 foreach($participants as $part) {
@@ -470,6 +481,7 @@ class GroupController extends Controller
                 $vote_object->setUserVoted($vote_data['user']);
                 $vote_object->setGameGroup($group);
                 $vote_object->setVote($vote_data['vote']);
+                $vote_object->setDatetime(new \Datetime('now'));
 
                 $entityManager->persist($vote_object);
                 $entityManager->flush();

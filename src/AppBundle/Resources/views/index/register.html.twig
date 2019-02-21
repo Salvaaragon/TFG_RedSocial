@@ -28,26 +28,25 @@
         <div class="row">
             <div class="col-md-6 register_left_panel">
             {{ form_start(form) }}
-                {{ form_widget(form.username) }}                                  
-                {{ form_widget(form.plainPassword.first) }}
-                {{ form_widget(form.profileName) }}
-                {{ form_widget(form.psn_id) }}
-            </div>
+                <div class="form-group">{{ form_widget(form.username) }} </div>                                
+                <div class="form-group">{{ form_widget(form.plainPassword.first) }}</div>
+                <div class="form-group">{{ form_widget(form.profileName) }}</div>
+                <div class="form-group">{{ form_widget(form.psn_id) }}
+            </div></div>
             <div class="col-md-6 register_right_panel">
-                {{ form_widget(form.email) }}
-                {{ form_widget(form.plainPassword.second) }}
-                {{ form_widget(form.steam_id) }}
-                {{ form_widget(form.xbox_id) }}
+                <div class="form-group">{{ form_widget(form.email) }}</div>
+                <div class="form-group">{{ form_widget(form.plainPassword.second) }}</div>
+                <div class="form-group">{{ form_widget(form.steam_id) }}</div>
+                <div class="form-group">{{ form_widget(form.xbox_id) }}</div>
             </div>
-        <div class="col-md-12 register_div_buttons">
-            <div class="register_div_btn">{{ form_widget(form.submit) }}</div>
-            <div class="register_div_btn">
-                <button type="button" onclick="window.location.href = '{{ path('index') }}'" class="btn btn-danger register_btn">
+        <div class="col-md-12">
+            {{ form_widget(form.submit) }}
+                <button type="button" onclick="window.location.href = '{{ path('index') }}'" class="btn btn-danger btn-block">
                     Volver a la página principal
                 </button>
-            </div>
-            <div class="register_div_btn">{{ form_widget(form.reset) }}</div>
+            {{ form_widget(form.reset) }}
         {{ form_end(form) }}
+        </div>
         </div>
         <div class="col-md-12 register_bottom_separation"></div>
     </div>

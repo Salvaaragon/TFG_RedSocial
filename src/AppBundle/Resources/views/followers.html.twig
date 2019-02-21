@@ -16,7 +16,7 @@
                         <div class="user_data_element"><a href="{{ path('followings_user', { 'username' : user.username }) }}">Siguiendo<br><b>{% if numfollowings is defined %} {{ numfollowings }} {% else %} 0 {% endif %}</b></a></div>
                         <div class="user_data_element"><a href="{{ path('profile', { 'username' : user.username }) }}">Publicaciones<br><b>{% if numposts is defined %} {{ numposts }} {% else %} 0 {% endif %}</b></a></div>
                         <div class="user_data_element"><a href="{{ path('likes_user', { 'username' : user.username }) }}">Me gusta<br><b>{% if numlikes is defined %} {{ numlikes }} {% else %} 0 {% endif %}</b></a></div>
-                        <div class="user_data_element"><a href="#">Puntuación<br><b>0</b></a></div>
+                        <div class="user_data_element">Puntuación<br><b>{{ puntuation }}</b></div>
                     </div>
                 </div>
                 </div>

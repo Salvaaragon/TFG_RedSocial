@@ -10,4 +10,38 @@ namespace AppBundle\Repository;
  */
 class GameGroupVoteRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function getAverageVoteUser($id_user) {
+        $query_sum = $this->getEntityManager()
+        ->createQuery(
+            'SELECT sum(v.vote) FROM AppBundle:GameGroupVote v 
+            WHERE v.userVoted = :id_user'
+        )->setParameter('id_user', $id_user)
+        ->getSingleScalarResult();
+
+        $query_count = $this->getEntityManager()
+            ->createQuery(
+                'SELECT count(v.id) FROM AppBundle:GameGroupVote v 
+                WHERE v.userVoted = :id_user'
+            )->setParameter('id_user', $id_user)
+            ->getSingleScalarResult();
+        
+        if($query_sum != 0 and $query_count != 0)
+            return (double)$query_sum/(double)$query_count;
+        else
+            return 0;
+    }
+
+    public function getBestVotedUsers($date_begin, $date_end) {
+        $query = $this->getEntityManager()
+            ->createQuery(
+                'SELECT IDENTITY(g.userVoted) AS id_user, sum(g.vote)/count(g.userVoted) AS total 
+                 FROM AppBundle:GameGroupVote g 
+                 WHERE g.datetime BETWEEN :from AND :to
+                 GROUP BY g.userVoted ORDER BY total DESC'
+            )->setParameters(array('from' => $date_begin, 'to' => $date_end))
+            ->setMaxResults(10)
+            ->getResult();
+ 
+        return $query;
+    }
 }

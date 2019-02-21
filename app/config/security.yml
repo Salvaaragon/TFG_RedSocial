@@ -1,16 +1,22 @@
 # To get started with security, check out the documentation:
 # https://symfony.com/doc/current/security.html
 security:
-
     encoders:
         AppBundle\Entity\User: bcrypt
 
     # https://symfony.com/doc/current/security.html#b-configuring-how-users-are-loaded
     providers:
-        our_db_provider:
+        chain_provider:
+            chain:
+                providers: [db_username, db_email]
+        db_username:
             entity:
                 class: AppBundle:User
                 property: username
+        db_email:
+            entity:
+                class: AppBundle:User
+                property: email
 
     firewalls:
         # disables authentication for assets and the profiler, adapt it according to your needs
@@ -20,7 +26,7 @@ security:
 
         main:
             anonymous: ~
-            provider: our_db_provider
+            provider: chain_provider
             form_login:
                 login_path: index
                 check_path: index

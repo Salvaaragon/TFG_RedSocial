@@ -68,11 +68,11 @@ class UserType extends AbstractType
                 "label"=>false,"required"=>false))
             ->add('submit', SubmitType::class, array(
                 'label' => 'Enviar',
-                'attr' => array('class' => 'btn btn-primary register_btn')));
+                'attr' => array('class' => 'btn btn-primary btn-block')));
             if($options['type'] === 'register')
                 $builder->add('reset', ResetType::class, array(
                     'label' => 'Reiniciar formulario',
-                    'attr' => array('class' => 'btn btn-info register_btn')
+                    'attr' => array('class' => 'btn btn-info btn-block')
                 ));
     }
 

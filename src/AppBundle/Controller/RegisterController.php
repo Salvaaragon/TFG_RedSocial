@@ -14,16 +14,17 @@ class RegisterController extends Controller
 {
 
     /**
+     * Función que genera el formulario de registro y lo muestra en la vista
      * @Route("/register", name="register")
      */
     public function registerAction(Request $request, UserPasswordEncoderInterface $passwordEncoder, 
         \Swift_Mailer $mailer)
     {
-        // 1) build the form
+        // Generamos el formulario
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
 
-        // 2) handle the submit (will only happen on POST)
+        // handle the submit (will only happen on POST)
         $form->handleRequest($request);
 
         $validator = $this->get('validator');
@@ -31,30 +32,29 @@ class RegisterController extends Controller
 
         if($form->isSubmitted()) {
             if (count($errors) > 0) {
-                return $this->render('@App/register.html.twig', array(
+                return $this->render('@App/index/register.html.twig', array(
                     'errors' => $errors, 'form' => $form->createView()
                 ));
             } else {
-                // 3) Encode the password (you could also do this via Doctrine listener)
+                // Encriptamos la contraseña
                 $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
                 $user->setPassword($password);
+
                 if($user->getProfileName() == null) $user->setProfileName($user->getUsername());
 
-                // 4) save the User!
+                // Se almacena el usuario en la base de datos
                 $entityManager = $this->getDoctrine()->getManager();
                 $entityManager->persist($user);
                 $entityManager->flush();
 
-                // ... do any other work - like sending them an email, etc
-                // maybe set a "flash" success message for the user
-
+                // Y se envía un mensaje de correo electrónico solicitándole al mismo que active su cuenta
+                // y dándole la bienvenida
                 $message = (new \Swift_Message())
                 ->setSubject('¡Bienvenido a Gaming Together!')
                 ->setFrom(['soporte.gamingtogether@gmail.com' => 'Soporte de Gaming Together'])
                 ->setTo($user->getEmail())
                 ->setBody($this->renderView(
-                    // AppBundle/Resources/views/Emails/registration_email.html.twig
-                    '@App/Emails/registration_email.html.twig',
+                    '@App/emails/registration_email.html.twig',
                     array('username' => $user->getUsername())
                 ),
                 'text/html');
@@ -70,12 +70,13 @@ class RegisterController extends Controller
         }
 
         return $this->render(
-            '@App/register.html.twig',
+            '@App/index/register.html.twig',
             array('form' => $form->createView())
         );
     }
 
     /**
+     * Función que permite activar la cuenta de usuario
      * @Route("/active_account/{username}", name="active_account")
      */
     public function activeAccountAction($username) {
@@ -83,14 +84,19 @@ class RegisterController extends Controller
         $entityManager = $this->getDoctrine()->getManager();
         $user = $entityManager->getRepository(User::class)->findOneByUsername($username);
 
-        $user->setIsActive(true);
-        $entityManager->flush();
+        if($user) {
+            if(!$user->isEnabled()) {
+                $user->setIsActive(true);
+                $entityManager->flush();
 
-        $this->addFlash(
-            'dark',
-            'Su cuenta ha sido activada correctamente.'
-        );
-
-        return $this->redirectToRoute('index');
+                $this->addFlash(
+                    'dark',
+                    'Su cuenta ha sido activada correctamente.'
+                );
+            }
+            return $this->redirectToRoute('index');
+        }
+        else
+            return $this->render('@App/error_page.html.twig');
     }
 }

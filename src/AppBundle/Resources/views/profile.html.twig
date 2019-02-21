@@ -17,7 +17,7 @@
                         <div class="user_data_element"><a href="{{ path('followings_user', { 'username' : user.username }) }}">Siguiendo<br><b>{% if numfollowing is defined %} {{ numfollowing }} {% else %} 0 {% endif %}</b></a></div>
                         <div class="user_data_element"><a class="current_page">Publicaciones<br><b>{% if numposts is defined %} {{ numposts }} {% else %} 0 {% endif %}</b></a></div>
                         <div class="user_data_element"><a href="{{ path('likes_user', { 'username' : user.username }) }}">Me gusta<br><b>{% if numlikes is defined %} {{ numlikes }} {% else %} 0 {% endif %}</b></a></div>
-                        <div class="user_data_element"><a href="#">Puntuación<br><b>0</b></a></div>
+                        <div class="user_data_element">Puntuación<br><b>0</b></div>
                     </div>
                 </div>
                 </div>
@@ -59,15 +59,18 @@
                     {% if posts is defined and posts is not null %}
                         {% for post in posts %}
                             <div class="post">
-                                <div class="pull-left">
-                                    <img class="rounded-circle img-fluid d-block mx-auto post_user_img" src="{{ asset('bundles/app/image/default_profile.png') }}" alt="">
-                                </div>
-                                <div class="post_user_datetime"><b>{{ post.user.profileName }}</b> - {{ post.user.username }} - {{ post.datetime }}</div>
-                                <div class="post_text"><p>{{ post.text }}</p></div>
-                                <div class="post_buttons">
-                                    <span data-likes={{ post.likes }} data-liked="{{ post.hasLike }}" data-post="{{ post.id }}" class="btn far fa-thumbs-up btn_like 
-                                    {% if post.hasLike == 'liked' %}post_liked{% else %}post_unliked{% endif %}"> {{ post.likes }}</span>
-                                </div>
+                        <div class="pull-left">
+                            <img class="rounded-circle img-fluid d-block mx-auto post_user_img" src="{{ asset('bundles/app/image/default_profile.png') }}" alt="">
+                        </div>
+                        <div class="post_user_datetime"><b><a href="{{ path('profile',{'username':post.user.username}) }}">{{ post.user.profileName }} </a></b>  {{ post.user.username }} <br> {{ post.datetime }}</div>
+                        <div class="post_text"><p>{{ post.text }}</p></div>
+                        {% if post.image is defined and post.image is not null %}
+                            <button type="button" class="btn btn-success myImag btn-block" data-src="{{ asset('uploads/posts/' ~ post.image) }}">Imagen de la publicación</button>
+                        {% endif %}
+                        <div class="">
+                            <span data-likes={{ post.likes }} data-liked="{{ post.hasLike }}" data-post="{{ post.id }}" class="btn far fa-thumbs-up btn_like 
+                            {% if post.hasLike == 'liked' %}post_liked{% else %}post_unliked{% endif %}"> {{ post.likes }}</span>
+                        </div>
                             </div>
                             {% if loop.index != numposts %}<hr>{% endif %}
                         {% endfor %}
@@ -80,4 +83,75 @@
             </div>
     </div>
 </div>
+
+<!-- Modal Post Image -->
+<div id="myModal" class="modal-img" style="margin-top:50px;">
+  <!-- The Close Button -->
+  <span class="close-modal-img btn" id="close">&times;</span>
+  <!-- Modal Content (The Image) -->
+  <img class="modal-img-content" id="img01">
+  <!-- Modal Caption (Image Text) -->
+  <div id="modal-img-caption"></div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script type="text/javascript">
+
+    $(".btn_like").on('click', function() {
+        var hasliked = $(this).attr('data-liked');
+        var likes = parseInt($(this).attr('data-likes'));
+        var id_post = $(this).attr('data-post');
+        var $btn_like = $(this);
+
+        if(hasliked == 'liked') {
+            $(this).addClass('post_unliked');
+            $(this).removeClass('post_liked');
+            $(this).attr('data-liked', 'unliked');
+            likes = likes - 1;
+            $(this).attr('data-likes', likes);
+            $btn_like.html(" "+likes);
+            $.ajax({
+                url: Routing.generate('unlike_post', { id_post: id_post }),
+                success: function(data) {  
+                    console.log("Post unliked");
+                }
+            });
+        }
+        else {
+            $(this).addClass('post_liked');
+            $(this).removeClass('post_unliked');
+            $(this).attr('data-liked', 'liked');
+            likes = likes + 1;
+            $(this).attr('data-likes', likes);
+            $btn_like.html(" "+likes);
+            $.ajax({
+                url: Routing.generate('like_post', { id_post: id_post }),
+                success: function(data) {  
+                    console.log("Post liked");
+                }
+            });
+        }
+    });
+
+// Get the modal
+var modal = document.getElementById('myModal');
+
+// Get the image and insert it inside the modal - use its "alt" text as a caption
+var modalImg = document.getElementById("img01");
+var captionText = document.getElementById("modal-img-caption");
+$(".myImag").on("click", function(){
+  modal.style.display = "block";
+  modalImg.src = $(this).data('src');
+});
+
+
+// When the user clicks on <span> (x), close the modal
+$('.close-modal-img').on('click' ,function() {
+  modal.style.display = "none";
+  modalImg.src = "";
+});
+
+</script>
 {% endblock %}

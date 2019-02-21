@@ -12,28 +12,47 @@
                 <img class="rounded-circle img-fluid d-block mx-auto profile_img" src="{{ asset('bundles/app/image/default_profile.png') }}" alt="">
                 <h2>{{ app.user.profileName}}</h2>
                 <small>{{ app.user.username }}</small>
-                <div class="row justify-content-center">
-                    <div class="user_data_element"><a href="{{ path('followers_user', { 'username' : app.user.username }) }}">Seguidores<br><b>{% if numfollowers is defined %} {{ numfollowers }} {% else %} 0 {% endif %}</b></a></div>
-                    <div class="user_data_element"><a href="{{ path('followings_user', { 'username' : app.user.username }) }}">Siguiendo<br><b>{% if numfollowing is defined %} {{ numfollowing }} {% else %} 0 {% endif %}</b></a></div>
-                    <div class="user_data_element"><a href="#">Publicaciones<br><b>{% if numposts is defined %} {{ numposts }} {% else %} 0 {% endif %}</b></a></div>
-                    <div class="user_data_element"><a href="#">Me gusta<br><b>0</b></a></div>
-                    <div class="user_data_element"><a href="#">Puntuación<br><b>0</b></a></div>
-                </div>
             </div>
             </div>
           </div>
         </div>
       </div>
     </header>
-
+    <br>
+    <div class="col-lg-6 offset-lg-3">
+        <div class="card">
+            <div class="card-body">
+                <ul class="list-inline">
+                    <li class="list-inline-item user_data_element"><a href="{{ path('followers_user', { 'username' : app.user.username }) }}">Seguidores<br><b>{% if numfollowers is defined %} {{ numfollowers }} {% else %} 0 {% endif %}</b></a></li>
+                    <li class="list-inline-item user_data_element"><a href="{{ path('followings_user', { 'username' : app.user.username }) }}">Siguiendo<br><b>{% if numfollowing is defined %} {{ numfollowing }} {% else %} 0 {% endif %}</b></a></li>
+                    <li class="list-inline-item user_data_element"><a href="{{ path('profile', { 'username' : app.user.username }) }}">Publicaciones<br><b>{% if numposts is defined %} {{ numposts }} {% else %} 0 {% endif %}</b></a></li>
+                    <li class="list-inline-item user_data_element"><a href="{{ path('likes_user', { 'username' : app.user.username }) }}">Me gusta<br><b>0</b></a></li>
+                    <li class="list-inline-item user_data_element">Puntuación<br><b>{{ puntuation }}</b></li>
+                </ul>
+            </div>
+        </div>
+    </div>
 <div class="col-lg-12 col-sm-12">
     <div class="row">
         <div class="col-lg-3 col-sm-12">
-            <div class="card notification_card">
+            <div class="card user_accounts">
+                <div class="card-header">
+                    <h5><i class="fas fa-gamepad"></i> Cuentas de {{ app.user.username }}</h5>
+                </div>
                 <ul class="list-group list-group-flush">
-                    <li class="list-group-item">Cras justo odio</li>
-                    <li class="list-group-item">Dapibus ac facilisis in</li>
-                    <li class="list-group-item">Vestibulum at eros</li>
+                    {% if app.user.steamId is defined and app.user.steamId is not null %}
+                        <li class="list-group-item"><i class="fab fa-steam"></i> {{ app.user.steamId }}</li>
+                    {% endif %}
+                    {% if app.user.xboxId is defined and app.user.xboxId is not null %}
+                        <li class="list-group-item"><i class="fab fa-xbox"></i> {{ app.user.xboxId }}</li>
+                    {% endif %}
+                    {% if app.user.psnId is defined and app.user.psnId is not null %}
+                        <li class="list-group-item"><i class="fab fa-playstation"></i> {{ app.user.psnId }}</li>
+                    {% endif %}
+                    {% if app.user.steamId is null and app.user.xboxId is null 
+                        and app.user.psnId is null %}
+                        <li class="list-group-item">Este usuario no posee cuentas de juego registradas</li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
@@ -45,8 +64,8 @@
                         <div class="textarea_div">
                             {{ form_widget(form.text) }}
                         </div>
-                        <div id="submit_image_post" class="float-lg-left">{{ form_widget(form.image) }}</div>
-                        <div class="float-lg-right">{{ form_widget(form.submit) }}</div>
+                        <div id="submit_image_post" class="form-group">{{ form_widget(form.image) }}</div>
+                        <div class="form-group">{{ form_widget(form.submit) }}</div>
                         {{ form_end(form) }}
                     </div>
                 </div>
@@ -73,14 +92,12 @@
                         <div class="pull-left">
                             <img class="rounded-circle img-fluid d-block mx-auto post_user_img" src="{{ asset('bundles/app/image/default_profile.png') }}" alt="">
                         </div>
-                        <div class="post_user_datetime"><b>{{ post.user.profileName }}</b> - {{ post.user.username }} - {{ post.datetime }}</div>
+                        <div class="post_user_datetime"><b><a href="{{ path('profile',{'username':post.user.username}) }}">{{ post.user.profileName }} </a></b>  {{ post.user.username }} <br> {{ post.datetime }}</div>
                         <div class="post_text"><p>{{ post.text }}</p></div>
                         {% if post.image is defined and post.image is not null %}
-                        <div class="post_image_div">
-                            <img  class="post_image myImag" src="{{ asset('uploads/' ~ post.image) }}"></img>
-                        </div>
+                            <button type="button" class="btn btn-success myImag btn-block" data-src="{{ asset('uploads/' ~ post.image) }}">Imagen de la publicación</button>
                         {% endif %}
-                        <div class="post_buttons">
+                        <div class="">
                             <span data-likes={{ post.likes }} data-liked="{{ post.hasLike }}" data-post="{{ post.id }}" class="btn far fa-thumbs-up btn_like 
                             {% if post.hasLike == 'liked' %}post_liked{% else %}post_unliked{% endif %}"> {{ post.likes }}</span>
                         </div>
@@ -115,6 +132,8 @@
 {% block javascripts %}
 <script type="text/javascript">
 
+    // Función para dar me gusta a una publicación (o quitarlo), la cuál se encarga de llamar al 
+    // controlador y de recalcular los likes de la publicación sin tener que recargar la página
     $(".btn_like").on('click', function() {
         var hasliked = $(this).attr('data-liked');
         var likes = parseInt($(this).attr('data-likes'));
@@ -161,15 +180,12 @@ var submitImage = document.getElementById("submit_image_post");
 $(".myImag").on("click", function(){
     submitImage.style.display= "none";
   modal.style.display = "block";
-  modalImg.src = this.src;
-  captionText.innerHTML = this.alt;
+  modalImg.src = $(this).data('src');
 });
 
-// Get the <span> element that closes the modal
-var span = document.getElementById('close-modal-img');
 
 // When the user clicks on <span> (x), close the modal
-$(span).on('click' ,function() {
+$('.close-modal-img').on('click' ,function() {
   modal.style.display = "none";
   submitImage.style.display="inline";
 });

@@ -6,7 +6,7 @@
         <div class="container">
             <h1 class="display-4"><a style="text-decoration:none" href="{{ path('tournaments',{'platform':'todos'})}}">Juegos:</a> <a style="text-decoration:none" href="{{ path('game',{'game_name':game.name, 'page': 1})}}">{{game.name_normalized}}</a></h1>
             <h2><i class="fab fa-{{ game.platform|lower}}"></i> {{game.platform}}</h2>
-            <h3><a style="text-decoration:none" href="{{ path('tournament_info',{'game_name':game.name, 'id_tournament':tournament.id})}}">{{ tournament.name }}</a></h3>
+            <h3><a style="text-decoration:none" href="{{ path('tournament_info',{'id_tournament':tournament.id})}}">{{ tournament.name }}</a></h3>
             <h4>Fecha y hora: {{ tournament.datetime }}</h4>
             <h4>{{ tournament.type|capitalize }}</h4>
             <h5>Participantes requeridos: {{ tournament.participants_required }}</h5>
@@ -288,7 +288,7 @@
                 data: data ,
                 success: function (data) {
                     console.log("Emparejamiento generado correctamente");
-                    window.location.replace(window.location.origin.concat("/app_dev.php/tournament_pairing/",game_no_normalized,"/", id_tournament));
+                    window.location.replace(window.location.origin.concat("/app_dev.php/tournament_pairing/", id_tournament));
                 },
                 error : function(xhr, status, errorMessage) {
                     alert("Algo ha salido mal: "+errorMessage);

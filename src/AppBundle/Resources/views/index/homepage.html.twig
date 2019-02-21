@@ -4,7 +4,7 @@
 <section class="login_block">
     <div class="container global_panel">
         <div class="row">
-            <div class="col-md-8 left_panel">
+            <div id="div_img" class="col-lg-8 left_panel">
                 <div class="left_panel_text">
                     <h2 class="web_title">GAMING TOGETHER</h2>
                     <ul class="list_title">
@@ -14,7 +14,7 @@
                     </ul>
                 </div>
             </div>
-            <div class="col-md-4 right_panel">
+            <div class="col-lg-4 right_panel">
                 <h2 class="text-center">INICIAR SESIÓN</h2>
                 <form class="login-form" action="{{ path('index') }}" method="post">
                     <div class="form-group">
@@ -28,7 +28,7 @@
                     </div>
                 </form>
                     <div class="button_div">
-                        <button type="button" class="btn btn-success btn-block">Recuperar contraseña</button>
+                        <button type="button" onclick="window.location.href = '{{ path('reset_password') }}'" class="btn btn-success btn-block">Recuperar contraseña</button>
                     </div>
                     <div class="button_div">
                         <button type="button" onclick="window.location.href = '{{ path('register') }}'" class="btn btn-danger btn-block">Nuevo usuario</button>

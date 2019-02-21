@@ -37,4 +37,18 @@ class PostLikeRepository extends \Doctrine\ORM\EntityRepository
             )->setParameter('user', $user)
             ->getSingleScalarResult();
     }
+
+    public function getBestPosts($date_begin, $date_end) {
+        $query = $this->getEntityManager()
+            ->createQuery(
+                'SELECT IDENTITY(p.post) AS id_post, count(p.post) AS total 
+                 FROM AppBundle:PostLike p 
+                 WHERE p.datetime BETWEEN :from AND :to
+                 GROUP BY p.post ORDER BY total DESC'
+            )->setParameters(array('from' => $date_begin, 'to' => $date_end))
+            ->setMaxResults(10)
+            ->getResult();
+ 
+        return $query;
+    }
 }

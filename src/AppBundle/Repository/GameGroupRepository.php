@@ -36,7 +36,7 @@ class GameGroupRepository extends \Doctrine\ORM\EntityRepository
         return $query->getQuery()->getResult();
     }
 
-    public function getAllGroupsActivePlatformNotPlaying() {
+    public function getAllGroupsActivePlatformNotPlaying($id_platform) {
         $query = $this->getEntityManager()
                 ->createQueryBuilder();
 

@@ -111,7 +111,7 @@ class TournamentsController extends Controller
 
         $game_query = $repository_game->findOneBy(array('name' => $game_name));
 
-        if($game_query) {
+        if($game_query && $page > 0) {
             if($repository_tournament->findOneBy(array('game' => $game_query->getId()))) {
                 $pageSize=10;
                 $paginator=$repository_tournament->findByPaginateTournaments($pageSize,$page, $game_query->getId());
@@ -148,7 +148,7 @@ class TournamentsController extends Controller
 
         $game_query = $repository_game->findOneBy(array('name' => $game_name));
 
-        if($game_query) {
+        if($game_query && $page > 0) {
             if($repository_tournament->findOneBy(array('game' => $game_query->getId()))) {
                 $pageSize=10;
                 $paginator=$repository_tournament->findByPaginateHistoricalTournaments($pageSize,$page, $game_query->getId());
@@ -207,7 +207,7 @@ class TournamentsController extends Controller
         $repository_game = $this->getDoctrine()->getRepository(Game::class);
 
         $POST_DATA = $request->request->all();
-        if($POST_DATA) {
+        if($_SERVER['REQUEST_METHOD'] === 'POST') {
             $game_name = $POST_DATA['data']['game_name'];
             $tournament_type = $POST_DATA['data']['tournament_type']; 
             $tournament_start = $POST_DATA['data']['tournament_date'];
@@ -267,104 +267,95 @@ class TournamentsController extends Controller
     }
 
     /**
-     * @Route("/tournament_info/{game_name}/{id_tournament}", name="tournament_info", options={"expose"=true})
+     * @Route("/tournament_info/{id_tournament}", name="tournament_info", options={"expose"=true})
      */
-    public function tournamentInfoAction(Request $request, $game_name, $id_tournament) {
+    public function tournamentInfoAction(Request $request, $id_tournament) {
         setlocale(LC_ALL, 'es_ES');
         date_default_timezone_set('Europe/Madrid');
         $repository_tournament = $this->getDoctrine()->getRepository(Tournament::class);
-        $repository_game = $this->getDoctrine()->getRepository(Game::class);
         $repository_tournamentRule = $this->getDoctrine()->getRepository(TournamentRule::class);
 
         $logged_user = $this->container->get('security.token_storage')->getToken()->getUser();
         $registered = false;
 
-        $game_query = $repository_game->findOneBy(array('name' => $game_name));
+        $tournament_query = $repository_tournament->findOneBy(array('id' => $id_tournament));
+        if($tournament_query) {
+            $tournamentRule_query = $repository_tournamentRule->findBy(array('tournament' => $tournament_query));
+            
+            $tournament_participants = $tournament_query->getParticipants()->toArray();
 
-        if($game_query) {
-
-            $tournament_query = $repository_tournament->findOneBy(array('id' => $id_tournament));
-            if($tournament_query) {
-                $tournamentRule_query = $repository_tournamentRule->findBy(array('tournament' => $tournament_query));
-                
-                $tournament_participants = $tournament_query->getParticipants()->toArray();
-
-                foreach($tournament_participants as $user) {
-                    $participants[] = array (
-                        'username' => $user->getUsername()
-                    );
-
-                    if($user->getUsername() == $logged_user->getUsername())
-                        $registered = true;
-                }
-
-                switch($game_query->getPlatform()->getName()) {
-                    case 'PlayStation':
-                        $platform_account_registered = $logged_user->getPlayStationId() != null ? true : false;
-                        break;
-                    case 'Xbox':
-                        $platform_account_registered = $logged_user->getXboxId() != null ? true : false;
-                        break;
-                    case 'Steam':
-                        $platform_account_registered = $logged_user->getSteamId() != null ? true : false;
-                        break;
-                }
-
-                $string_limit_checkin = new \Datetime($tournament_query->getDatetime()->format('d-m-Y H:i'));
-                $string_limit_checkin = date_sub($string_limit_checkin, date_interval_create_from_date_string('7 days'))->format('d M. H:i').'h';
-                $object_limit_checkin = new \Datetime($tournament_query->getDatetime()->format('d-m-Y H:i'));
-                $object_limit_checkin = date_sub($object_limit_checkin, date_interval_create_from_date_string('7 days'));
-
-                $tournament_winner = $tournament_query->getWinner();
-                if(isset($tournament_winner))
-                    $tournament_winner = $tournament_query->getWinner()->getUsername();
-                else {
-                    $tournament_winner = null;
-                }
-
-                $num_part = isset($participants)? sizeof($participants) : 0;
-
-                $tournament = array(
-                    'id' => $tournament_query->getId(),
-                    'name' => $tournament_query->getName(),
-                    'game' => $tournament_query->getGame()->getName(),
-                    'datetime' => $tournament_query->getDatetime()->format('d M. H:i').'h',
-                    'datetime_object' => $tournament_query->getDatetime(),
-                    'type' => $tournament_query->getType(),
-                    'participants_required' => $tournament_query->getParticipantsRequired(),
-                    'limit_checkin' => $string_limit_checkin,
-                    'limit_checkin_object' => $object_limit_checkin,
-                    'num_participants' => $num_part,
-                    'winner' => $tournament_winner,
-                    'is_active' => $tournament_query->getIsActive()
+            foreach($tournament_participants as $user) {
+                $participants[] = array (
+                    'username' => $user->getUsername()
                 );
 
-                $game = array(
-                    'name_normalized' => str_replace("_", " ", $game_query->getName()),
-                    'name' => $game_query->getName(),
-                    'platform' => $game_query->getPlatform()->getName()
-                );
+                if($user->getUsername() == $logged_user->getUsername())
+                    $registered = true;
+            }
 
-                foreach($tournamentRule_query as $rule) {
-                    $rules[] = array(
-                        'id' => $rule->getId(),
-                        'rule' => $rule->getRule()
-                    );
-                }
-                
-                return $this->render('@App/tournament_info.html.twig', 
-                    array(
-                        'tournament' => $tournament, 
-                        'game' => $game, 
-                        'rules' => $rules, 
-                        'participants' => isset($participants) ? $participants : null,
-                        'registered' => $registered,
-                        'registrable' => $platform_account_registered
-                    ));
-                }
-                else {
-                    return $this->render('@App/error_page.html.twig');
-                }
+            switch($tournament_query->getGame()->getPlatform()->getName()) {
+                case 'PlayStation':
+                    $platform_account_registered = $logged_user->getPsnId() != null ? true : false;
+                    break;
+                case 'Xbox':
+                    $platform_account_registered = $logged_user->getXboxId() != null ? true : false;
+                    break;
+                case 'Steam':
+                    $platform_account_registered = $logged_user->getSteamId() != null ? true : false;
+                    break;
+            }
+
+            $string_limit_checkin = new \Datetime($tournament_query->getDatetime()->format('d-m-Y H:i'));
+            $string_limit_checkin = date_sub($string_limit_checkin, date_interval_create_from_date_string('7 days'))->format('d M. H:i').'h';
+            $object_limit_checkin = new \Datetime($tournament_query->getDatetime()->format('d-m-Y H:i'));
+            $object_limit_checkin = date_sub($object_limit_checkin, date_interval_create_from_date_string('7 days'));
+
+            $tournament_winner = $tournament_query->getWinner();
+            if(isset($tournament_winner))
+                $tournament_winner = $tournament_query->getWinner()->getUsername();
+            else {
+                $tournament_winner = null;
+            }
+
+            $num_part = isset($participants)? sizeof($participants) : 0;
+
+            $tournament = array(
+                'id' => $tournament_query->getId(),
+                'name' => $tournament_query->getName(),
+                'game' => $tournament_query->getGame()->getName(),
+                'datetime' => $tournament_query->getDatetime()->format('d M. H:i').'h',
+                'datetime_object' => $tournament_query->getDatetime(),
+                'type' => $tournament_query->getType(),
+                'participants_required' => $tournament_query->getParticipantsRequired(),
+                'limit_checkin' => $string_limit_checkin,
+                'limit_checkin_object' => $object_limit_checkin,
+                'num_participants' => $num_part,
+                'winner' => $tournament_winner,
+                'is_active' => $tournament_query->getIsActive()
+            );
+
+            $game = array(
+                'name_normalized' => str_replace("_", " ", $tournament_query->getGame()->getName()),
+                'name' => $tournament_query->getGame()->getName(),
+                'platform' => $tournament_query->getGame()->getPlatform()->getName()
+            );
+
+            foreach($tournamentRule_query as $rule) {
+                $rules[] = array(
+                    'id' => $rule->getId(),
+                    'rule' => $rule->getRule()
+                );
+            }
+            
+            return $this->render('@App/tournament_info.html.twig', 
+                array(
+                    'tournament' => $tournament, 
+                    'game' => $game, 
+                    'rules' => $rules, 
+                    'participants' => isset($participants) ? $participants : null,
+                    'registered' => $registered,
+                    'registrable' => $platform_account_registered
+                ));
         }
         else {
             return $this->render('@App/error_page.html.twig');
@@ -452,127 +443,119 @@ class TournamentsController extends Controller
     }
 
     /**
-     * @Route("/tournament_pairing/{game_name}/{id_tournament}", name="tournament_pairing", options={"expose"=true})
+     * @Route("/tournament_pairing/{id_tournament}", name="tournament_pairing", options={"expose"=true})
      */
-    public function tournamentPairingAction(Request $request, $game_name, $id_tournament) {
+    public function tournamentPairingAction(Request $request, $id_tournament) {
         setlocale(LC_ALL, 'es_ES');
         date_default_timezone_set('Europe/Madrid');
         $repository_tournament = $this->getDoctrine()->getRepository(Tournament::class);
-        $repository_game = $this->getDoctrine()->getRepository(Game::class);
         $repository_pairing = $this->getDoctrine()->getRepository(TournamentPairing::class);
 
-        $game_query = $repository_game->findOneBy(array('name' => $game_name));
+        $tournament_query = $repository_tournament->findOneBy(array('id' => $id_tournament));
+        if($tournament_query) {
+            $current_round = $tournament_query->getCurrentRound();
+            $num_rounds = round(log(sizeof($tournament_query->getParticipants()),2));
 
-        if($game_query) {
-            $tournament_query = $repository_tournament->findOneBy(array('id' => $id_tournament));
-            if($tournament_query) {
-                $current_round = $tournament_query->getCurrentRound();
-                $num_rounds = round(log(sizeof($tournament_query->getParticipants()),2));
+            for($i = 0; $i < $current_round; $i++) {
+                $tournament_pairings = $repository_pairing->findBy(
+                    array(
+                        'tournament'=>$tournament_query,
+                        'round'=>$i+1));
+                foreach($tournament_pairings as $pair) {
 
-                for($i = 0; $i < $current_round; $i++) {
-                    $tournament_pairings = $repository_pairing->findBy(
-                        array(
-                            'tournament'=>$tournament_query,
-                            'round'=>$i+1));
-                    foreach($tournament_pairings as $pair) {
-
-                        $winner = $pair->getWinner();
-                        if(isset($winner))
-                            $winner = $pair->getWinner()->getUsername();
-                        else {
-                            $winner = null;
-                        }
-                        if($pair->getPlayerOne()->getUsername() != $pair->getPlayerTwo()->getUsername())
-                            $pairings[] = array(
-                                'id' => $pair->getId(),
-                                'playerOne' => $pair->getPlayerOne()->getUsername(),
-                                'playerTwo' => $pair->getPlayerTwo()->getUsername(),
-                                'resultImgPOne' => $pair->getImageResultPlayerOne(),
-                                'resultImgPTwo' => $pair->getImageResultPlayerTwo(),
-                                'resultPOne' => $pair->getResultPlayerOne(),
-                                'resultPTwo' => $pair->getResultPlayerTwo(),
-                                'winner' => $winner,
-                                'round' => $pair->getRound()
-                            );
-                        else {
-                            $direct_pass = array(
-                                $pair->getPlayerOne()->getUsername());
-                        }
+                    $winner = $pair->getWinner();
+                    if(isset($winner))
+                        $winner = $pair->getWinner()->getUsername();
+                    else {
+                        $winner = null;
                     }
-                    if(isset($pairings))
-                        $pairings_total['Ronda'][$i+1] = $pairings;
-                    unset($pairings);
-                    if(isset($direct_pass)) {
-                        $direct_pass_t['Ronda'][$i+1] = $direct_pass;
-                        unset($direct_pass);
+                    if($pair->getPlayerOne()->getUsername() != $pair->getPlayerTwo()->getUsername())
+                        $pairings[] = array(
+                            'id' => $pair->getId(),
+                            'playerOne' => $pair->getPlayerOne()->getUsername(),
+                            'playerTwo' => $pair->getPlayerTwo()->getUsername(),
+                            'resultImgPOne' => $pair->getImageResultPlayerOne(),
+                            'resultImgPTwo' => $pair->getImageResultPlayerTwo(),
+                            'resultPOne' => $pair->getResultPlayerOne(),
+                            'resultPTwo' => $pair->getResultPlayerTwo(),
+                            'winner' => $winner,
+                            'round' => $pair->getRound()
+                        );
+                    else {
+                        $direct_pass = array(
+                            $pair->getPlayerOne()->getUsername());
                     }
                 }
-
-                $string_limit_checkin = new \Datetime($tournament_query->getDatetime()->format('d-m-Y H:i'));
-                $string_limit_checkin = date_sub($string_limit_checkin, date_interval_create_from_date_string('7 days'))->format('d M. H:i').'h';
-                $object_limit_checkin = new \Datetime($tournament_query->getDatetime()->format('d-m-Y H:i'));
-                $object_limit_checkin = date_sub($object_limit_checkin, date_interval_create_from_date_string('7 days'));
-
-                $tournament_winner = $tournament_query->getWinner();
-                if(isset($tournament_winner))
-                    $tournament_winner = $tournament_query->getWinner()->getUsername();
-                else {
-                    $tournament_winner = null;
+                if(isset($pairings))
+                    $pairings_total['Ronda'][$i+1] = $pairings;
+                unset($pairings);
+                if(isset($direct_pass)) {
+                    $direct_pass_t['Ronda'][$i+1] = $direct_pass;
+                    unset($direct_pass);
                 }
-
-                $num_part = isset($participants)? sizeof($participants) : 0;
-
-                $tournament = array(
-                    'id' => $tournament_query->getId(),
-                    'name' => $tournament_query->getName(),
-                    'game' => $tournament_query->getGame()->getName(),
-                    'datetime' => $tournament_query->getDatetime()->format('d M. H:i').'h',
-                    'datetime_object' => $tournament_query->getDatetime(),
-                    'type' => $tournament_query->getType(),
-                    'participants_required' => $tournament_query->getParticipantsRequired(),
-                    'limit_checkin' => $string_limit_checkin,
-                    'limit_checkin_object' => $object_limit_checkin,
-                    'current_round' => $tournament_query->getCurrentRound(),
-                    'num_rounds' => $num_rounds,
-                    'winner' => $tournament_winner,
-                    'is_active' => $tournament_query->getIsActive(),
-                    'num_participants' => $num_part
-                );
-
-                $game = array(
-                    'name_normalized' => str_replace("_", " ", $game_query->getName()),
-                    'name' => $game_query->getName(),
-                    'platform' => $game_query->getPlatform()->getName()
-                );
-
-                $pairings_current_round = $repository_pairing->findBy(array('tournament' => $tournament_query->getId(),'round' => $tournament_query->getCurrentRound()));
-
-                if(!$pairings_current_round)
-                    $pairings_generated = false;
-                else
-                    $pairings_generated = true;
-
-                if(isset($pairings_total)) 
-                    return $this->render('@App/tournament_pairing.html.twig', 
-                        array(
-                            'tournament' => $tournament, 
-                            'game' => $game,
-                            'pairings' => $pairings_total,
-                            'num_rounds' => sizeof($pairings_total['Ronda']),
-                            'last_round_generated' => $pairings_generated,
-                            'direct_pass' => isset($direct_pass_t) ? $direct_pass_t : null
-                        ));
-                else 
-                    return $this->render('@App/tournament_pairing.html.twig', 
-                        array(
-                            'tournament' => $tournament, 
-                            'game' => $game,
-                            'last_round_generated' => $pairings_generated
-                        ));
             }
+
+            $string_limit_checkin = new \Datetime($tournament_query->getDatetime()->format('d-m-Y H:i'));
+            $string_limit_checkin = date_sub($string_limit_checkin, date_interval_create_from_date_string('7 days'))->format('d M. H:i').'h';
+            $object_limit_checkin = new \Datetime($tournament_query->getDatetime()->format('d-m-Y H:i'));
+            $object_limit_checkin = date_sub($object_limit_checkin, date_interval_create_from_date_string('7 days'));
+
+            $tournament_winner = $tournament_query->getWinner();
+            if(isset($tournament_winner))
+                $tournament_winner = $tournament_query->getWinner()->getUsername();
             else {
-                return $this->render('@App/error_page.html.twig');
+                $tournament_winner = null;
             }
+
+            $num_part = isset($participants)? sizeof($participants) : 0;
+
+            $tournament = array(
+                'id' => $tournament_query->getId(),
+                'name' => $tournament_query->getName(),
+                'game' => $tournament_query->getGame()->getName(),
+                'datetime' => $tournament_query->getDatetime()->format('d M. H:i').'h',
+                'datetime_object' => $tournament_query->getDatetime(),
+                'type' => $tournament_query->getType(),
+                'participants_required' => $tournament_query->getParticipantsRequired(),
+                'limit_checkin' => $string_limit_checkin,
+                'limit_checkin_object' => $object_limit_checkin,
+                'current_round' => $tournament_query->getCurrentRound(),
+                'num_rounds' => $num_rounds,
+                'winner' => $tournament_winner,
+                'is_active' => $tournament_query->getIsActive(),
+                'num_participants' => $num_part
+            );
+
+            $game = array(
+                'name_normalized' => str_replace("_", " ", $tournament_query->getGame()->getName()),
+                'name' => $tournament_query->getGame()->getName(),
+                'platform' => $tournament_query->getGame()->getPlatform()->getName()
+            );
+
+            $pairings_current_round = $repository_pairing->findBy(array('tournament' => $tournament_query->getId(),'round' => $tournament_query->getCurrentRound()));
+
+            if(!$pairings_current_round)
+                $pairings_generated = false;
+            else
+                $pairings_generated = true;
+
+            if(isset($pairings_total)) 
+                return $this->render('@App/tournament_pairing.html.twig', 
+                    array(
+                        'tournament' => $tournament, 
+                        'game' => $game,
+                        'pairings' => $pairings_total,
+                        'num_rounds' => sizeof($pairings_total['Ronda']),
+                        'last_round_generated' => $pairings_generated,
+                        'direct_pass' => isset($direct_pass_t) ? $direct_pass_t : null
+                    ));
+            else 
+                return $this->render('@App/tournament_pairing.html.twig', 
+                    array(
+                        'tournament' => $tournament, 
+                        'game' => $game,
+                        'last_round_generated' => $pairings_generated
+                    ));
         }
         else {
             return $this->render('@App/error_page.html.twig');
@@ -593,7 +576,7 @@ class TournamentsController extends Controller
         $id_pairing = $request->request->get('pairing_id_player');
         $winner = $request->request->get('select_winner_player');
 
-        if($id_tournament && $id_pairing && $winner) {
+        if($_SERVER['REQUEST_METHOD'] === 'POST') {
             $image_result = $request->files->get('input_result');
             $ext = $image_result->guessExtension();
             $file_name = time().".".$ext;
@@ -652,7 +635,7 @@ class TournamentsController extends Controller
         $id_tournament = $request->request->get('tournament_id_mod');
         $id_pairing = $request->request->get('pairing_id_mod');
         $winner = $request->request->get('select_winner_mod');
-        if($id_tournament && $id_pairing && $winner) {
+        if($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pairing = $repository_pairing->findOneBy(array('id' => $id_pairing));
             $user = $repository_user->findOneBy(array('username' => $winner));
             $tournament = $repository_tournament->findOneBy(array('id' => $id_tournament));

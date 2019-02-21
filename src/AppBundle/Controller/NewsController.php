@@ -13,7 +13,8 @@ class NewsController extends Controller
      * @Route("/news", name="news")
      */
     public function indexAction(Request $request) {
-
+        setlocale(LC_ALL, 'es_ES');
+        date_default_timezone_set('Europe/Madrid');
         $rss_3djuegos = new \DOMDocument();
         $rss_vidaextra = new \DOMDocument();
         $rss_vandal = new \DOMDocument();

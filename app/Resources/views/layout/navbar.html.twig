@@ -5,22 +5,19 @@
   </button>
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="nav navbar-nav mr-auto">
-            <li class="nav-item active">
-                <a class="nav-link" href=""><i class="fas fa-home"></i> INICIO<span class="sr-only">(current)</span></a>
+            <li {% if app.request.get('_route') == 'homepage' %} class="nav-item active" {% else %} class="nav-item" {% endif %}>
+                <a class="nav-link" href="{{ path('homepage') }}"><i class="fas fa-home"></i> INICIO</span></a>
             </li>
-            <li class="nav-item">
+            <li {% if app.request.get('_route') == 'tournaments' %} class="nav-item active" {% else %} class="nav-item" {% endif %}>
                 <a class="nav-link" href="{{ path('tournaments', {'platform':'todos'}) }}"><i class="fas fa-trophy"></i> TORNEOS</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href=""><i class="fas fa-list-ol"></i> RANKINGS</a>
+            <li {% if app.request.get('_route') == 'rankings' %} class="nav-item active" {% else %} class="nav-item" {% endif %}>
+                <a class="nav-link" href="{{ path('rankings')}} "><i class="fas fa-list-ol"></i> RANKINGS</a>
             </li>
-            <li class="nav-item">
+            <li {% if app.request.get('_route') == 'group' %} class="nav-item active" {% else %} class="nav-item" {% endif %}>
                 <a class="nav-link" href="{{ path('group') }}"><i class="fas fa-users"></i> GRUPOS</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href=""><i class="fas fa-comment-alt"></i> CHATS</a>
-            </li>
-            <li class="nav-item">
+            <li {% if app.request.get('_route') == 'news' %} class="nav-item active" {% else %} class="nav-item" {% endif %}>
                 <a class="nav-link" href="{{ path('news') }}"><i class="fas fa-newspaper"></i> NOTICIAS</a>
             </li>
         </ul>

@@ -17,7 +17,7 @@
                         <div class="user_data_element"><a href="{{ path('followings_user', { 'username' : user.username }) }}">Siguiendo<br><b>{% if numfollowing is defined %} {{ numfollowing }} {% else %} 0 {% endif %}</b></a></div>
                         <div class="user_data_element"><a href="{{ path('profile', { 'username' : user.username }) }}">Publicaciones<br><b>{% if numposts is defined %} {{ numposts }} {% else %} 0 {% endif %}</b></a></div>
                         <div class="user_data_element"><a class="current_page">Me gusta<br><b>{% if numlikes is defined %} {{ numlikes }} {% else %} 0 {% endif %}</b></a></div>
-                        <div class="user_data_element"><a href="#">Puntuación<br><b>0</b></a></div>
+                        <div class="user_data_element">Puntuación<br><b>{{ puntuation }}</b></div>
                     </div>
                 </div>
                 </div>
@@ -62,7 +62,7 @@
                         <div class="pull-left">
                             <img class="rounded-circle img-fluid d-block mx-auto post_user_img" src="{{ asset('bundles/app/image/default_profile.png') }}" alt="">
                         </div>
-                        <div class="post_user_datetime"><b>{{ post.user.profileName }}</b> - {{ post.user.username }} - {{ post.datetime }}</div>
+                        <div class="post_user_datetime"><b><a href="{{ path('profile',{'username':post.user.username}) }}">{{ post.user.profileName }} </a></b> - {{ post.user.username }} - {{ post.datetime }}</div>
                         <div class="post_text"><p>{{ post.text }}</p></div>
                         <div class="post_buttons">
                             <span data-likes={{ post.likes }} data-liked="{{ post.hasLike }}" data-post="{{ post.id }}" class="btn far fa-thumbs-up btn_like 

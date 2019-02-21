@@ -1,0 +1,24 @@
+{% for user in winners %}
+<div>
+    <div class="pull-left">
+        <img class="rounded-circle img-fluid d-block mx-auto follower_img" src="{{ asset('bundles/app/image/default_profile.png') }}" alt="">
+    </div>
+    <div class="follower_data"><b><a href="{{ path('profile',{'username':user.username}) }}">{{ user.profileName }} </a></b><br> {{ user.username }}</div>
+    
+    <div class="row">
+        <div class="follower_accounts col-lg-8 col-xs-1">
+            {% if user.steam_id is defined and user.steam_id is not null %}
+                <i class="fab fa-steam"></i>
+            {% endif %}
+            {% if user.xbox_id is defined and user.xbox_id is not null %}
+                <i class="fab fa-xbox"></i>
+            {% endif %}
+            {% if user.psn_id is defined and user.psn_id is not null %}
+                <i class="fab fa-playstation"></i>
+            {% endif %}<br>
+            <b>Torneos ganados: </b>{{ user.num_wins }}
+        </div>
+    </div>
+</div>
+<hr>
+{% endfor %}

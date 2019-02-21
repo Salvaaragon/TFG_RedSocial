@@ -27,12 +27,13 @@ class PostType extends AbstractType
                     'class' => 'file',
                     'data-language' => 'es',
                     'data-show-preview' => 'false',
+                    'data-show-cancel' => 'false',
                     'data-allowed-file-extensions' => '["jpg","gif","png"]',
                     'data-show-upload' => 'false'
                     )))
             ->add('submit', SubmitType::class, array(
                 'label' => 'Enviar',
-                'attr' => array('class' => 'btn btn-success')))
+                'attr' => array('class' => 'btn btn-success btn-block')))
         ;
     }
 

@@ -84,7 +84,7 @@
                             <button type="button" class="btn btn-primary disabled">Inscrito</button>
                         {% endif %}
                     {% endif %}
-                    <a type="button" href="{{ path('tournament_pairing', {'game_name': tournament.game, 'id_tournament': tournament.id }) }}" class="btn btn-danger">Ver emparejamientos</a>
+                    <a type="button" href="{{ path('tournament_pairing', {'id_tournament': tournament.id }) }}" class="btn btn-danger">Ver emparejamientos</a>
                 </div>
             </div>
             <br>

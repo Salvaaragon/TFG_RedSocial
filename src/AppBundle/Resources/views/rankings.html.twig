@@ -1,0 +1,128 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class="div_tournaments">
+    <div class="jumbotron">
+        <div class="container">
+            <h3 class="display-4"><i class="fas fa-list-ol"></i> Rankings</h3>
+            <p>Aquí podemos obtener diversas clasificaciones en base a distintos parámetros</p>
+        </div>
+    </div>
+
+    <div class="col-lg-10 offset-lg-1">
+        <div class="card">
+            <div class="card-body row">
+                <div class="col-lg-10">
+                    <div class="col-lg-12">
+                    <select class="custom-select" id="select_filter">
+                        <option selected value="best_posts">Mejores publicaciones</option>
+                        <option value="voted_users">Usuarios mejor votados</option>
+                        <option value="winners">Ganadores de torneos</option>
+                    </select> 
+                    </div>
+                    <br>
+                    <div class="col-lg-12 row">
+                        <div class="form-group row col-lg-6" id="filter_int_begin">
+                            <label for="input_filter_begin" class="col-lg-6 col-form-label">Fecha de inicio</label>
+                            <div class="col-lg-6">
+                                <div id="input_filter_begin" class="input-append date input_filter_begin">
+                                    <input id="input_filter_int_begin" class="form-control" size="16" type="text" value="" readonly required/>
+                                    <span class="add-on"><i class="icon-th"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row col-lg-6" id="filter_int_end">
+                            <label for="input_filter_end" class="col-lg-6 col-form-label">Fecha de fin</label>
+                            <div class="col-lg-6">
+                                <div id="input_filter_end" class="input-append date input_filter_end">
+                                    <input id="input_filter_int_end" class="form-control" size="16" type="text" value="" readonly required/>
+                                    <span class="add-on"><i class="icon-th"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2"><button id="filter_button" class="btn btn-primary btn-block">Filtrar</button></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-12"></div>
+    <div class="col-lg-10 offset-lg-1">
+        <div class="card">
+            <div class="card-body">
+                <div name="dinamic_rank" id="dinamic_rank" class="dinamic_rank">
+                <p style="text-align: center; vertical-align: middle;">Aquí se mostrarán los elementos filtrados</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+
+<script type="text/javascript"> 
+
+$(document).ready(function(){  
+
+        var date = new Date();
+        var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        var maxDate_begin = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        var maxDate_end = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+        $(".input_filter_begin").datetimepicker({
+            format: "dd MM yyyy",
+            weekStart: "1",
+            endDate: maxDate_begin,
+            autoclose: "true",
+            pickerPosition: "top-right",
+            minView: "2",
+            setDate: today,
+            language: 'es'
+        });
+
+        $(".input_filter_end").datetimepicker({
+            format: "dd MM yyyy",
+            weekStart: "1",
+            endDate: maxDate_end,
+            autoclose: "true",
+            pickerPosition: "top-right",
+            minView: "2",
+            setDate: today,
+            language: 'es'
+        });
+
+        $(".input_filter_begin").datetimepicker('setDate', today);
+        $(".input_filter_end").datetimepicker('setDate', today);
+
+        $("#filter_button").click(function() {
+
+            $('#dinamic_rank').html('<div style="text-align: center; vertical-align: middle;"><div class="fa fa-spinner fa-spin"></div> Cargando contenido...</div>');
+            var filter_parameter = $('#select_filter').val();
+            var date_begin = $("#input_filter_begin").data('datetimepicker').getDate();
+            var date_end = $("#input_filter_end").data('datetimepicker').getDate();
+            var date_begin_formatted = date_begin.getFullYear() + "-" + (date_begin.getMonth() + 1) + "-" + date_begin.getDate();
+            var date_end_formatted = date_end.getFullYear() + "-" + (date_end.getMonth() + 1) + "-" + date_end.getDate();
+            var data = {}
+
+            data['filter_parameter'] = filter_parameter;
+            data['date_begin'] = date_begin_formatted;
+            data['date_end'] = date_end_formatted;
+
+            $.ajax({  
+                url: Routing.generate('filter_ranking'),  
+                type: "POST",
+                data: data,
+                success: function (data) {
+                    $('#dinamic_rank').html(data);
+                },
+                error : function(xhr, status, errorMessage) {
+                    alert("Algo ha salido mal: "+errorMessage);
+                }
+            });  
+        });  
+});
+
+</script>
+
+{% endblock %}

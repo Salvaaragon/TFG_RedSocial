@@ -52,6 +52,13 @@ class GameGroupVote
      */
     private $vote;
 
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="datetime", type="datetime")
+     */
+    private $datetime;
+
 
     /**
      * Get id
@@ -147,6 +154,30 @@ class GameGroupVote
      */
     public function getVote() {
         return $this->vote;
+    }
+
+    /**
+     * Set datetime
+     *
+     * @param \DateTime $datetime
+     *
+     * @return Tournament
+     */
+    public function setDatetime($datetime)
+    {
+        $this->datetime = $datetime;
+
+        return $this;
+    }
+
+    /**
+     * Get datetime
+     *
+     * @return \DateTime
+     */
+    public function getDatetime()
+    {
+        return $this->datetime;
     }
 
 }

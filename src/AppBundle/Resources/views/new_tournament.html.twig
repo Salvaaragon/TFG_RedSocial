@@ -167,7 +167,7 @@ $(document).ready(function(){
                 data: { 'data':data, 'rules':rules},
                 success: function (data) {
                     console.log("Torneo creado correctamente");
-                    window.location.replace(window.location.origin.concat("/app_dev.php/tournaments_game/",game_no_normalized,"/1"));
+                    window.location.replace(window.location.origin.concat("/tournaments_game/","1"));
                 },
                 error : function(xhr, status, errorMessage) {
                     alert("Algo ha salido mal: "+errorMessage);

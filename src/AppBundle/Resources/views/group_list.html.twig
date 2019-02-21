@@ -91,7 +91,7 @@
                     <div class="col-lg-1">
                         {% if group.datetime|date('Y-m-d H:i') < "now"|date('Y-m-d H:i') %}
                             {% if group.isActive and group.user_is_participant %}
-                                {% if group.user_has_vote == false %}
+                                {% if group.user_has_vote == false and group.num_part > 0 %}
                                     <a type="button" href="{{ path('group_vote', {'id_group':group.id}) }}" class="btn btn-primary btn-lg btn-block">Votar</a>
                                 {% endif %}
                             {% endif %}

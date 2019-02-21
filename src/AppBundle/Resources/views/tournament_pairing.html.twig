@@ -290,7 +290,7 @@
                 data: data ,
                 success: function (data) {
                     console.log("Emparejamiento generado correctamente");
-                    window.location.replace(window.location.origin.concat("/app_dev.php/tournament_pairing/", id_tournament));
+                    window.location.replace(window.location.origin.concat("/tournament_pairing/", id_tournament));
                 },
                 error : function(xhr, status, errorMessage) {
                     alert("Algo ha salido mal: "+errorMessage);

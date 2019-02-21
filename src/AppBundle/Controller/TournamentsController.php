@@ -451,7 +451,6 @@ class TournamentsController extends Controller
         }
 
         return $this->redirectToRoute('tournament_pairing', array(
-            'game_name' => $tournament_query->getGame()->getName(),
             'id_tournament' => $id_tournament
         ));
     }
@@ -631,7 +630,6 @@ class TournamentsController extends Controller
 
             return $this->redirectToRoute('tournament_pairing', 
                 array(
-                    'game_name' => $tournament->getGame()->getName(), 
                     'id_tournament' => $id_tournament));
         }
         else 
@@ -704,7 +702,7 @@ class TournamentsController extends Controller
                 }
             }
 
-            return $this->redirectToRoute('tournament_pairing', array('game_name' => $tournament->getGame()->getName(), 'id_tournament' => $id_tournament));
+            return $this->redirectToRoute('tournament_pairing', array('id_tournament' => $id_tournament));
         }
         else 
             return $this->render('@App/error_page.html.twig');
@@ -750,7 +748,6 @@ class TournamentsController extends Controller
 
         return $this->redirectToRoute('tournament_info', 
             array(
-                'game_name' => $tournament->getGame()->getName(),
                 'id_tournament' => $tournament->getId()
             ));
         

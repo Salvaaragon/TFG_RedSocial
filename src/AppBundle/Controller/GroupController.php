@@ -424,7 +424,7 @@ class GroupController extends Controller
                     }
                 }
                 return $this->render('@App/group_vote.html.twig', 
-                    array('participants' => $participants_array, 'group' => $group_array));
+                    array('participants' => isset($participants_array) ? $participants_array : null, 'group' => $group_array));
             }
 
             else {

@@ -8,22 +8,30 @@
             <div class="col-lg-12">
                 <div class="row justify-content-center">
                 <div class="col-lg-12 col-sm-6 text-center mb-3 user_info">
-                    <img class="rounded-circle img-fluid d-block mx-auto profile_img" src="{{ asset('bundles/app/image/default_profile.png') }}" alt="">
+                    <img class="rounded-circle img-fluid d-block mx-auto profile_img" src="{{ asset('uploads/profile_images/' ~ user.image) }}" alt="">
                     <h2>{{ user.profileName }}</h2>
                     <small>{{ user.username }}</small>
-                    <div class="row col-xs-6 justify-content-center">
-                        <div class="user_data_element"><a class="current_page">Seguidores<br><b>{% if numfollowers is defined %} {{ numfollowers }} {% else %} 0 {% endif %}</b></a></div>
-                        <div class="user_data_element"><a href="{{ path('followings_user', { 'username' : user.username }) }}">Siguiendo<br><b>{% if numfollowings is defined %} {{ numfollowings }} {% else %} 0 {% endif %}</b></a></div>
-                        <div class="user_data_element"><a href="{{ path('profile', { 'username' : user.username }) }}">Publicaciones<br><b>{% if numposts is defined %} {{ numposts }} {% else %} 0 {% endif %}</b></a></div>
-                        <div class="user_data_element"><a href="{{ path('likes_user', { 'username' : user.username }) }}">Me gusta<br><b>{% if numlikes is defined %} {{ numlikes }} {% else %} 0 {% endif %}</b></a></div>
-                        <div class="user_data_element">Puntuación<br><b>{{ puntuation }}</b></div>
-                    </div>
                 </div>
                 </div>
             </div>
             </div>
         </div>
     </header>
+
+    <br>
+    <div class="col-lg-6 offset-lg-3">
+        <div class="card">
+            <div class="card-body">
+                <ul class="list-inline">
+                    <li class="list-inline-item user_data_element"><a class="current_page">Seguidores<br><b>{% if numfollowers is defined %} {{ numfollowers }} {% else %} 0 {% endif %}</b></a></li>
+                    <li class="list-inline-item user_data_element"><a href="{{ path('followings_user', { 'username' : user.username }) }}">Siguiendo<br><b>{% if numfollowings is defined %} {{ numfollowings }} {% else %} 0 {% endif %}</b></a></li>
+                    <li class="list-inline-item user_data_element"><a href="{{ path('profile', { 'username' : user.username }) }}">Publicaciones<br><b>{% if numposts is defined %} {{ numposts }} {% else %} 0 {% endif %}</b></a></li>
+                    <li class="list-inline-item user_data_element"><a href="{{ path('likes_user', { 'username' : user.username }) }}">Me gusta<br><b>{% if numlikes is defined %} {{ numlikes }} {% else %} 0 {% endif %}</b></a></li>
+                    <li class="list-inline-item user_data_element">Puntuación<br><b>{{ puntuation }}</b></li>
+                </ul>
+            </div>
+        </div>
+    </div>
     
     <div class="row">
         <div class="col-lg-3">
@@ -59,9 +67,9 @@
                         {% for follower in followers %}
                         <div>
                             <div class="pull-left">
-                                <img class="rounded-circle img-fluid d-block mx-auto follower_img" src="{{ asset('bundles/app/image/default_profile.png') }}" alt="">
+                                <img class="rounded-circle img-fluid d-block mx-auto follower_img" src="{{ asset('uploads/profile_images/' ~ follower.image) }}" alt="">
                             </div>
-                            <div class="follower_data"><b>{{ follower.profileName }}</b><br> {{ follower.username }}</div>
+                            <div class="follower_data"><b><a href="{{ path('profile',{'username':follower.username}) }}">{{ follower.profileName }} </a></b><br> {{ follower.username }}</div>
                             
                             <div class="row">
                                 <div class="follower_accounts col-lg-8 col-xs-1">
@@ -103,6 +111,7 @@
             </div>
         </div>
     </div>
+    </br>
 {% endblock %}
 
 {% block javascripts %}

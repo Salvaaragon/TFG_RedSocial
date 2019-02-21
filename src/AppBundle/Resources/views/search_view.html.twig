@@ -14,7 +14,7 @@
                     {% for user in users %}
                     <div>
                         <div class="pull-left">
-                            <img class="rounded-circle img-fluid d-block mx-auto follower_img" src="{{ asset('bundles/app/image/default_profile.png') }}" alt="">
+                            <img class="rounded-circle img-fluid d-block mx-auto follower_img" src="{{ asset('uploads/profile_images/' ~ user.image) }}" alt="">
                         </div>
                         <div class="follower_data"><b><a href="{{ path('profile',{'username':user.username}) }}">{{ user.profileName }} </a></b><br> {{ user.username }}</div>
                         

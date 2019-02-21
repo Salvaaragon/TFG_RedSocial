@@ -105,6 +105,7 @@ class ProfileController extends Controller
         $repository_following = $this->getDoctrine()->getRepository(Following::class);
         $repository_user = $this->getDoctrine()->getRepository(User::class);
         $repository_likes = $this->getDoctrine()->getRepository(PostLike::class);
+        $repository_votes = $this->getDoctrine()->getRepository(GameGroupVote::class);
 
         $user = $repository_user->findOneBy(
             array('username' => $username)
@@ -120,6 +121,9 @@ class ProfileController extends Controller
             $query_numpost_user = $repository_post->getNumPostsUser($user);
             $query_numlikes_user = $repository_likes->getNumPostUserHasLiked($user);
 
+            $query_puntuation = $repository_votes->getAverageVoteUser($user->getId()); // Puntuación media que posee de los grupos
+
+
             foreach($query_followers as $follower_id) {
                 $follower = $repository_user->find($follower_id['id_user']);
                 $isFollow = $repository_following->getUserIsFollowing($logged_user, $follower);
@@ -130,7 +134,8 @@ class ProfileController extends Controller
                     'steam_id' => $follower->getSteamId(),
                     'xbox_id' => $follower->getXboxId(),
                     'psn_id' => $follower->getPsnId(),
-                    'isFollowed' => $isFollow
+                    'isFollowed' => $isFollow,
+                    'image' => $follower->getImage(),
                 );
             }
 
@@ -141,7 +146,8 @@ class ProfileController extends Controller
                     'numfollowings' => isset($query_numfollowing_user) ? count($query_numfollowing_user) : 0,
                     'numposts' => isset($query_numpost_user) ? $query_numpost_user : 0,
                     'user' => $user,
-                    'numlikes' => isset($query_numlikes_user) ? $query_numlikes_user : 0));
+                    'numlikes' => isset($query_numlikes_user) ? $query_numlikes_user : 0,
+                    'puntuation' => isset($query_puntuation) ? $query_puntuation:0));
         }
         else
             return $this->render('@App/error_page.html.twig');
@@ -156,6 +162,7 @@ class ProfileController extends Controller
         $repository_following = $this->getDoctrine()->getRepository(Following::class);
         $repository_user = $this->getDoctrine()->getRepository(User::class);
         $repository_likes = $this->getDoctrine()->getRepository(PostLike::class);
+        $repository_votes = $this->getDoctrine()->getRepository(GameGroupVote::class);
 
         $user = $repository_user->findOneBy(
             array('username' => $username)
@@ -170,6 +177,8 @@ class ProfileController extends Controller
             $query_numlikes_user = $repository_likes->getNumPostUserHasLiked($user);
             $query_numpost_user = $repository_post->getNumPostsUser($user);
 
+            $query_puntuation = $repository_votes->getAverageVoteUser($user->getId()); // Puntuación media que posee de los grupos
+
             // Al igual que anteriormente, obtenemos estos datos que se mostrarán en la parte superior
             foreach($query_followings as $following_id) {
                 $following = $repository_user->find($following_id['id_user']);
@@ -180,7 +189,8 @@ class ProfileController extends Controller
                     'steam_id' => $following->getSteamId(),
                     'xbox_id' => $following->getXboxId(),
                     'psn_id' => $following->getPsnId(),
-                    'isFollowed' => true
+                    'isFollowed' => true,
+                    'image' => $following->getImage(),
                 );
             }
 
@@ -190,7 +200,8 @@ class ProfileController extends Controller
                 'numfollowers' => isset($query_numfollower_user) ? count($query_numfollower_user) : 0,
                 'numposts' => isset($query_numpost_user) ? $query_numpost_user : 0,
                 'user' => $user,
-                'numlikes' => isset($query_numlikes_user) ? $query_numlikes_user : 0));
+                'numlikes' => isset($query_numlikes_user) ? $query_numlikes_user : 0,
+                'puntuation' => isset($query_puntuation) ? $query_puntuation:0));
         }
         else
             return $this->render('@App/error_page.html.twig');
@@ -296,7 +307,8 @@ class ProfileController extends Controller
                     'steam_id' => $user->getSteamId(),
                     'xbox_id' => $user->getXboxId(),
                     'psn_id' => $user->getPsnId(),
-                    'isFollowed' => $isFollow
+                    'isFollowed' => $isFollow,
+                    'image' => $user->getImage(),
                 );
             }
 

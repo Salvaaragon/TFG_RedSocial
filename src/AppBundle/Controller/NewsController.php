@@ -101,8 +101,17 @@ class NewsController extends Controller
             }
         }
 
+        uasort($feed,array($this,"compare_date"));
+
         return $this->render('@App/news.html.twig', array(
                 'rss' => $feed, 'num_news' => sizeof($feed)
         ));
+    }
+
+    private function compare_date($a, $b) {
+        if ($a['date'] == $b['date']) {
+            return 0;
+        }
+        return ($a['date'] < $b['date']) ? -1 : 1;
     }
 }

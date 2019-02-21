@@ -31,8 +31,8 @@ class GameGroupType extends AbstractType
                     'placeholder' => 'Juego',
                     'maxlength' => 128),
                 "label" => false,
-                "required" => "required"))/*,
-                "choices" => $user->getSteamGames()))*/
+                "required" => "required",
+                "choices" => $this->getGames()))
             ->add('platform', EntityType::class, array(
                 'class' => 'AppBundle:Platform',
                 'query_builder' => function (PlatformRepository $pr) {
@@ -121,5 +121,53 @@ class GameGroupType extends AbstractType
         }
 
         return $date_now;
+    }
+
+    private function getGames() {
+        $games_array = array('Counter-Strike: Global Offensive' => 'Counter-Strike: Global Offensive',
+        'PLAYERUNKNOWN\'S BATTLEGROUNDS' => 'PLAYERUNKNOWN\'S BATTLEGROUNDS',
+        'Tom Clancy\'s Rainbow Six Siege' => 'Tom Clancy\'s Rainbow Six Siege',
+        'Rocket League' => 'Rocket League',
+        'Grand Theft Auto V' => 'Grand Theft Auto V',
+        'Team Fortress 2' => 'Team Fortress 2',
+        'ARK: Survival Evolved' => 'ARK: Survival Evolved',
+        'MONSTER HUNTER: WORLD' => 'MONSTER HUNTER: WORLD',
+        'Terraria' => 'Terraria',
+        'The Elder Scrolls Online' => 'The Elder Scrolls Online',
+        'Dead by Daylight' => 'Dead by Daylight',
+        'Fallout 4' => 'Fallout 4',
+        'Black Desert Online' => 'Black Desert Online',
+        'Paladins' => 'Paladins',
+        '7 Days to Die' => '7 Days to Die',
+        'Age of Empires II: HD Edition' => 'Age of Empires II: HD Edition',
+        'PAYDAY 2' => 'PAYDAY 2',
+        'Left 4 Dead 2' => 'Left 4 Dead 2',
+        'Assassin\'s Creed Odyssey' => 'Assassin\'s Creed Odyssey',
+        'Tom Clancy\'s The Division' => 'Tom Clancy\'s The Division',
+        'Far Cry 5' => 'Far Cry 5',
+        'For Honor' => 'For Honor',
+        'Fifa 19' => 'Fifa 19',
+        'Apex' => 'Apex',
+        'Dying Light' => 'Dying Light',
+        'Tom Clancy\'s Ghost Recon® Wildlands' => 'Tom Clancy\'s Ghost Recon® Wildlands',
+        'Fornite' => 'Fornite',
+        'Red Dead Redemption 2' => 'Red Dead Redemption 2',
+        'Call of Duty: Black Ops 4' => 'Call of Duty: Black Ops 4',
+        'Forza Horizon 4' => 'Forza Horizon 4',
+        'Battlefield V' => 'Battlefield V',
+        'NBA 2K19' => 'NBA 2K19',
+        'PES 2019' => 'PES 2019',
+        'Destiny 2' => 'Destiny 2',
+        'Gear of War 4' => 'Gear of War 4',
+        'Overwatch' => 'Overwatch',
+        'Minecraft' => 'Minecraft',
+        'Forza Motorsport 7' => 'Forza Motorsport 7',
+        'Battlefield 1' => 'Battlefield 1',
+        'Assassin\'s Creed Origins' => 'Assassin\'s Creed Origins',
+        'Star Wars Battlefront II' => 'Star Wars Battlefront II',
+        'Star Wars Battlefront II' => 'Star Wars Battlefront II');
+        asort($games_array);
+
+        return $games_array;
     }
 }

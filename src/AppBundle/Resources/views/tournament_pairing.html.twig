@@ -45,6 +45,7 @@
                                 <thead class="thead-dark">
                                     <tr>
                                         <th scope="col">Emparejamiento</th>
+                                        <th scopet="col">Cuentas de juego</th>
                                         <th scope="col">Ganador</th>
                                         <th scope="col">Acciones</th>
                                     </tr>
@@ -53,6 +54,7 @@
                                     {% for partida in pairings['Ronda'][loop.index] %}
                                     <tr>
                                         <td><b>{{ partida['playerOne'] }}</b> vs <b>{{ partida['playerTwo'] }}</b></td>
+                                        <td><b>{{ partida['account_pOne'] |raw }}</b> vs <b>{{ partida['account_pTwo']|raw }}</b></td>
                                         <td>
                                             {% if partida['winner'] is defined and partida['winner'] is not null %}
                                             {{ partida['winner'] }}

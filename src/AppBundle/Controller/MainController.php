@@ -18,18 +18,22 @@ class MainController extends Controller
      */
     public function loginAction(AuthenticationUtils $authenticationUtils) {
         
-        // Se obtienen los errores generados en el último intento de autenticación
-        $error = $authenticationUtils->getLastAuthenticationError();
-        
-        // Con esta variable almacenamos el último nombre de usuario que se ha introducido
-        // a fin de mostrarlo a modo de recordatorio
-        $lastUsername = $authenticationUtils->getLastUsername();
+        if($this->container->get('security.token_storage')->getToken()->getUser() != "anon.")
+            return $this->redirectToRoute('homepage');
+        else {
+            // Se obtienen los errores generados en el último intento de autenticación
+            $error = $authenticationUtils->getLastAuthenticationError();
+            
+            // Con esta variable almacenamos el último nombre de usuario que se ha introducido
+            // a fin de mostrarlo a modo de recordatorio
+            $lastUsername = $authenticationUtils->getLastUsername();
 
-        // Renderizamos la vista pasandole los parámetros deseados
-        return $this->render('@App/index/homepage.html.twig', array(
-            'last_username' => $lastUsername,
-            'error'         => $error,
-        ));
+            // Renderizamos la vista pasandole los parámetros deseados
+            return $this->render('@App/index/homepage.html.twig', array(
+                'last_username' => $lastUsername,
+                'error'         => $error,
+            ));
+        }
     }
 
     /**
@@ -37,7 +41,10 @@ class MainController extends Controller
      * @Route("/reset_password", name="reset_password")
      */
     public function resetPasswordView() {
-        return $this->render('@App/index/reset_password.html.twig');
+        if($this->container->get('security.token_storage')->getToken()->getUser() != "anon.")
+            return $this->redirectToRoute('homepage');
+        else 
+            return $this->render('@App/index/reset_password.html.twig');
     }
 
     /**
@@ -57,7 +64,7 @@ class MainController extends Controller
         // Comprobamos que existe la variable a fin de evitar que se pueda acceder a la función 
         // introduciendo directamente la ruta en la barra de direcciones (lo que daría error sin dicha
         // comprobación)
-        if($email) {
+        if($_SERVER['REQUEST_METHOD'] === 'POST') {
             $user = $repository_user->findOneBy(array('email' => $email)); // Objeto User poseedor del email
             if($user) { // En caso de que el correo electrónico no este registrado no se reiniciará la contraseña
                 $random_password = md5(random_bytes(10)); // Generamos una nueva contraseña aleatoria

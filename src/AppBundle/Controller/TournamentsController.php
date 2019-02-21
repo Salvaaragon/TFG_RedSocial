@@ -284,16 +284,30 @@ class TournamentsController extends Controller
             
             $tournament_participants = $tournament_query->getParticipants()->toArray();
 
+            $game_platform = $tournament_query->getGame()->getPlatform()->getName();
+
             foreach($tournament_participants as $user) {
+                switch($game_platform) {
+                    case 'PlayStation':
+                        $platform_account = "<i class='fab fa-playstation'></i> ".$user->getPsnId();
+                    break;
+                    case 'Xbox':
+                        $platform_account = "<i class='fab fa-xbox'></i> ".$user->getXboxId();
+                    break;
+                    case 'Steam':
+                        $platform_account = "<i class='fab fa-steam'></i> ".$user->getSteamId();
+                    break;
+                }
                 $participants[] = array (
-                    'username' => $user->getUsername()
+                    'username' => $user->getUsername(),
+                    'platform_account' => $platform_account
                 );
 
                 if($user->getUsername() == $logged_user->getUsername())
                     $registered = true;
             }
 
-            switch($tournament_query->getGame()->getPlatform()->getName()) {
+            switch($game_platform) {
                 case 'PlayStation':
                     $platform_account_registered = $logged_user->getPsnId() != null ? true : false;
                     break;
@@ -463,6 +477,21 @@ class TournamentsController extends Controller
                         'round'=>$i+1));
                 foreach($tournament_pairings as $pair) {
 
+                    switch($tournament_query->getGame()->getPlatform()->getName()) {
+                        case 'PlayStation':
+                            $platform_account_plone = "<i class='fab fa-playstation'></i> ".$pair->getPlayerOne()->getPsnId();
+                            $platform_account_pltwo = "<i class='fab fa-playstation'></i> ".$pair->getPlayerTwo()->getPsnId();
+                            break;
+                        case 'Xbox':
+                            $platform_account_plone = "<i class='fab fa-xbox'></i> ".$pair->getPlayerOne()->getXboxId();
+                            $platform_account_pltwo = "<i class='fab fa-xbox'></i> ".$pair->getPlayerTwo()->getXboxId();
+                        break;
+                        case 'Steam':
+                            $platform_account_plone = "<i class='fab fa-steam'></i> ".$pair->getPlayerOne()->getSteamId();
+                            $platform_account_pltwo = "<i class='fab fa-steam'></i> ".$pair->getPlayerTwo()->getSteamId();
+                        break;
+                    }
+
                     $winner = $pair->getWinner();
                     if(isset($winner))
                         $winner = $pair->getWinner()->getUsername();
@@ -479,7 +508,9 @@ class TournamentsController extends Controller
                             'resultPOne' => $pair->getResultPlayerOne(),
                             'resultPTwo' => $pair->getResultPlayerTwo(),
                             'winner' => $winner,
-                            'round' => $pair->getRound()
+                            'round' => $pair->getRound(),
+                            'account_pOne' => $platform_account_plone,
+                            'account_pTwo' => $platform_account_pltwo
                         );
                     else {
                         $direct_pass = array(
@@ -608,7 +639,7 @@ class TournamentsController extends Controller
     }
 
     /**
-     * @Route("download_image_pairing/{image_name}", name="download_img_pairing", options={"expose"=true})
+     * @Route("/download_image_pairing/{image_name}", name="download_img_pairing", options={"expose"=true})
      */
     public function downloadImageResult($image_name) {
 

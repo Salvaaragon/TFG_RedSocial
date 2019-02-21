@@ -130,6 +130,7 @@ class User implements AdvancedUserInterface
         $this->game_groups = new ArrayCollection();
         $this->messages = new ArrayCollection();
         $this->posts = new ArrayCollection();
+        $this->setImage("default_profile.png");
     }
 
     /**
@@ -404,7 +405,7 @@ class User implements AdvancedUserInterface
         return $this->isActive;
     }
 
-    public function getSteamGames() {
+    /*public function getSteamGames() {
         if(isset($this->steamId)) {
             $json_userapikey = file_get_contents("http://api.steampowered.com/ISteamUser/ResolveVanityURL/v0001/?key=B04E1EB884D3702EBB032D4B90E97166&vanityurl=".$this->steamId);
             $decode_json_userapikey = json_decode($json_userapikey, true);
@@ -430,6 +431,6 @@ class User implements AdvancedUserInterface
             }
             return $games_name;
         }
-    }
+    }*/
 }
 

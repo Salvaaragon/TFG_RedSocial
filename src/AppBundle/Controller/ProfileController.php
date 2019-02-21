@@ -363,15 +363,37 @@ class ProfileController extends Controller
             'user_image' => $user->getImage()));
     }
 
-    public function changeImage(Request $request = null) {
-        $user = $this->container->get('security.token_storage')->getToken()->getUser();
-        $entityManager = $this->getDoctrine()->getManager();
-        if($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $image = $request->request->get('image_file');
-        $user->setImage($image);
-        $entityManager->flush();
+    /**
+     * @Route("/change_image", name="change_image", options={"expose"=true}, requirements={"methods":"POST"})
+     */
+    public function changeImage(Request $request) {
 
-        return $this->redirectToRoute('my_data_profile');
+        $repository_user = $this->getDoctrine()->getRepository(User::class);
+        $entityManager = $this->getDoctrine()->getManager();
+
+        if($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $image = $request->files->get('input_image');
+            $id_user = $request->request->get('id_user');
+
+            $user = $repository_user->find($id_user);
+
+            if($user) {
+
+                $ext = $image->guessExtension();
+                $file_name = time().".".$ext;
+                $image->move("uploads/profile_images",$file_name);
+                $user->setImage($file_name);
+                $entityManager->flush();
+
+                $this->addFlash(
+                    'notice',
+                    'Su imagen ha sido modificada correctamente.'
+                );
+
+                return $this->redirectToRoute('my_data_profile');
+            }
+            else
+                return $this->render('@App/error_page.html.twig');
         }
         else
             return $this->render('@App/error_page.html.twig');

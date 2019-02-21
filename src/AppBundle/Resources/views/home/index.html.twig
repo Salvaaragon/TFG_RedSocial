@@ -9,7 +9,7 @@
           <div class="col-lg-12">
            <div class="row justify-content-center">
             <div class="col-lg-12 col-sm-6 text-center mb-3 user_info">
-                <img class="rounded-circle img-fluid d-block mx-auto profile_img" src="{{ asset('bundles/app/image/default_profile.png') }}" alt="">
+                <img class="rounded-circle img-fluid d-block mx-auto profile_img" src="{{ asset('uploads/profile_images/' ~ app.user.image) }}" alt="">
                 <h2>{{ app.user.profileName}}</h2>
                 <small>{{ app.user.username }}</small>
             </div>
@@ -90,7 +90,7 @@
                 <div class="card-body">
                     <div class="post">
                         <div class="pull-left">
-                            <img class="rounded-circle img-fluid d-block mx-auto post_user_img" src="{{ asset('bundles/app/image/default_profile.png') }}" alt="">
+                            <img class="rounded-circle img-fluid d-block mx-auto post_user_img" src="{{ asset('uploads/profile_images/' ~ post.user.image) }}" alt="">
                         </div>
                         <div class="post_user_datetime"><b><a href="{{ path('profile',{'username':post.user.username}) }}">{{ post.user.profileName }} </a></b>  {{ post.user.username }} <br> {{ post.datetime }}</div>
                         <div class="post_text"><p>{{ post.text }}</p></div>

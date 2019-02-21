@@ -9,25 +9,32 @@
             <div class="col-lg-12">
                 <div class="row justify-content-center">
                 <div class="col-lg-12 col-sm-6 text-center mb-3 user_info">
-                    <img class="rounded-circle img-fluid d-block mx-auto profile_img" src="{{ asset('bundles/app/image/default_profile.png') }}" alt="">
+                    <img class="rounded-circle img-fluid d-block mx-auto profile_img" src="{{ asset('uploads/profile_images/' ~ user.image) }}" alt="">
                     <h2>{{ user.profileName }}</h2>
                     <small>{{ user.username }}</small>
-                    <div class="row col-xs-6 justify-content-center">
-                        <div class="user_data_element"><a href="{{ path('followers_user', { 'username' : user.username }) }}">Seguidores<br><b>{% if numfollowers is defined %} {{ numfollowers }} {% else %} 0 {% endif %}</b></a></div>
-                        <div class="user_data_element"><a href="{{ path('followings_user', { 'username' : user.username }) }}">Siguiendo<br><b>{% if numfollowing is defined %} {{ numfollowing }} {% else %} 0 {% endif %}</b></a></div>
-                        <div class="user_data_element"><a class="current_page">Publicaciones<br><b>{% if numposts is defined %} {{ numposts }} {% else %} 0 {% endif %}</b></a></div>
-                        <div class="user_data_element"><a href="{{ path('likes_user', { 'username' : user.username }) }}">Me gusta<br><b>{% if numlikes is defined %} {{ numlikes }} {% else %} 0 {% endif %}</b></a></div>
-                        <div class="user_data_element">Puntuación<br><b>0</b></div>
-                    </div>
                 </div>
                 </div>
             </div>
             </div>
         </div>
     </header>
-
+    <br>
+    <div class="col-lg-6 offset-lg-3">
+        <div class="card">
+            <div class="card-body">
+                <ul class="list-inline">
+                    <li class="list-inline-item user_data_element"><a href="{{ path('followers_user', { 'username' : user.username }) }}">Seguidores<br><b>{% if numfollowers is defined %} {{ numfollowers }} {% else %} 0 {% endif %}</b></a></li>
+                    <li class="list-inline-item user_data_element"><a href="{{ path('followings_user', { 'username' : user.username }) }}">Siguiendo<br><b>{% if numfollowing is defined %} {{ numfollowing }} {% else %} 0 {% endif %}</b></a></li>
+                    <li class="list-inline-item user_data_element"><a class="current_page">Publicaciones<br><b>{% if numposts is defined %} {{ numposts }} {% else %} 0 {% endif %}</b></a></li>
+                    <li class="list-inline-item user_data_element"><a href="{{ path('likes_user', { 'username' : user.username }) }}">Me gusta<br><b>0</b></a></li>
+                    <li class="list-inline-item user_data_element">Puntuación<br><b>{{ puntuation }}</b></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+<div class="col-lg-12 col-sm-12">
     <div class="row">
-        <div class="col-lg-3">
+        <div class="col-lg-3 col-sm-12">
             <div class="card user_accounts">
                 <div class="card-header">
                     <h5><i class="fas fa-gamepad"></i> Cuentas de {{ user.username }}</h5>
@@ -50,7 +57,7 @@
             </div>
         </div>
 
-            <div class="col-lg-6">
+            <div class="col-lg-6 col-sm-12">
                 <div class="card followers_panel">
                     <div class="card-header">
                         <h5><i class="fas fa-user-friends"></i> Publicaciones de {{ user.username }}</h5>
@@ -60,7 +67,7 @@
                         {% for post in posts %}
                             <div class="post">
                         <div class="pull-left">
-                            <img class="rounded-circle img-fluid d-block mx-auto post_user_img" src="{{ asset('bundles/app/image/default_profile.png') }}" alt="">
+                            <img class="rounded-circle img-fluid d-block mx-auto post_user_img" src="{{ asset('uploads/profile_images/' ~ post.user.image) }}" alt="">
                         </div>
                         <div class="post_user_datetime"><b><a href="{{ path('profile',{'username':post.user.username}) }}">{{ post.user.profileName }} </a></b>  {{ post.user.username }} <br> {{ post.datetime }}</div>
                         <div class="post_text"><p>{{ post.text }}</p></div>
@@ -81,6 +88,7 @@
                     {% endif %}
                 </div>
             </div>
+            <div class="col-lg-2"></div>
     </div>
 </div>
 

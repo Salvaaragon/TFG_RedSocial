@@ -42,7 +42,35 @@ security:
             #form_login: ~
 
     access_control:
-        # require ROLE_ADMIN for /admin*
         - { path: ^/home, roles: [ROLE_USER, ROLE_MOD] }
-        - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/news, roles: [ROLE_USER, ROLE_MOD] }
+        - { path: ^/register, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/active_account, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/tournaments, roles: [ROLE_USER, ROLE_MOD] }
+        - { path: ^/tournaments_game, roles: [ROLE_USER, ROLE_MOD] }
+        - { path: ^/tournaments_game_historical, roles: [ROLE_USER, ROLE_MOD] }
+        - { path: ^/new_tournament, roles: ROLE_MOD }
+        - { path: ^/tournaments_new/create_tournament, roles: ROLE_MOD }
+        - { path: ^/tournament_info, roles: [ROLE_USER, ROLE_MOD] }
+        - { path: ^/pairing_generate, roles: ROLE_MOD }
+        - { path: ^/tournament_pairing, roles: [ROLE_USER, ROLE_MOD] }
+        - { path: ^/tournament_upload_result, roles: [ROLE_USER] }
+        - { path: ^/download_image_pairing, roles: ROLE_MOD }
+        - { path: ^/tournament_solve_pairing, roles: ROLE_MOD }
+        - { path: ^/tournament_close, roles: ROLE_MOD }
+        - { path: ^/tournament_register, roles: [ROLE_USER] }
+        - { path: ^/follow, roles: [ROLE_USER, ROLE_MOD] }
+        - { path: ^/unfollow, roles: [ROLE_USER, ROLE_MOD] }
+        - { path: ^/group, roles: [ROLE_USER, ROLE_MOD] }
+        - { path: ^/save_vote, roles: [ROLE_USER, ROLE_MOD] }
+        - { path: ^/profile, roles: [ROLE_USER, ROLE_MOD] }
+        - { path: ^/search, roles: [ROLE_USER, ROLE_MOD] }
+        - { path: ^/my_data_profile, roles: [ROLE_USER, ROLE_MOD] }
+        - { path: ^/modify_profile, roles: [ROLE_USER, ROLE_MOD] }
+        - { path: ^/change_image, roles: [ROLE_USER, ROLE_MOD] }
+        - { path: ^/rankings, roles: [ROLE_USER, ROLE_MOD] }
+        - { path: ^/filter_ranking, roles: [ROLE_USER, ROLE_MOD] }
+
+
+
+        

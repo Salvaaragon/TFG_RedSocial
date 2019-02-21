@@ -95,7 +95,7 @@
                 <div class="card-body">
                     {% if participants is defined and participants is not null %}
                         {% for participant in participants %}
-                            {{ participant.username }}<br>
+                            {{ participant.username }} - {{ participant.platform_account|raw }}<br>
                         {% endfor %}
                     {% else %}
                         Este torneo aún no posee participantes

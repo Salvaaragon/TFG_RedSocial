@@ -84,57 +84,37 @@
 
 
         <!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Cambiar imagen</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="kv-avatar">
-                <div class="file-loading">
-                    <input id="avatar-1" name="avatar-1" type="file" required>
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Cambiar imagen</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="form_change_image" action="{{path('change_image')}}" method="post" enctype="multipart/form-data">
+                    <input id="id_user" name="id_user" value="{{ app.user.id }}" type="hidden" readonly/>
+                    <input id="input_image" name="input_image" type="file" class="file" 
+                        data-language='es' 
+                        data-allowed-file-extensions= '["jpg", "gif", "png"]' 
+                        data-show-upload="true" 
+                        data-show-cancel="false" 
+                        data-show-preview="true" 
+                        data-msg-placeholder="Añadir imagen.." 
+                        data-max-image-width = "225"
+                        data-max-image-height = "225"
+                        data-min-image-width = "225"
+                        data-min-image-height = "225" required>
+                </div>
+                <div class="modal-footer">
+                    <button id="submit_image" type="submit" class="btn btn-primary">Subir</button>
+                    </form>
+                    <button type="submit" data-dismiss="modal" class="btn btn-secondary">Cancelar</button>
+                </div>
                 </div>
             </div>
-            <div class="kv-avatar-hint"><small>Select file < 1500 KB</small></div>
-            <div id="kv-avatar-errors-1" class="center-block" style="display:none"></div>
-      </div>
-      <div class="modal-footer">
-        <button id="submit_image" type="submit" class="btn btn-primary">Subir</button>
-        <button type="submit" data-dismiss="modal" class="btn btn-secondary">Cancelar</button>
-      </div>
-    </div>
-  </div>
-</div>
+        </div>
 
-{% endblock %}
-
-{% block javascripts %}
-<script>
-$("#avatar-1").fileinput({
-    overwriteInitial: true,
-    maxFileSize: 1500,
-    showClose: false,
-    showCaption: false,
-    browseLabel: '',
-    removeLabel: '',
-    browseIcon: '<i class="fas fa-folder-open"></i>',
-    removeIcon: '<i class="far fa-trash-alt"></i>',
-    removeTitle: 'Cancel or reset changes',
-    elErrorContainer: '#kv-avatar-errors-1',
-    msgErrorClass: 'alert alert-block alert-danger',
-    defaultPreviewContent: '<img src="{{ asset('uploads/profile_images/' ~ user_image) }}" alt="Tu avatar">',
-    layoutTemplates: {main2: '{preview} {remove} {browse}'},
-    allowedFileExtensions: ["jpg", "png", "jpeg"]
-});
-
-$('#submit_image').click(function() {
-    var data = {}
-    var image = $('#avatar-1).val();
-});
-
-</script>
 {% endblock %}

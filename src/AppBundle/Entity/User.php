@@ -338,7 +338,7 @@ class User implements AdvancedUserInterface
      *
      * @param string $image
      *
-     * @return Post
+     * @return User
      */
     public function setImage($image)
     {
@@ -358,6 +358,19 @@ class User implements AdvancedUserInterface
     }
 
     /**
+     * Set roles
+     * 
+     * @param string $roles
+     * 
+     * @return User
+     */
+    public function setRoles($roles) {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    /**
      * Get roles
      */
     public function getRoles()
@@ -367,6 +380,10 @@ class User implements AdvancedUserInterface
 
     /**
      * Set isActive
+     * 
+     * @param bool $isActive
+     * 
+     * @return User
      */
     public function setIsActive($isActive) {
         $this->isActive = $isActive;

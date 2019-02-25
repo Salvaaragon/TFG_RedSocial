@@ -60,7 +60,7 @@ class RankingsController extends Controller
                     return new Response("<p style='text-align: center; vertical-align: middle;'>No se han encontrado publicaciones en el intervalo introducido</p>");
                 break;
             case "voted_users":
-                $best_group_users = $repository_gamegroup_vote->getBestVotedUsers(new \Datetime($date_begin), new \Datetime($date_end));
+                $best_group_users = $repository_gamegroup_vote->getBestVotedUsers(new \Datetime($date_begin." 00:00:00"), new \Datetime($date_end." 23:59:59"));
                 foreach($best_group_users as $user_element) {
                     $user = $repository_user->find($user_element['id_user']);
                     $votedUsers[] = array(

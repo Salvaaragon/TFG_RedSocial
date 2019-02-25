@@ -135,7 +135,6 @@ class GameGroupType extends AbstractType
         'Terraria' => 'Terraria',
         'The Elder Scrolls Online' => 'The Elder Scrolls Online',
         'Dead by Daylight' => 'Dead by Daylight',
-        'Fallout 4' => 'Fallout 4',
         'Black Desert Online' => 'Black Desert Online',
         'Paladins' => 'Paladins',
         '7 Days to Die' => '7 Days to Die',
@@ -164,7 +163,6 @@ class GameGroupType extends AbstractType
         'Forza Motorsport 7' => 'Forza Motorsport 7',
         'Battlefield 1' => 'Battlefield 1',
         'Assassin\'s Creed Origins' => 'Assassin\'s Creed Origins',
-        'Star Wars Battlefront II' => 'Star Wars Battlefront II',
         'Star Wars Battlefront II' => 'Star Wars Battlefront II');
         asort($games_array);
 

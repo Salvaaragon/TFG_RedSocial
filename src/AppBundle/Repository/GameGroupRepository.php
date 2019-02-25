@@ -11,6 +11,8 @@ namespace AppBundle\Repository;
 class GameGroupRepository extends \Doctrine\ORM\EntityRepository
 {
     public function getNumGroupsUser($id_user) {
+        setlocale(LC_ALL, 'es_ES');
+        date_default_timezone_set('Europe/Madrid');
         return $query = $this->getEntityManager()
             ->createQuery(
                 'SELECT count(g.id) FROM AppBundle:GameGroup g 
@@ -21,6 +23,8 @@ class GameGroupRepository extends \Doctrine\ORM\EntityRepository
     }
 
     public function getAllGroupsActiveNotPlaying() {
+        setlocale(LC_ALL, 'es_ES');
+        date_default_timezone_set('Europe/Madrid');
         $query = $this->getEntityManager()
                 ->createQueryBuilder();
 
@@ -37,6 +41,8 @@ class GameGroupRepository extends \Doctrine\ORM\EntityRepository
     }
 
     public function getAllGroupsActivePlatformNotPlaying($id_platform) {
+        setlocale(LC_ALL, 'es_ES');
+        date_default_timezone_set('Europe/Madrid');
         $query = $this->getEntityManager()
                 ->createQueryBuilder();
 
@@ -54,6 +60,8 @@ class GameGroupRepository extends \Doctrine\ORM\EntityRepository
     }
 
     public function getGroupsPlatformUserpart($id_platform, $id_user) {
+        setlocale(LC_ALL, 'es_ES');
+        date_default_timezone_set('Europe/Madrid');
         $query = $this->getEntityManager()
                 ->createQueryBuilder();
 
@@ -70,6 +78,8 @@ class GameGroupRepository extends \Doctrine\ORM\EntityRepository
     }
 
     public function getGroupsUserpart($id_user) {
+        setlocale(LC_ALL, 'es_ES');
+        date_default_timezone_set('Europe/Madrid');
         $query = $this->getEntityManager()
                 ->createQueryBuilder();
 
@@ -85,6 +95,8 @@ class GameGroupRepository extends \Doctrine\ORM\EntityRepository
     }
 
     public function getAllGroupsPlatformUser($id_platform, $id_user) {
+        setlocale(LC_ALL, 'es_ES');
+        date_default_timezone_set('Europe/Madrid');
         $query = $this->getEntityManager()
         ->createQueryBuilder();
 
@@ -100,6 +112,8 @@ class GameGroupRepository extends \Doctrine\ORM\EntityRepository
     }
 
     public function getAllGroupsUser($id_user) {
+        setlocale(LC_ALL, 'es_ES');
+        date_default_timezone_set('Europe/Madrid');
         $query = $this->getEntityManager()
         ->createQueryBuilder();
 
@@ -114,6 +128,8 @@ class GameGroupRepository extends \Doctrine\ORM\EntityRepository
     }
 
     public function getAllPartPlatformUser($id_platform, $id_user) {
+        setlocale(LC_ALL, 'es_ES');
+        date_default_timezone_set('Europe/Madrid');
         $query = $this->getEntityManager()
         ->createQueryBuilder();
 
@@ -130,6 +146,8 @@ class GameGroupRepository extends \Doctrine\ORM\EntityRepository
     }
 
     public function getAllPartUser($id_user) {
+        setlocale(LC_ALL, 'es_ES');
+        date_default_timezone_set('Europe/Madrid');
         $query = $this->getEntityManager()
         ->createQueryBuilder();
 
@@ -145,6 +163,8 @@ class GameGroupRepository extends \Doctrine\ORM\EntityRepository
     }
 
     public function getAllGroupsPlayingPlatform($id_platform) {
+        setlocale(LC_ALL, 'es_ES');
+        date_default_timezone_set('Europe/Madrid');
         $query = $this->getEntityManager()
         ->createQueryBuilder();
 
@@ -162,6 +182,8 @@ class GameGroupRepository extends \Doctrine\ORM\EntityRepository
     }
 
     public function getAllGroupsPlaying() {
+        setlocale(LC_ALL, 'es_ES');
+        date_default_timezone_set('Europe/Madrid');
         $query = $this->getEntityManager()
         ->createQueryBuilder();
 

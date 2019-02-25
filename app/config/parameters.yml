@@ -10,3 +10,9 @@ parameters:
     mailer_user: soporte.gamingtogether@gmail.com
     mailer_password: tfg_redsocial2018
     secret: 3d6a83b217b3918766a5282b6fbf18e690f91720
+    test_database_driver: pdo_mysql
+    test_database_host: localhost
+    test_database_port: 3306
+    test_database_name: tfg_redsocial_test
+    test_database_user: root
+    test_database_password: mysql

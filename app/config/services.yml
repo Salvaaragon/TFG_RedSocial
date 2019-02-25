@@ -33,3 +33,7 @@ services:
     # AppBundle\Service\ExampleService:
     #     arguments:
     #         $someArgument: 'some_value'
+    
+    Tests\AppBundle\DataFixtures\:
+        resource: '../../tests/AppBundle/DataFixtures'
+        tags: ['doctrine.fixture.orm']

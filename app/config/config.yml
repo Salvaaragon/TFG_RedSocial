@@ -48,7 +48,7 @@ twig:
 # Doctrine Configuration
 doctrine:
     dbal:
-        default_connection: test
+        default_connection: default
         connections:
             default:
                 driver: pdo_mysql

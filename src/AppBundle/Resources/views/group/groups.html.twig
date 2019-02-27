@@ -26,7 +26,7 @@
     {% endfor %}
  
     <div class="row platform_filter">
-        <div class="col-3">
+        <div class="col-lg-3">
             <select class="custom-select" id="select_filter_group">
                 <option selected value="all">Todos los grupos</option>
                 <option value="mygroups">Mis grupos</option>
@@ -36,7 +36,7 @@
                 <option value="groups_playing">Grupos en linea</option>
             </select> 
         </div>
-        <div class="col-3">
+        <div class="col-lg-3">
             <select class="custom-select" id="select_filter_platform">
                 <option selected value="0">Todas las plataformas</option>
                 {% for platform in platforms %}
@@ -44,8 +44,8 @@
                 {% endfor %}
             </select>
         </div>
-        <div class="col-4"></div>
-        <div class="col-2"><button class="btn btn-primary btn-block" id="new_group_btn" data-toggle="modal" data-target="#exampleModal">Nuevo grupo</button></div>
+        <div class="col-lg-4"></div>
+        <div class="col-lg-2"><button class="btn btn-primary btn-block" id="new_group_btn" data-toggle="modal" data-target="#exampleModal">Nuevo grupo</button></div>
     </div>
       
     <div id="loading_div" class="loading_group_div">Cargando grupos...</div>
@@ -128,6 +128,7 @@
         </div>
     </div>
 
+    <!-- Chat group modal -->
     <div class="modal fade" id="modalChat"  data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modalChatLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -160,13 +161,17 @@ $(document).ready(function(){
     
     var cargando = $("#loading_div");
 
+    // Filtro de la plataforma
     $('#select_filter_platform').val(0);
+    // Filtro de tipo de los grupos
     $('#select_filter_group').val('all');
 
+    // Cargamos la lista de grupos en base al filtro
     cargando.show();
-    $('#div_dinamico').load(Routing.generate('groups_json', { filter_group: 'all', id_platform: 0 }));
+    $('#div_dinamico').load(Routing.generate('groups_filter', { filter_group: 'all', id_platform: 0 }));
     cargando.hide();
 
+    // Si cambia el filtro de grupo se genera la nueva lista de grupos
     $('#select_filter_group').on('change', function() {
         var filter_group = $('#select_filter_group').val();
 
@@ -174,7 +179,7 @@ $(document).ready(function(){
         cargando.show();
         
         $.ajax({  
-            url: Routing.generate('groups_json', { filter_group: filter_group, id_platform: 0 }),  
+            url: Routing.generate('groups_filter', { filter_group: filter_group, id_platform: 0 }),  
             success: function(data) {  
                 cargando.hide();
                 $('#div_dinamico').html(data); 
@@ -182,7 +187,8 @@ $(document).ready(function(){
             }  
         });  
     });  
-  
+    
+    // Si cambia el filtro de la plataforma se genera la nueva lista de grupos
     $('#select_filter_platform').on('change', function() {
         var platform = $('#select_filter_platform').val();
         var filter_group = $('#select_filter_group').val();
@@ -191,7 +197,7 @@ $(document).ready(function(){
         cargando.show();
         
         $.ajax({  
-            url: Routing.generate('groups_json', { filter_group: filter_group, id_platform: platform }),  
+            url: Routing.generate('groups_filter', { filter_group: filter_group, id_platform: platform }),  
             success: function(data) {  
                 cargando.hide();
                 $('#div_dinamico').html(data); 
@@ -202,6 +208,8 @@ $(document).ready(function(){
     
 });
 
+// Al cargar el modal de información del grupo se modifican los datos que allí aparecen en base al grupo
+// y los botones en función de si el usuario es líder o participante (o no)
 $('#group_modal').on('show.bs.modal', function (event) {
     var $modal = $(this);
     var game = $(event.relatedTarget).data('game');
@@ -213,6 +221,7 @@ $('#group_modal').on('show.bs.modal', function (event) {
     var max_part = $(event.relatedTarget).data('part');
     var numpart = $(event.relatedTarget).data('numpart');
     var isActive = $(event.relatedTarget).data('active');
+    var is_playing = $(event.relatedTarget).data('isplaying');
     var loggedUser = "{{ app.user.username }}";
     var btn_signin = document.getElementById('group_signUp');
     var btn_signdown = document.getElementById('group_signDown');
@@ -278,7 +287,7 @@ $('#group_modal').on('show.bs.modal', function (event) {
         else {
             btn_chat.style.display = "none";
             btn_chat.disabled = true;
-            if(rest_part != 0) {
+            if(rest_part > 0 && !is_playing) {
                 btn_signin.style.display = "inline";
                 btn_signin.disabled = false;
             }
@@ -306,14 +315,16 @@ $('#group_modal').on('show.bs.modal', function (event) {
     $modal.find('.modal-footer .group_date').html('<b>Comienzo: </b><br>'+datetime);
 });
 
+// Al cerrar el modal desaparecen algunos botones y dejan de poder usarse
 $('#group_modal').on('hide.bs.modal', function(event) {
-    group_delete.style.display = "inline";
+    group_delete.style.display = "none";
     confirm_delete.style.display = "none";
-    group_signDown.style.display = "inline";
+    group_signDown.style.display = "none";
     confirm_signdown.style.display="none";
-    group_chat.style.display = "inline";
+    group_chat.style.display = "none";
 });
 
+// Si se pulsa en eliminar grupo aparece una confirmación
 $('#group_delete').on('click',function(event) {
     var group_delete = document.getElementById('group_delete');
     var confirm_delete = document.getElementById('confirm_delete');
@@ -323,6 +334,7 @@ $('#group_delete').on('click',function(event) {
     group_chat.style.display = "none";  
 });
 
+// Y en caso de confirmarla se cierra el grupo y se recarga la página
 $('#group_delete_accept').on('click',function(event) {
     var id_group = $('#group_id_value').val();
 
@@ -336,12 +348,14 @@ $('#group_delete_accept').on('click',function(event) {
     });
 });
 
+// En caso de cancelar el borrado se vuelven a mostrar los botones iniciales
 $('#group_delete_cancel').on('click', function(event) {
     group_delete.style.display = "inline";
     confirm_delete.style.display = "none";
     group_chat.style.display = "inline";
 });
 
+// Pulsación en el botón de inscripción en el grupo
 $('#group_signUp').on('click', function(event) {
     var id_group = $('#group_id_value').val();
     var loggedUser = "{{ app.user.id }}";
@@ -356,6 +370,7 @@ $('#group_signUp').on('click', function(event) {
     });
 });
 
+// Pulsación en el botón de desinscripción en el grupo
 $('#group_signDown').on('click',function(event) {
     var group_signDown = document.getElementById('group_signDown');
     var confirm_signdown = document.getElementById('confirm_signdown');
@@ -365,6 +380,7 @@ $('#group_signDown').on('click',function(event) {
     group_chat.style.display = "none";  
 });
 
+// Si el usuario acepta, deja de estar inscrito en el grupo y se recarga la página
 $('#group_signdown_accept').on('click',function(event) {
     var id_group = $('#group_id_value').val();
 
@@ -378,12 +394,14 @@ $('#group_signdown_accept').on('click',function(event) {
     });
 });
 
+// Si cancela vuelven a aparecen los botones iniciales
 $('#group_signdown_cancel').on('click', function(event) {
     group_signDown.style.display = "inline";
     confirm_signdown.style.display = "none";
     group_chat.style.display = "inline";
 });
 
+// Se muestra el chat grupal; que en caso de ser un grupo activo se irá recargando
 $('#group_chat').on('click', function(event) {
     var id_group = $('#group_id_value').val();
     var group_active = $('#active_group').val();
@@ -403,6 +421,7 @@ $('#group_chat').on('click', function(event) {
 
     $('#modalChat').modal('show');
 
+    // Cargamos los mensajes desde el controlador
     function charge_messages() {
         $.ajax({  
             url: Routing.generate('get_messages', { id_group: id_group }),  
@@ -412,12 +431,14 @@ $('#group_chat').on('click', function(event) {
         });
     }
 
+    // Cierre del chat
     $('#close_chat_btn').on('click', function(event) {
         clearInterval(intervalrepeat);
         $('#message_field').val("");
         $('#div_messages').html("");
     });
 
+    // Enviamos un mensaje, llamando a la función del controlador que se encarga de procesarlo
     $('#send_message').on('click', function(event) {
         var data = {}
         var msg;

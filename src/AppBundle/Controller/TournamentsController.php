@@ -30,15 +30,16 @@ class TournamentsController extends Controller
         $repository_platform = $this->getDoctrine()->getRepository(Platform::class);
         $repository_tournament = $this->getDoctrine()->getRepository(Tournament::class);
 
-        if($platform == "todos")
+        if($platform == "todos") // Filtro por todas las plataformas
             $game_query = $repository_game->findAll();
-        else {
+        else { // Filtro por plataforma
             $platform_id = $repository_platform->findBy(array('name' => $platform));
             $game_query = $repository_game->findBy(array('platform' => $platform_id));
         }
 
-        foreach($game_query as $game) {
+        foreach($game_query as $game) { // Creamos el array con los juegos
 
+            // Obtenemos la plataforma del juego actual
             $platform_game = $repository_platform->find($game->getPlatform());
 
             $games[] = array(
@@ -51,6 +52,7 @@ class TournamentsController extends Controller
             );
         }
 
+        // Obtenemos todas las plataformas existentes
         $platform_query = $repository_platform->findAll();
 
         foreach($platform_query as $p) {
@@ -71,28 +73,35 @@ class TournamentsController extends Controller
         if($form->isSubmitted()) {
             
             if (count($errors) > 0) {
-                return $this->render('@App/tournaments.html.twig', array(
+                return $this->render('@App/tournaments/tournaments.html.twig', array(
                     'errors' => $errors, 'form' => $form->createView()
                 ));
             } else {
+                $query_platform = $repository_platform->find($form->get('platform')->getData());
+                $query_game = $repository_game->findOneBy(
+                    array('name' => str_replace(" ", "_",$form->get('name')->getData()), 'platform' => $query_platform)
+                );
+                if($query_game == null) { // Si no existe ya un juego con ese nombre y plataforma se crea
+                    // Se obtiene el archivo de la imagen
+                    $file = $form["image"]->getData();
+                    $ext = $file->guessExtension();
+                    $file_name = time().".".$ext;
+                    $file->move("uploads/games",$file_name);
 
-                // upload file
-                $file = $form["image"]->getData();
-                $ext = $file->guessExtension();
-                $file_name = time().".".$ext;
-                $file->move("uploads/games",$file_name);
-
-                $game->setImage($file_name);
-                $game->setName(str_replace(" ", "_", $game->getName()));
-                $entityManager = $this->getDoctrine()->getManager();
-                $entityManager->persist($game);
-                $entityManager->flush();
-                $this->get('session')->getFlashBag()->add('notice', 'Juego añadido correctamente');
+                    $game->setImage($file_name);
+                    $game->setName(str_replace(" ", "_", $game->getName())); // reemplazamos los espacios por _ para una mejor muestra en las direcciones
+                    $entityManager = $this->getDoctrine()->getManager();
+                    $entityManager->persist($game);
+                    $entityManager->flush();
+                    $this->get('session')->getFlashBag()->add('notice', 'Juego añadido correctamente');
+                }
+                else  // Si ya existe el juego se muestra un mensaje de error
+                    $this->get('session')->getFlashBag()->add('error', 'Juego ya existente');
                 return $this->redirectToRoute('tournaments', array('platform' => $platform));
             }
         }
 
-        return $this->render('@App/tournaments.html.twig', 
+        return $this->render('@App/tournaments/tournaments.html.twig', 
             array(
                 "form" => $form->createView(),
                 "games" => isset($games) ? $games : null,
@@ -102,17 +111,18 @@ class TournamentsController extends Controller
     
 
     /**
-     * @Route("/tournaments_game/{game_name}/{page}", name="game", options={"expose"=true}, defaults={"page":1}, requirements={"page":"\d+"})
+     * @Route("/tournaments_game/{id_game}/{page}", name="game", options={"expose"=true}, defaults={"page":1}, requirements={"page":"\d+"})
+     * Función que genera la vista con la lista de torneos de un juego
      */
-    public function gameAction(Request $request, $game_name, $page) {
+    public function gameAction(Request $request, $id_game, $page) {
         setlocale(LC_ALL, 'es_ES');
         $repository_tournament = $this->getDoctrine()->getRepository(Tournament::class);
         $repository_game = $this->getDoctrine()->getRepository(Game::class);
 
-        $game_query = $repository_game->findOneBy(array('name' => $game_name));
+        $game_query = $repository_game->find($id_game);
 
-        if($game_query && $page > 0) {
-            if($repository_tournament->findOneBy(array('game' => $game_query->getId()))) {
+        if($game_query && $page > 0) { // En caso de que el juego exista y la página sea mayor que 0
+            if($repository_tournament->findOneBy(array('game' => $game_query->getId(), 'isActive' => true))) { // Si existen torneos se hace la consulta
                 $pageSize=10;
                 $paginator=$repository_tournament->findByPaginateTournaments($pageSize,$page, $game_query->getId());
                 $totalItems = count($paginator);
@@ -122,10 +132,11 @@ class TournamentsController extends Controller
             $game = array(
                 'name_normalized' => str_replace("_", " ", $game_query->getName()),
                 'name' => $game_query->getName(),
-                'platform' => $game_query->getPlatform()->getName()
+                'platform' => $game_query->getPlatform()->getName(),
+                'id' => $game_query->getId()
             );
 
-            return $this->render('@App/game_tournament.html.twig', 
+            return $this->render('@App/tournaments/game_tournament.html.twig', 
             array(
                 'tournaments' => isset($paginator) ? $paginator : null, 
                 'game' => isset($game) ? $game : null, 
@@ -139,30 +150,32 @@ class TournamentsController extends Controller
     }
 
     /**
-     * @Route("/tournaments_game_historical/{game_name}/{page}", name="game_historical", options={"expose"=true}, defaults={"page":1}, requirements={"page":"\d+"})
+     * @Route("/tournaments_game_historical/{id_game}/{page}", name="game_historical", options={"expose"=true}, defaults={"page":1}, requirements={"page":"\d+"})
+     * Función que genera la vista con la lista de torneos ya realizados de un juego
      */
-    public function gameHistoricalAction(Request $request, $game_name, $page) {
+    public function gameHistoricalAction(Request $request, $id_game, $page) {
         setlocale(LC_ALL, 'es_ES');
         $repository_tournament = $this->getDoctrine()->getRepository(Tournament::class);
         $repository_game = $this->getDoctrine()->getRepository(Game::class);
 
-        $game_query = $repository_game->findOneBy(array('name' => $game_name));
+        $game_query = $repository_game->find($id_game);
 
-        if($game_query && $page > 0) {
-            if($repository_tournament->findOneBy(array('game' => $game_query->getId()))) {
+        if($game_query && $page > 0) { // Si existe el juego y la página es distinta a 0
+            if($repository_tournament->findOneBy(array('game' => $game_query->getId(), 'isActive' => false))) {
                 $pageSize=10;
                 $paginator=$repository_tournament->findByPaginateHistoricalTournaments($pageSize,$page, $game_query->getId());
                 $totalItems = count($paginator);
                 $pagesCount = ceil($totalItems / $pageSize);
-            }
+            } // Si existen torneos se hace la consulta
 
             $game = array(
                 'name_normalized' => str_replace("_", " ", $game_query->getName()),
                 'name' => $game_query->getName(),
-                'platform' => $game_query->getPlatform()->getName()
+                'platform' => $game_query->getPlatform()->getName(),
+                'id' => $game_query->getId()
             );
 
-            return $this->render('@App/game_tournament.html.twig', 
+            return $this->render('@App/tournaments/game_tournament.html.twig', 
                 array(
                     'tournaments' => isset($paginator) ? $paginator : null, 
                     'game' => $game, 
@@ -177,20 +190,22 @@ class TournamentsController extends Controller
 
 
     /**
-     * @Route("/new_tournament/{game_name}", name="new_tournament", options={"expose"=true})
+     * @Route("/new_tournament/{id_game}", name="new_tournament", options={"expose"=true})
+     * Función que muestra la vista de nuevos torneos de un juego
      */
-    public function newTournamentAction(Request $request, $game_name) {
+    public function newTournamentAction(Request $request, $id_game) {
         $repository_game = $this->getDoctrine()->getRepository(Game::class);
 
-        $game_query = $repository_game->findOneBy(array('name' => $game_name));
-        if($game_query) {
+        $game_query = $repository_game->find($id_game);
+        if($game_query) { // Si no existe el juego se muestra la página de error
             $game = array(
                 'name_normalized' => str_replace("_", " ", $game_query->getName()),
                 'name' => $game_query->getName(),
-                'platform' => $game_query->getPlatform()->getName()
+                'platform' => $game_query->getPlatform()->getName(),
+                'id' => $game_query->getId()
             );
             
-            return $this->render('@App/new_tournament.html.twig', array('game' => $game));
+            return $this->render('@App/tournaments/new_tournament.html.twig', array('game' => $game));
         }
         else {
             return $this->render('@App/error_page.html.twig');
@@ -199,6 +214,7 @@ class TournamentsController extends Controller
 
     /**
      * @Route("/tournaments_new/create_tournament", name="create_tournament", options={"expose"=true})
+     * Función para crear un nuevo torneo
      */
     public function createTournamentAction(Request $request) {
         setlocale(LC_ALL, 'es_ES');
@@ -207,27 +223,24 @@ class TournamentsController extends Controller
         $repository_game = $this->getDoctrine()->getRepository(Game::class);
 
         $POST_DATA = $request->request->all();
-        if($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $game_name = $POST_DATA['data']['game_name'];
+        if($_SERVER['REQUEST_METHOD'] === 'POST') { // Sólo se puede invocar si es una llamada POST. En caso contrario muestra la página de error
+            $game_id = $POST_DATA['data']['game_id'];
             $tournament_type = $POST_DATA['data']['tournament_type']; 
             $tournament_start = $POST_DATA['data']['tournament_date'];
 
             $numrules = $POST_DATA['data']['num_rules'];
 
-            for($i = 0; $i < $numrules; $i++) {
+            for($i = 0; $i < $numrules; $i++) { // Obtenemos las reglas
                 $rules[$i] = $request->get($i);
             }
 
-            if($tournament_type === "liga") {
-                $min_part = $POST_DATA['data']['min_part'];
-                $max_part = $POST_DATA['data']['max_part'];
-            }
-            if($tournament_type === "eliminatoria") {
+            if($tournament_type === "eliminatoria") { // Siempre es eliminatoria
                 $match_part = $POST_DATA['data']['match_part'];
             }
 
-            $game = $repository_game->findOneBy(array('name' => $game_name));
+            $game = $repository_game->find($game_id); // Obtenemos el objeto de tipo Game
 
+            // Creamos el torneo
             $tournament = new Tournament();
             $tournament->setType($tournament_type);
             $tournament->setDatetime(new \Datetime($tournament_start));
@@ -248,6 +261,7 @@ class TournamentsController extends Controller
             $entityManager->persist($tournament);
             $entityManager->flush();
 
+            // Creamos las reglas
             for($i = 0; $i < $numrules; $i++) {
                 $rule = $POST_DATA['rules']['rule_'.$i];
                 $tournamentRule = new TournamentRule();
@@ -268,6 +282,7 @@ class TournamentsController extends Controller
 
     /**
      * @Route("/tournament_info/{id_tournament}", name="tournament_info", options={"expose"=true})
+     * Función que muestra la vista con la información de un torneo
      */
     public function tournamentInfoAction(Request $request, $id_tournament) {
         setlocale(LC_ALL, 'es_ES');
@@ -279,13 +294,16 @@ class TournamentsController extends Controller
         $registered = false;
 
         $tournament_query = $repository_tournament->findOneBy(array('id' => $id_tournament));
-        if($tournament_query) {
+        if($tournament_query) { // Si el torneo existe
             $tournamentRule_query = $repository_tournamentRule->findBy(array('tournament' => $tournament_query));
             
+            // Obtenemos los participantes del juego
             $tournament_participants = $tournament_query->getParticipants()->toArray();
-
+            
+            // Obtenemos la plataforma del juego
             $game_platform = $tournament_query->getGame()->getPlatform()->getName();
 
+            // Obtenemos la cuenta de juego del usuario y le añadimos un icono propio de la plataforma
             foreach($tournament_participants as $user) {
                 switch($game_platform) {
                     case 'PlayStation':
@@ -307,6 +325,7 @@ class TournamentsController extends Controller
                     $registered = true;
             }
 
+            // Definimos si el usuario ha registrado la cuenta de juego del torneo
             switch($game_platform) {
                 case 'PlayStation':
                     $platform_account_registered = $logged_user->getPsnId() != null ? true : false;
@@ -324,6 +343,7 @@ class TournamentsController extends Controller
             $object_limit_checkin = new \Datetime($tournament_query->getDatetime()->format('d-m-Y H:i'));
             $object_limit_checkin = date_sub($object_limit_checkin, date_interval_create_from_date_string('7 days'));
 
+            // Determinamos el ganador
             $tournament_winner = $tournament_query->getWinner();
             if(isset($tournament_winner))
                 $tournament_winner = $tournament_query->getWinner()->getUsername();
@@ -331,6 +351,7 @@ class TournamentsController extends Controller
                 $tournament_winner = null;
             }
 
+            // Obtenemos el número de participantes del torneo
             $num_part = isset($participants)? sizeof($participants) : 0;
 
             $tournament = array(
@@ -351,7 +372,8 @@ class TournamentsController extends Controller
             $game = array(
                 'name_normalized' => str_replace("_", " ", $tournament_query->getGame()->getName()),
                 'name' => $tournament_query->getGame()->getName(),
-                'platform' => $tournament_query->getGame()->getPlatform()->getName()
+                'platform' => $tournament_query->getGame()->getPlatform()->getName(),
+                'id' => $tournament_query->getGame()->getId()
             );
 
             foreach($tournamentRule_query as $rule) {
@@ -361,7 +383,7 @@ class TournamentsController extends Controller
                 );
             }
             
-            return $this->render('@App/tournament_info.html.twig', 
+            return $this->render('@App/tournaments/tournament_info.html.twig', 
                 array(
                     'tournament' => $tournament, 
                     'game' => $game, 
@@ -378,6 +400,7 @@ class TournamentsController extends Controller
 
     /**
      * @Route("/pairing_generate", name="pairing_generate", options={"expose"=true}, condition="request.isXmlHttpRequest()")
+     * Función para generar el emparejamiento de una ronda
      */
     public function pairingGenerateAction(Request $request) {
 
@@ -389,9 +412,9 @@ class TournamentsController extends Controller
 
         $tournament_query = $repository_tournament->findOneBy(array('id' => $id_tournament));
 
-        if($tournament_query->getCurrentRound() == 1)
+        if($tournament_query->getCurrentRound() == 1) // Si estamos en la primera ronda obtenemos los usuarios desde los participantes
             $participants_object = $tournament_query->getParticipants();
-        else {
+        else { // En caso contrario hemos de obtener los participantes desde los ganadores de cada emparejamiento
             $participants_object = new ArrayCollection();
             $pairings = $repository_pairing->findBy(
                 array(
@@ -406,7 +429,7 @@ class TournamentsController extends Controller
         }
 
         $i = 1;
-        foreach($participants_object as $participant) {
+        foreach($participants_object as $participant) { // Obtenemos los nombres de usuario
             $participants[$i] = $participant->getUsername();
             $i++;
         }
@@ -415,27 +438,27 @@ class TournamentsController extends Controller
         
         $index = 1;
         while(sizeof($participants) > 0) {
-            if(sizeof($participants) >= 2){
+            if(sizeof($participants) >= 2){ // Tomamos los usuarios de dos en dos de forma aleatorio
                 $elementos_aleatorios = array_rand($participants, 2);
                 $combinacion["Partida ".$index]["Participante 1"] = $participants[$elementos_aleatorios[0]];
                 $combinacion["Partida ".$index]["Participante 2"] = $participants[$elementos_aleatorios[1]];
                 $playerOne = $repository_user->findOneBy(array('username' => $participants[$elementos_aleatorios[0]]));
                 $playerTwo = $repository_user->findOneBy(array('username' => $participants[$elementos_aleatorios[1]]));
             }
-            else {
+            else { // Si se da el caso que queda uno suelto, pasa de ronda de forma directa
                 $elementos_aleatorios = array_rand($participants, 1);
                 $combinacion["Partida ".$index]["Participante 1"] = $participants[$elementos_aleatorios];
                 $combinacion["Partida ".$index]["Participante 2"] = $participants[$elementos_aleatorios];
                 $playerOne = $repository_user->findOneBy(array('username' => $participants[$elementos_aleatorios]));
                 $playerTwo = $playerOne;
             }
-
+            // Creamos el emparejamiento y lo añadimos a la base de datos
             $pair = new TournamentPairing();
             $pair->setPlayerOne($playerOne);
             $pair->setPlayerTwo($playerTwo);
             $pair->setRound($tournament_query->getCurrentRound());
             $pair->setTournament($tournament_query);
-            if(sizeof($participants) == 1)
+            if(sizeof($participants) == 1) // Usuario que pasa de ronda directo
                 $pair->setWinner($playerOne);
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($pair);
@@ -457,6 +480,7 @@ class TournamentsController extends Controller
 
     /**
      * @Route("/tournament_pairing/{id_tournament}", name="tournament_pairing", options={"expose"=true})
+     * Función que genera la página de los emparejamientos de un torneo
      */
     public function tournamentPairingAction(Request $request, $id_tournament) {
         setlocale(LC_ALL, 'es_ES');
@@ -465,11 +489,11 @@ class TournamentsController extends Controller
         $repository_pairing = $this->getDoctrine()->getRepository(TournamentPairing::class);
 
         $tournament_query = $repository_tournament->findOneBy(array('id' => $id_tournament));
-        if($tournament_query) {
-            $current_round = $tournament_query->getCurrentRound();
-            $num_rounds = round(log(sizeof($tournament_query->getParticipants()),2));
+        if($tournament_query) { // Si existe el torneo
+            $current_round = $tournament_query->getCurrentRound(); // Ronda actual
+            $num_rounds = round(log(sizeof($tournament_query->getParticipants()),2)); // Número de rondas
 
-            for($i = 0; $i < $current_round; $i++) {
+            for($i = 0; $i < $current_round; $i++) { // Obtenemos la lista de emparejamientos por ronda
                 $tournament_pairings = $repository_pairing->findBy(
                     array(
                         'tournament'=>$tournament_query,
@@ -530,7 +554,7 @@ class TournamentsController extends Controller
             $object_limit_checkin = new \Datetime($tournament_query->getDatetime()->format('d-m-Y H:i'));
             $object_limit_checkin = date_sub($object_limit_checkin, date_interval_create_from_date_string('7 days'));
 
-            $tournament_winner = $tournament_query->getWinner();
+            $tournament_winner = $tournament_query->getWinner(); // Ganador del torneo
             if(isset($tournament_winner))
                 $tournament_winner = $tournament_query->getWinner()->getUsername();
             else {
@@ -559,9 +583,11 @@ class TournamentsController extends Controller
             $game = array(
                 'name_normalized' => str_replace("_", " ", $tournament_query->getGame()->getName()),
                 'name' => $tournament_query->getGame()->getName(),
-                'platform' => $tournament_query->getGame()->getPlatform()->getName()
+                'platform' => $tournament_query->getGame()->getPlatform()->getName(),
+                'id' => $tournament_query->getGame()->getId()
             );
 
+            // Si no se han generado los emparejamientos de la ronda actual, se mostrará el botón para ello
             $pairings_current_round = $repository_pairing->findBy(array('tournament' => $tournament_query->getId(),'round' => $tournament_query->getCurrentRound()));
 
             if(!$pairings_current_round)
@@ -570,7 +596,7 @@ class TournamentsController extends Controller
                 $pairings_generated = true;
 
             if(isset($pairings_total)) 
-                return $this->render('@App/tournament_pairing.html.twig', 
+                return $this->render('@App/tournaments/tournament_pairing.html.twig', 
                     array(
                         'tournament' => $tournament, 
                         'game' => $game,
@@ -580,7 +606,7 @@ class TournamentsController extends Controller
                         'direct_pass' => isset($direct_pass_t) ? $direct_pass_t : null
                     ));
             else 
-                return $this->render('@App/tournament_pairing.html.twig', 
+                return $this->render('@App/tournaments/tournament_pairing.html.twig', 
                     array(
                         'tournament' => $tournament, 
                         'game' => $game,
@@ -593,7 +619,8 @@ class TournamentsController extends Controller
     }
 
     /**
-     * @Route("/tournament_upload_result", name="tournament_upload_result", options={"expose"=true}, requirements={"methods":"POST"})
+     * @Route("/tournament_upload_result", name="tournament_upload_result", options={"expose"=true}, methods={"POST"})
+     * Función para subir el resultado de un emparejamiento
      */
     public function uploadResult(Request $request) {
 
@@ -607,6 +634,7 @@ class TournamentsController extends Controller
         $winner = $request->request->get('select_winner_player');
 
         if($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Obtenemos la imagen
             $image_result = $request->files->get('input_result');
             $ext = $image_result->guessExtension();
             $file_name = time().".".$ext;
@@ -614,6 +642,7 @@ class TournamentsController extends Controller
 
             $pairing = $repository_pairing->findOneBy(array('id' => $id_pairing));
 
+            // Obtenemos el resultado
             if($pairing->getPlayerOne()->getUsername() === $winner) {
                 $pairing->setResultPlayerOne($winner);
                 $pairing->setImageResultPlayerOne($file_name);
@@ -638,6 +667,7 @@ class TournamentsController extends Controller
 
     /**
      * @Route("/download_image_pairing/{image_name}", name="download_img_pairing", options={"expose"=true})
+     * Función para descargar la imagen resultado de un emparejamiento
      */
     public function downloadImageResult($image_name) {
 
@@ -653,6 +683,7 @@ class TournamentsController extends Controller
 
     /**
      * @Route("/tournament_solve_pairing", name="tournament_solve_pairing", options={"expose"=true}, requirements={"methods":"POST"})
+     * Función para resolver un emparejamiento
      */
     public function solvePairing(Request $request) {
 
@@ -669,7 +700,7 @@ class TournamentsController extends Controller
             $user = $repository_user->findOneBy(array('username' => $winner));
             $tournament = $repository_tournament->findOneBy(array('id' => $id_tournament));
 
-            $pairing->setWinner($user);
+            $pairing->setWinner($user); // Definimos el ganador
 
             $entityManager->persist($pairing);
             $entityManager->flush();
@@ -677,24 +708,24 @@ class TournamentsController extends Controller
             $round = $pairing->getRound();
             $num_rounds = round(log(sizeof($tournament->getParticipants()),2));
 
-            $pairings_round = $repository_pairing->findBy(array('round' => $round));
+            $pairings_round = $repository_pairing->findBy(array('round' => $round, 'tournament' => $tournament->getId()));
 
             $complete_round = true;
 
             $idd = 0;
 
-            foreach($pairings_round as $pair) {
+            foreach($pairings_round as $pair) { // Comprobamos si todos los emparejamientos de la ronda poseen un ganador
                 if($pair->getWinner() == null)
                     $complete_round = false;
             }
 
-            if($complete_round == true) {
-                if($num_rounds != $tournament->getCurrentRound()) {
+            if($complete_round == true) { // En caso afirmativo
+                if($num_rounds != $tournament->getCurrentRound()) { // Si no es la última ronda se incrementa el número de ronda
                     $tournament->setCurrentRound($tournament->getCurrentRound()+1);
                     $entityManager->persist($tournament);
                     $entityManager->flush();
                 }
-                else {
+                else { // Si lo es, definimos al ganador del torneo, desactivamos el torneo y lo almacenamos
                     $tournament->setWinner($user);
                     $tournament->setIsActive(false);
                     $entityManager->persist($tournament);
@@ -710,17 +741,18 @@ class TournamentsController extends Controller
 
     /**
      * @Route("/tournament_close/{id_tournament}", name="tournament_close", options={"expose"=true})
+     * Función que permite el cierre de un torneo
      */
     public function closeTournament($id_tournament) {
         $repository_tournament = $this->getDoctrine()->getRepository(Tournament::class);
         $tournament = $repository_tournament->findOneBy(array('id' => $id_tournament));
         $entityManager = $this->getDoctrine()->getManager();
-        if($tournament) {
+        if($tournament) { // Si existe lo desactiva
             $tournament->setIsActive(false);
             $entityManager->persist($tournament);
             $entityManager->flush();
 
-            return $this->redirectToRoute('game', array('game_name' => $tournament->getGame()->getName(), 'page' => 1));
+            return $this->redirectToRoute('game', array('id_game' => $tournament->getGame()->getId(), 'page' => 1));
         }
         else 
             return $this->render('@App/error_page.html.twig');
@@ -728,6 +760,7 @@ class TournamentsController extends Controller
 
     /**
      * @Route("/tournament_register", name="tournament_register", options={"expose"=true}, condition="request.isXmlHttpRequest()")
+     * Función que permite inscribirse en un torneo
      */
     public function tournamentRegister(Request $request) {
         $repository_tournament = $this->getDoctrine()->getRepository(Tournament::class);
@@ -740,6 +773,7 @@ class TournamentsController extends Controller
         $tournament = $repository_tournament->findOneBy(array('id' => $id_tournament));
         $user = $repository_user->findOneBy(array('username' => $username));
 
+        // Si hay hueco se inscribe
         if(sizeof($tournament->getParticipants()) != $tournament->getParticipantsRequired()) {
             $tournament->addParticipant($user);
             $entityManager->persist($tournament);

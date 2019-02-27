@@ -20,6 +20,7 @@ class RegisterController extends Controller
     public function registerAction(Request $request, UserPasswordEncoderInterface $passwordEncoder, 
         \Swift_Mailer $mailer)
     {
+        // En caso de estar autenticado redirige a la ruta homepage
         if($this->container->get('security.token_storage')->getToken()->getUser() != "anon.")
             return $this->redirectToRoute('homepage');
         else {
@@ -33,12 +34,12 @@ class RegisterController extends Controller
             $validator = $this->get('validator');
             $errors = $validator->validate($user);
 
-            if($form->isSubmitted()) {
-                if (count($errors) > 0) {
-                    return $this->render('@App/index/register.html.twig', array(
+            if($form->isSubmitted()) { // Si el formulario se envía
+                if (count($errors) > 0) { // En caso de existir errores, los devolvemos a la vista
+                    return $this->render('@App/register/register.html.twig', array(
                         'errors' => $errors, 'form' => $form->createView()
                     ));
-                } else {
+                } else { // En caso contrario creamos el usuario
                     // Encriptamos la contraseña
                     $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
                     $user->setPassword($password);
@@ -73,7 +74,7 @@ class RegisterController extends Controller
             }
 
             return $this->render(
-                '@App/index/register.html.twig',
+                '@App/register/register.html.twig',
                 array('form' => $form->createView())
             );
         }
@@ -84,15 +85,15 @@ class RegisterController extends Controller
      * @Route("/active_account/{username}", name="active_account")
      */
     public function activeAccountAction($username) {
-        
+        // En caso de estar autenticado redirige a la ruta homepage
         if($this->container->get('security.token_storage')->getToken()->getUser() != "anon.")
             return $this->redirectToRoute('homepage');
         else {
             $entityManager = $this->getDoctrine()->getManager();
             $user = $entityManager->getRepository(User::class)->findOneByUsername($username);
 
-            if($user) {
-                if(!$user->isEnabled()) {
+            if($user) { // En caso de no encontrar al usuario, renderiza la página de error
+                if(!$user->isEnabled()) { // Se activa si no lo está ya
                     $user->setIsActive(true);
                     $entityManager->flush();
 

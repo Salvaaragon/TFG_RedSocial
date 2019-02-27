@@ -3,6 +3,23 @@
 {% block body %}
 <div class="games_panel">
     <div class="jumbotron">
+        {% for flashMessage in app.session.flashbag.get('notice') %}
+
+    <div class="alert alert-success alert-dismissible flash_error_group" role="alert">
+        <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        {{ flashMessage }}
+    </div>
+
+    {% endfor %}
+
+    {% for flashMessage in app.session.flashbag.get('error') %}
+
+    <div class="alert alert-danger alert-dismissible flash_error_group" role="alert">
+        <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        {{ flashMessage }}
+    </div>
+
+    {% endfor %}
         <div class="container">
             <h1 class="display-4">JUEGOS</h1>
             <h3>Juegos con torneos disponibles</h3>
@@ -47,7 +64,7 @@
         {% if games is defined and games is not null %}
         {% for game in games %}
             <div class="col-lg-2">
-            <a href="{{ path('game', {'game_name':game.name, 'page': 1}) }}" class="game_tournament_link">
+            <a href="{{ path('game', {'id_game':game.id, 'page': 1}) }}" class="game_tournament_link">
                 <img class="img_hola" src="{{ asset('uploads/games/' ~ game.image) }}">
                 <div class="game_tournament_name"><b>{{ game.name_normalized }}</b></div>
                 <div class="game_tournament_data">{{ game.platform }} - {{ game.num_active }} activos</div>

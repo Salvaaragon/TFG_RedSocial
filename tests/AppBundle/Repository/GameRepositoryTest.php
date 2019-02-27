@@ -42,7 +42,7 @@ class GameRepositoryTest extends KernelTestCase
     {
         $game = $this->entityManager
             ->getRepository(Game::class)
-            ->findBy(array('name'=>'Monster Hunter: World'));
+            ->findBy(array('name'=>'Monster_Hunter:_World'));
 
         $this->assertCount(1, $game);
     }

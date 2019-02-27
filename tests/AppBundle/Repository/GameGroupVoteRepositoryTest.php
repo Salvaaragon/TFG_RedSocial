@@ -47,15 +47,6 @@ class GameGroupVoteRepositoryTest extends KernelTestCase
         $this->assertCount(4, $bestUsers);
     }
 
-    /*public function testSearchAllForGroup()
-    {
-        $gamegroupvotes = $this->entityManager
-            ->getRepository(GameGroup::class)
-            ->findAll();
-
-        $this->assertCount(30, $gamegroups);
-    }*/
-
     /**
      * {@inheritDoc}
      */

@@ -3,12 +3,29 @@
 {% block body %}
 <div class="div_tournaments">
     <div class="jumbotron">
+    {% for flashMessage in app.session.flashbag.get('notice') %}
+
+    <div class="alert alert-success alert-dismissible flash_error_group" role="alert">
+        <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        {{ flashMessage }}
+    </div>
+
+    {% endfor %}
+
+    {% for flashMessage in app.session.flashbag.get('error') %}
+
+    <div class="alert alert-danger alert-dismissible flash_error_group" role="alert">
+        <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        {{ flashMessage }}
+    </div>
+
+    {% endfor %}
         <div class="container">
             <h1 class="display-4"><a style="text-decoration:none" href="{{ path('tournaments',{'platform':'todos'})}}">Juegos:</a> 
             {% if tournament.is_active == true %}
-                <a style="text-decoration:none" href="{{ path('game',{'game_name':game.name, 'page': 1})}}">{{game.name_normalized}}</a></h1>
+                <a style="text-decoration:none" href="{{ path('game',{'id_game':game.id, 'page': 1})}}">{{game.name_normalized}}</a></h1>
             {% else %}
-                <a style="text-decoration:none" href="{{ path('game_historical',{'game_name':game.name, 'page': 1})}}">{{game.name_normalized}}</a></h1>
+                <a style="text-decoration:none" href="{{ path('game_historical',{'id_game':game.id, 'page': 1})}}">{{game.name_normalized}}</a></h1>
             {% endif %}     
             <h2><i class="fab fa-{{ game.platform|lower}}"></i> {{game.platform}}</h2>
             <h3>{{ tournament.name }}</h3>

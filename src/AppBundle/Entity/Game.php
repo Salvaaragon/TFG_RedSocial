@@ -3,11 +3,15 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\UniqueConstraint;
 
 /**
  * Game
  *
- * @ORM\Table(name="game")
+ * @ORM\Table(name="game",uniqueConstraints={
+ *        @UniqueConstraint(name="unique_game", 
+ *            columns={"name", "id_platform"})
+ *    })
  * @ORM\Entity(repositoryClass="AppBundle\Repository\GameRepository")
  */
 class Game
@@ -24,7 +28,7 @@ class Game
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=128, unique=true)
+     * @ORM\Column(name="name", type="string", length=128, nullable=false)
      */
     private $name;
 

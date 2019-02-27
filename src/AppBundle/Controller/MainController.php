@@ -17,7 +17,7 @@ class MainController extends Controller
      * @Route("/", name="index")
      */
     public function loginAction(AuthenticationUtils $authenticationUtils) {
-        
+        // En caso de estar autenticado redirige a la ruta homepage
         if($this->container->get('security.token_storage')->getToken()->getUser() != "anon.")
             return $this->redirectToRoute('homepage');
         else {
@@ -29,7 +29,7 @@ class MainController extends Controller
             $lastUsername = $authenticationUtils->getLastUsername();
 
             // Renderizamos la vista pasandole los parámetros deseados
-            return $this->render('@App/index/homepage.html.twig', array(
+            return $this->render('@App/main/homepage.html.twig', array(
                 'last_username' => $lastUsername,
                 'error'         => $error,
             ));
@@ -41,15 +41,16 @@ class MainController extends Controller
      * @Route("/reset_password", name="reset_password")
      */
     public function resetPasswordView() {
+        // En caso de estar autenticado redirige a la ruta homepage
         if($this->container->get('security.token_storage')->getToken()->getUser() != "anon.")
             return $this->redirectToRoute('homepage');
         else 
-            return $this->render('@App/index/reset_password.html.twig');
+            return $this->render('@App/main/reset_password.html.twig');
     }
 
     /**
      * Función encargada de reiniciar la contraseña de usuario y proporcionarla al mismo
-     * @Route("/reset_password_form", name="reset_password_form", requirements={"methods":"POST"})
+     * @Route("/reset_password_form", name="reset_password_form", methods={"POST"})
      */
     public function resetPasswordAction(Request $request, 
         UserPasswordEncoderInterface $passwordEncoder, \Swift_Mailer $mailer) {
@@ -87,14 +88,13 @@ class MainController extends Controller
                 ),
                 'text/html');
                 $mailer->send($message);
-
-                $this->addFlash(
-                    'dark',
-                    'Hemos recibido su solicitud. Si el correo electrónico introducido se encuentra en nuestro sistema recibirá un mensaje con su nueva contraseña'
-                );
-
-                return $this->redirectToRoute('index');
             }
+            $this->addFlash(
+                'dark',
+                'Hemos recibido su solicitud. Si el correo electrónico introducido se encuentra en nuestro sistema recibirá un mensaje con su nueva contraseña'
+            );
+
+            return $this->redirectToRoute('index');
         }
         else
             return $this->render('@App/error_page.html.twig');

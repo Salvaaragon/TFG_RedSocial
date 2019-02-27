@@ -15,6 +15,7 @@ use AppBundle\Entity\TournamentPairing;
 use AppBundle\Entity\TournamentRule;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Common\Collections\ArrayCollection;
 
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
@@ -226,56 +227,65 @@ class AppFixtures extends Fixture
         $platform_xbox = $platform_repository->findOneBy(array('name'=>'Xbox'));
 
         $game_1 = new Game();
-        $game_1->setName('Assassin\'s Creed Origins');
+        $game_1->setName('Assassin\'s_Creed_Origins');
         $game_1->setPlatform($platform_xbox);
+        $game_1->setImage('acorigins.png');
 
         $manager->persist($game_1);
 
         $game_2 = new Game();
-        $game_2->setName('Battlefield V');
+        $game_2->setName('Battlefield_V');
         $game_2->setPlatform($platform_playstation);
+        $game_2->setImage('battlefieldv.png');
         
         $manager->persist($game_2);
 
         $game_3 = new Game();
-        $game_3->setName('Counter Strike: Global Offensive');
+        $game_3->setName('Counter_Strike:_Global_Offensive');
         $game_3->setPlatform($platform_steam);
+        $game_3->setImage('csgo.png');
         
         $manager->persist($game_3);
 
         $game_4 = new Game();
-        $game_4->setName('Destiny 2');
+        $game_4->setName('Destiny_2');
         $game_4->setPlatform($platform_xbox);
+        $game_4->setImage('destiny2.png');
         
         $manager->persist($game_4);
 
         $game_5 = new Game();
-        $game_5->setName('Far Cry Primal');
+        $game_5->setName('Far_Cry_Primal');
         $game_5->setPlatform($platform_playstation);
+        $game_5->setImage('farcryprimal.png');
         
         $manager->persist($game_5);
 
         $game_6 = new Game();
-        $game_6->setName('Garry\'s Mod');
+        $game_6->setName('Garry\'s_Mod');
         $game_6->setPlatform($platform_steam);
+        $game_6->setImage('garrysmod.png');
         
         $manager->persist($game_6);
 
         $game_7 = new Game();
-        $game_7->setName('Halo Wars 2');
+        $game_7->setName('Halo_Wars_2');
         $game_7->setPlatform($platform_xbox);
+        $game_7->setImage('halowars2.png');
         
         $manager->persist($game_7);
 
         $game_8 = new Game();
-        $game_8->setName('Monster Hunter: World');
+        $game_8->setName('Monster_Hunter:_World');
         $game_8->setPlatform($platform_playstation);
+        $game_8->setImage('monsterhunterworld.png');
         
         $manager->persist($game_8);
 
         $game_9 = new Game();
-        $game_9->setName('Portal 2');
+        $game_9->setName('Portal_2');
         $game_9->setPlatform($platform_steam);
+        $game_9->setImage('portal2.png');
         
         $manager->persist($game_9);
 
@@ -982,7 +992,11 @@ class AppFixtures extends Fixture
 
     private function createGameGroupsVotes(ObjectManager $manager, GameGroup $g, int $vote) {
 
-        $participants = $g->getParticipants();
+        $participants = new ArrayCollection();
+
+        foreach($g->getParticipants() as $part)
+            $participants->add($part);
+
         $participants->add($g->getUser());
 
         foreach($participants as $part_a) {
@@ -1028,39 +1042,39 @@ class AppFixtures extends Fixture
 
         $game_1 = $game_repository->findOneBy(
             array(
-                'name' => 'Assassin\'s Creed Origins',
+                'name' => 'Assassin\'s_Creed_Origins',
                 'platform' => $platform_xbox));
         $game_2 = $game_repository->findOneBy(
             array(
-                'name' => 'Battlefield V',
+                'name' => 'Battlefield_V',
                 'platform' => $platform_playstation));
         $game_3 = $game_repository->findOneBy(
             array(
-                'name' => 'Counter Strike: Global Offensive',
+                'name' => 'Counter_Strike:_Global_Offensive',
                 'platform' => $platform_steam));
         $game_4 = $game_repository->findOneBy(
             array(
-                'name' => 'Destiny 2',
+                'name' => 'Destiny_2',
                 'platform' => $platform_xbox));
         $game_5 = $game_repository->findOneBy(
             array(
-                'name' => 'Far Cry Primal',
+                'name' => 'Far_Cry_Primal',
                 'platform' => $platform_playstation));
         $game_6 = $game_repository->findOneBy(
             array(
-                'name' => 'Garry\'s Mod',
+                'name' => 'Garry\'s_Mod',
                 'platform' => $platform_steam));
         $game_7 = $game_repository->findOneBy(
             array(
-                'name' => 'Halo Wars 2',
+                'name' => 'Halo_Wars_2',
                 'platform' => $platform_xbox));
         $game_8 = $game_repository->findOneBy(
             array(
-                'name' => 'Monster Hunter: World',
+                'name' => 'Monster_Hunter:_World',
                 'platform' => $platform_playstation));
         $game_9 = $game_repository->findOneBy(
             array(
-                'name' => 'Portal 2',
+                'name' => 'Portal_2',
                 'platform' => $platform_steam));
 
         $tournament_1 = new Tournament();

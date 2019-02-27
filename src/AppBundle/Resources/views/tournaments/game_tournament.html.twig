@@ -3,10 +3,27 @@
 {% block body %}
 <div class="div_tournaments">
     <div class="jumbotron">
+    {% for flashMessage in app.session.flashbag.get('notice') %}
+
+    <div class="alert alert-success alert-dismissible flash_error_group" role="alert">
+        <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        {{ flashMessage }}
+    </div>
+
+    {% endfor %}
+
+    {% for flashMessage in app.session.flashbag.get('error') %}
+
+    <div class="alert alert-danger alert-dismissible flash_error_group" role="alert">
+        <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        {{ flashMessage }}
+    </div>
+
+    {% endfor %}
         <div class="container">
             <h1 class="display-4"><a style="text-decoration:none" href="{{ path('tournaments',{'platform':'todos'})}}">Juegos:</a> 
             {% if historical == true %} 
-            <a style="text-decoration:none" href="{{ path('game', {'game_name': game.name, 'page':1}) }}">{{game.name_normalized}}</a> (histórico)
+            <a style="text-decoration:none" href="{{ path('game', {'id_game': game.id, 'page':1}) }}">{{game.name_normalized}}</a> (histórico)
             {% else %}
             {{game.name_normalized}}
             {% endif %}
@@ -14,11 +31,11 @@
             <h2><i class="fab fa-{{ game.platform|lower}}"></i> {{game.platform}}</h2>
         {% if is_granted('ROLE_MOD') and historical == false %}
         <p class="lead">    
-            <a type="button" class="btn btn-primary" href="{{ path('new_tournament',{'game_name':game.name}) }}">Nuevo torneo</a>
+            <a type="button" class="btn btn-primary" href="{{ path('new_tournament',{'id_game':game.id}) }}">Nuevo torneo</a>
         </p>
         {% endif %}
         {% if historical == false %}
-        <a type="button" class="btn btn-primary" href="{{ path('game_historical', {'game_name': game.name, 'page':1}) }}">Ver histórico</a>
+        <a type="button" class="btn btn-primary" href="{{ path('game_historical', {'id_game': game.id, 'page':1}) }}">Ver histórico</a>
         {% endif %}
         </div>
     </div>
@@ -59,11 +76,11 @@
             <li class="page-item">
             {% endif %}
             {% if historical == true %}
-            <a class="page-link" href="{{ path('game_historical', {'game_name':game.name, 'page': (currentPage -1)}) }}" aria-label="Previous">
+            <a class="page-link" href="{{ path('game_historical', {'id_game':game.id, 'page': (currentPage -1)}) }}" aria-label="Previous">
                 Anterior
             </a>
             {% else %}
-            <a class="page-link" href="{{ path('game', {'game_name':game.name, 'page': (currentPage -1)}) }}" aria-label="Previous">
+            <a class="page-link" href="{{ path('game', {'id_game':game.id, 'page': (currentPage -1)}) }}" aria-label="Previous">
                 Anterior
             </a>
             {% endif %}
@@ -75,9 +92,9 @@
                 <li class="page-item">
                 {% endif %}
                 {% if historical == true %}
-                    <a class="page-link" href="{{ path('game_historical', {'game_name':game.name, 'page': i}) }}">{{ i }}</a></li>
+                    <a class="page-link" href="{{ path('game_historical', {'id_game':game.id, 'page': i}) }}">{{ i }}</a></li>
                 {% else %}
-                    <a class="page-link" href="{{ path('game', {'game_name':game.name, 'page': i}) }}">{{ i }}</a></li>
+                    <a class="page-link" href="{{ path('game', {'id_game':game.id, 'page': i}) }}">{{ i }}</a></li>
                 {% endif %}
             {% endfor %}
             {% if currentPage == pagesCount %}
@@ -87,11 +104,11 @@
             {% endif %}
 
             {% if historical == true %}
-            <a class="page-link" href="{{ path('game_historical', {'game_name':game.name, 'page': (currentPage +1)}) }}" aria-label="Next">
+            <a class="page-link" href="{{ path('game_historical', {'id_game':game.id, 'page': (currentPage +1)}) }}" aria-label="Next">
                 Siguiente
             </a>
             {% else %}
-            <a class="page-link" href="{{ path('game', {'game_name':game.name, 'page': (currentPage +1)}) }}" aria-label="Next">
+            <a class="page-link" href="{{ path('game', {'id_game':game.id, 'page': (currentPage +1)}) }}" aria-label="Next">
                 Siguiente
             </a>
             {% endif %}

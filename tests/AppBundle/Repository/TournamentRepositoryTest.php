@@ -36,7 +36,7 @@ class TournamentRepositoryTest extends KernelTestCase
             ->getRepository(Game::class)
             ->findOneBy(
                 array(
-                    'name' => 'Assassin\'s Creed Origins',
+                    'name' => 'Assassin\'s_Creed_Origins',
                     'platform' => $platform));
 
         $tournaments = $this->entityManager

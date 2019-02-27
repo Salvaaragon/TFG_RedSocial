@@ -11,8 +11,6 @@ namespace AppBundle\Repository;
 class GameGroupRepository extends \Doctrine\ORM\EntityRepository
 {
     public function getNumGroupsUser($id_user) {
-        setlocale(LC_ALL, 'es_ES');
-        date_default_timezone_set('Europe/Madrid');
         return $query = $this->getEntityManager()
             ->createQuery(
                 'SELECT count(g.id) FROM AppBundle:GameGroup g 

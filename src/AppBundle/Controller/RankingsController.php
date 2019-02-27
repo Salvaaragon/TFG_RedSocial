@@ -21,11 +21,12 @@ class RankingsController extends Controller
      */
     public function indexAction(Request $request) {
         
-        return $this->render('@App/rankings.html.twig');
+        return $this->render('@App/rankings/rankings.html.twig');
     }
 
     /**
      * @Route("/filter_ranking", name="filter_ranking",options={"expose"=true}, condition="request.isXmlHttpRequest()")
+     * Función que permite filtrar las clasificaciones en base a distintos parámetros
      */
     public function filterRankingAction(Request $request) {
         $repository_gamegroup = $this->getDoctrine()->getRepository(GameGroup::class);
@@ -35,11 +36,12 @@ class RankingsController extends Controller
         $repository_postslikes = $this->getDoctrine()->getRepository(PostLike::class);
         $repository_user = $this->getDoctrine()->getRepository(User::class);
 
+        // Obtenemos el parámetro de filtrado y el intervalo de fechas
         $filter_parameter = $request->request->get('filter_parameter');
         $date_begin = $request->request->get('date_begin');
         $date_end = $request->request->get('date_end');
         
-        switch($filter_parameter) {
+        switch($filter_parameter) { // En función del filtro se generan unos datos y se renderiza una vista
             case "best_posts":
                 $best_posts = $repository_postslikes->getBestPosts(new \Datetime($date_begin." 00:00:00"), new \Datetime($date_end." 23:59:59"));
                 foreach($best_posts as $post_element) {
@@ -54,7 +56,7 @@ class RankingsController extends Controller
                     );
                 }
                 if(isset($posts)) {
-                    return $this->render('@App/ranking_posts.html.twig', array('posts' => $posts));
+                    return $this->render('@App/rankings/ranking_posts.html.twig', array('posts' => $posts));
                 }
                 else
                     return new Response("<p style='text-align: center; vertical-align: middle;'>No se han encontrado publicaciones en el intervalo introducido</p>");
@@ -74,7 +76,7 @@ class RankingsController extends Controller
                     );
                 }
                 if(isset($votedUsers)) {
-                    return $this->render('@App/ranking_voted_users.html.twig', array('voted_users' => $votedUsers));
+                    return $this->render('@App/rankings/ranking_voted_users.html.twig', array('voted_users' => $votedUsers));
                 }
                 else
                     return new Response("<p style='text-align: center; vertical-align: middle;'>No se han encontrado usuarios votados en el intervalo introducido</p>");
@@ -94,7 +96,7 @@ class RankingsController extends Controller
                     );
                 }
                 if(isset($winners)) {
-                    return $this->render('@App/ranking_winners.html.twig', array('winners' => $winners));
+                    return $this->render('@App/rankings/ranking_winners.html.twig', array('winners' => $winners));
                 }
                 else
                     return new Response("<p style='text-align: center; vertical-align: middle;'>No se han encontrado ganadores de torneos en el intervalo introducido</p>");

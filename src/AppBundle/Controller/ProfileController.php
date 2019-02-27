@@ -33,7 +33,7 @@ class ProfileController extends Controller
 
         $user = $repository_user->findOneBy(array('username' => $username));
 
-        if (!$user) {
+        if (!$user) { // En caso de no encontrar al usuario muestra un error de excepción
             throw $this->createNotFoundException('El usuario no existe');
         }
 
@@ -49,7 +49,7 @@ class ProfileController extends Controller
 
         foreach($query_post as $post) {
 
-            $datetime = $this->timeago($post->getDatetime());
+            $datetime = $this->timeago($post->getDatetime()); // Obtenemos el tiempo transcurrido desde que se realizó el post
             $likes = $repository_likes->getNumLikesPost($post); // Número de likes de la publicación
             $has_like = $repository_likes->getUserHasLikePost($post, $logged_user); // Obtenemos si el usuario logueado ha dado like a la publicación
             $posts[] = array(
@@ -63,14 +63,14 @@ class ProfileController extends Controller
             );
         }
 
-        return $this->render('@App/profile.html.twig', array(
+        return $this->render('@App/profile/profile.html.twig', array(
                 'posts' => isset($posts) ? $posts : null, 
                 'numposts' => isset($query_numpost_user) ? $query_numpost_user: 0,
                 'numfollowing' => isset($query_numfollowing_user) ? $query_numfollowing_user : 0, 
                 'numfollowers' => isset($query_numfollowers_user) ? $query_numfollowers_user : 0,
                 'user' => $user,
                 'numlikes' => isset($query_numlikes_user) ? $query_numlikes_user : 0,
-                'puntuation' => isset($query_puntuation) ? $query_puntuation: 0));
+                'puntuation' => isset($query_puntuation) ? round($query_puntuation,2): 0));
     }
 
     /**
@@ -123,10 +123,9 @@ class ProfileController extends Controller
 
             $query_puntuation = $repository_votes->getAverageVoteUser($user->getId()); // Puntuación media que posee de los grupos
 
-
             foreach($query_followers as $follower_id) {
                 $follower = $repository_user->find($follower_id['id_user']);
-                $isFollow = $repository_following->getUserIsFollowing($logged_user, $follower);
+                $isFollow = $repository_following->getUserIsFollowing($logged_user, $follower); // Determinamos si el usuario autenticado sigue a este
                 $followers[] = array(
                     'id' => $follower->getId(),
                     'username' => $follower->getUsername(),
@@ -139,15 +138,15 @@ class ProfileController extends Controller
                 );
             }
 
-            return $this->render('@App/followers.html.twig', 
+            return $this->render('@App/profile/followers.html.twig', 
                 array(
                     'followers' => isset($followers) ? $followers : null, 
                     'numfollowers' => isset($followers) ? count($followers) : 0,
-                    'numfollowings' => isset($query_numfollowing_user) ? count($query_numfollowing_user) : 0,
+                    'numfollowings' => isset($query_numfollowing_user) ? $query_numfollowing_user : 0,
                     'numposts' => isset($query_numpost_user) ? $query_numpost_user : 0,
                     'user' => $user,
                     'numlikes' => isset($query_numlikes_user) ? $query_numlikes_user : 0,
-                    'puntuation' => isset($query_puntuation) ? $query_puntuation:0));
+                    'puntuation' => isset($query_puntuation) ? round($query_puntuation,2):0));
         }
         else
             return $this->render('@App/error_page.html.twig');
@@ -182,6 +181,7 @@ class ProfileController extends Controller
             // Al igual que anteriormente, obtenemos estos datos que se mostrarán en la parte superior
             foreach($query_followings as $following_id) {
                 $following = $repository_user->find($following_id['id_user']);
+
                 $followings[] = array(
                     'id' => $following->getId(),
                     'username' => $following->getUsername(),
@@ -189,19 +189,19 @@ class ProfileController extends Controller
                     'steam_id' => $following->getSteamId(),
                     'xbox_id' => $following->getXboxId(),
                     'psn_id' => $following->getPsnId(),
-                    'isFollowed' => true,
+                    'isFollowed' => 'followed',
                     'image' => $following->getImage(),
                 );
             }
 
-            return $this->render('@App/followings.html.twig', array(
+            return $this->render('@App/profile/followings.html.twig', array(
                 'followings' => isset($followings) ? $followings : null, 
                 'numfollowings' => isset($followings) ? count($followings) : 0,
-                'numfollowers' => isset($query_numfollower_user) ? count($query_numfollower_user) : 0,
+                'numfollowers' => isset($query_numfollower_user) ? $query_numfollower_user : 0,
                 'numposts' => isset($query_numpost_user) ? $query_numpost_user : 0,
                 'user' => $user,
                 'numlikes' => isset($query_numlikes_user) ? $query_numlikes_user : 0,
-                'puntuation' => isset($query_puntuation) ? $query_puntuation:0));
+                'puntuation' => isset($query_puntuation) ? round($query_puntuation,2):0));
         }
         else
             return $this->render('@App/error_page.html.twig');
@@ -225,6 +225,7 @@ class ProfileController extends Controller
         if($user) {
             $logged_user = $this->container->get('security.token_storage')->getToken()->getUser();
 
+            // Obtenemos las publicaciones votadas por el usuario
             $query_postslikedByUser = $repository_post->getPostsLikedByUser($user);
 
             $query_numfollowing_user = $repository_following->getNumFollowingsUser($user);
@@ -233,6 +234,7 @@ class ProfileController extends Controller
             $query_numpost_user = $repository_post->getNumPostsUser($user);
             $query_puntuation = $repository_votes->getAverageVoteUser($user->getId());
 
+            // y las almacenamos en un vector que le pasaremos a la vista
             foreach($query_postslikedByUser as $post) {
                 
                 $datetime = $this->timeago($post->getDatetime());
@@ -249,40 +251,34 @@ class ProfileController extends Controller
                 );
             }
 
-            if(isset($posts))
-                return $this->render('@App/likes.html.twig', array(
-                        'posts' => $posts, 
-                        'numposts' => $query_numpost_user,
-                        'numfollowing' => $query_numfollowing_user, 
-                        'numfollowers' => $query_numfollowers_user,
-                        'user' => $user,
-                        'numlikes' => $query_numlikes_user,
-                        'puntuation' => $query_puntuation));
-            else
-                return $this->render('@App/likes.html.twig', array(
-                        'numposts' => $query_numpost_user,
-                        'numfollowing' => $query_numfollowing_user, 
-                        'numfollowers' => $query_numfollowers_user,
-                        'user' => $user,
-                        'numlikes' => $query_numlikes_user,
-                        'puntuation' => $query_puntuation));
+            return $this->render('@App/profile/likes.html.twig', array(
+                    'posts' => isset($posts) ? $posts : null, 
+                    'numposts' => $query_numpost_user,
+                    'numfollowing' => $query_numfollowing_user, 
+                    'numfollowers' => $query_numfollowers_user,
+                    'user' => $user,
+                    'numlikes' => $query_numlikes_user,
+                    'puntuation' => round($query_puntuation,2)));
         }
         else
             return $this->render('@App/error_page.html.twig');
     }
 
+    /**
+     * Método que genera el campo de búsqueda
+     */
     public function searchBarAction() {
         $form = $this->createFormBuilder(null)
             ->add('search', TextType::class)
             ->getForm();
 
-        return $this->render('@App/searchBar.html.twig',
+        return $this->render('@App/profile/searchBar.html.twig',
             array('form' => $form->createView()));
     }
 
     /**
-     * @Route("/search", name="handleSearch", options={"expose"=true}, requirements={"methods":"POST"})
-     * 
+     * @Route("/search", name="handleSearch", options={"expose"=true}, methods={"POST"})
+     * Método para realizar la búsqueda
      * @param Request $request
      */
     public function handleSearch(Request $request) {
@@ -296,8 +292,10 @@ class ProfileController extends Controller
 
             $logged_user = $this->container->get('security.token_storage')->getToken()->getUser();
             
+            // Obtenemos la lista de usuarios almacenándola en un array 
             foreach($query_users as $user) {
 
+                // Determinamos si el usuario autenticado sigue a este
                 $isFollow = $repository_following->getUserIsFollowing($logged_user, $user);
 
                 $users[] = array(
@@ -312,7 +310,7 @@ class ProfileController extends Controller
                 );
             }
 
-            return $this->render('@App/search_view.html.twig', 
+            return $this->render('@App/profile/search_view.html.twig', 
                 array(
                     'users' => isset($users) ? $users: null, 
                     'numUsers' => isset($users) ? count($users) : 0));
@@ -323,11 +321,12 @@ class ProfileController extends Controller
 
     /**
      * @Route("/my_data_profile", name="my_data_profile")
+     * Método para acceder a los datos de nuestro perfil de usuario
      */
     public function myDataProfileAction(Request $request) {
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
 
-        return $this->render('@App/data_profile.html.twig', array('user' => $user,
+        return $this->render('@App/profile/data_profile.html.twig', array('user' => $user,
             'user_image' => $user->getImage()));
     }
 
@@ -346,13 +345,13 @@ class ProfileController extends Controller
         $validator = $this->get('validator');
         $errors = $validator->validate($user);
 
-        if($form->isSubmitted()) {
-            if (count($errors) > 0) {
-                return $this->render('@App/modify_profile.html.twig', array(
+        if($form->isSubmitted()) { // Si se ha enviado el formulario
+            if (count($errors) > 0) { // y posee errores, se devuelven a la vista
+                return $this->render('@App/profile/modify_profile.html.twig', array(
                     'errors' => $errors, 'form' => $form->createView(),
                     'user_image' => $user->getImage()
                 ));
-            } else {
+            } else { // en caso contrario se modifican los datos del usuario
                 // 3) Encode the password (you could also do this via Doctrine listener)
                 $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
                 $user->setPassword($password);
@@ -371,30 +370,31 @@ class ProfileController extends Controller
             }
         }
 
-        return $this->render('@App/modify_profile.html.twig', array('form' => $form->createView(),
+        return $this->render('@App/profile/modify_profile.html.twig', array('form' => $form->createView(),
             'user_image' => $user->getImage()));
     }
 
     /**
-     * @Route("/change_image", name="change_image", options={"expose"=true}, requirements={"methods":"POST"})
+     * @Route("/change_image", name="change_image", options={"expose"=true}, methods={"POST"})
+     * Método para cambiar la imagen de perfil
      */
     public function changeImage(Request $request) {
 
         $repository_user = $this->getDoctrine()->getRepository(User::class);
         $entityManager = $this->getDoctrine()->getManager();
 
-        if($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if($_SERVER['REQUEST_METHOD'] === 'POST') { // Esto es innecesario, ya lo controla @Route
             $image = $request->files->get('input_image');
             $id_user = $request->request->get('id_user');
 
             $user = $repository_user->find($id_user);
 
-            if($user) {
+            if($user) { // Solo la cambiamos en caso de recibir un id de usuario existente
 
-                $ext = $image->guessExtension();
-                $file_name = time().".".$ext;
-                $image->move("uploads/profile_images",$file_name);
-                $user->setImage($file_name);
+                $ext = $image->guessExtension(); // Obtenemos la extensión del fichero
+                $file_name = time().".".$ext; // Creamos un nombre único
+                $image->move("uploads/profile_images",$file_name); // Movemos el archivo a la carpeta de imágenes
+                $user->setImage($file_name); // y sobreescribimos la misma en la base de datos
                 $entityManager->flush();
 
                 $this->addFlash(

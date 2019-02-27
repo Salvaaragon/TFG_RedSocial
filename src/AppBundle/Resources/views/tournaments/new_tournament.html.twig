@@ -19,7 +19,7 @@
                     <label for="game_name" class="col-sm-2 col-form-label">Juego</label>
                     <div class="col-sm-10">
                         <input type="text" class="form-control" id="game_name" value="{{game.name_normalized}}" readonly>
-                        <input type="hidden" class="form-control" id="game_no_normalized" value="{{game.name}}" readonly>
+                        <input type="hidden" class="form-control" id="game_id" value="{{game.id}}" readonly>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -77,7 +77,7 @@
                 </div>
 
                 <button type="button" id="create_new_tournament" class="btn btn-primary">Crear torneo</button>
-                <a href="{{ path('game', {'game_name':game.name, 'page':1}) }}" class="btn btn-danger">Cancelar</a>
+                <a href="{{ path('game', {'id_game':game.id, 'page':1}) }}" class="btn btn-danger">Cancelar</a>
         </div>
     </div>
     </div>
@@ -140,14 +140,13 @@ $(document).ready(function(){
 
         if(!empty_rules) {
             var data = {}
-            var game_name;
+            var game_id;
             var game_no_normalized;
             var tournament_type;
             var tournament_start;
             var tournament_start_formatted;
 
-            game_name = $('#game_name').val();
-            game_no_normalized = $('#game_no_normalized').val();
+            game_id = $('#game_id').val();
             tournament_type = $('#tournament_type').val();
             tournament_start = $("#league_date_start").data('datetimepicker').getDate();
             tournament_start_formatted = tournament_start.getFullYear() + "-" + (tournament_start.getMonth() + 1) + "-" + tournament_start.getDate() + " " + tournament_start.getHours() + ":" + tournament_start.getMinutes() + ":" + tournament_start.getSeconds();
@@ -156,7 +155,7 @@ $(document).ready(function(){
             match_part = $('#tournament_match_part').val();
             data['match_part'] = match_part;
 
-            data['game_name'] = game_no_normalized;
+            data['game_id'] = game_id;
             data['tournament_type'] = tournament_type;
             data['tournament_date'] = tournament_start_formatted;
             data['num_rules'] = indexRules;
@@ -167,7 +166,7 @@ $(document).ready(function(){
                 data: { 'data':data, 'rules':rules},
                 success: function (data) {
                     console.log("Torneo creado correctamente");
-                    window.location.replace(window.location.origin.concat("/tournaments_game/","1"));
+                    window.location.replace(window.location.origin.concat("/tournaments_game/",game_id,"/1"));
                 },
                 error : function(xhr, status, errorMessage) {
                     alert("Algo ha salido mal: "+errorMessage);

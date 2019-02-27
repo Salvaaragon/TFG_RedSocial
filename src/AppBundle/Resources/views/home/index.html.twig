@@ -95,7 +95,7 @@
                         <div class="post_user_datetime"><b><a href="{{ path('profile',{'username':post.user.username}) }}">{{ post.user.profileName }} </a></b>  {{ post.user.username }} <br> {{ post.datetime }}</div>
                         <div class="post_text"><p>{{ post.text }}</p></div>
                         {% if post.image is defined and post.image is not null %}
-                            <button type="button" class="btn btn-success myImag btn-block" data-src="{{ asset('uploads/' ~ post.image) }}">Imagen de la publicación</button>
+                            <button type="button" class="btn btn-success myImag btn-block" data-src="{{ asset('uploads/posts/' ~ post.image) }}">Imagen de la publicación</button>
                         {% endif %}
                         <div class="">
                             <span data-likes={{ post.likes }} data-liked="{{ post.hasLike }}" data-post="{{ post.id }}" class="btn far fa-thumbs-up btn_like 

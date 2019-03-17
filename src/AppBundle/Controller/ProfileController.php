@@ -181,6 +181,7 @@ class ProfileController extends Controller
             // Al igual que anteriormente, obtenemos estos datos que se mostrarán en la parte superior
             foreach($query_followings as $following_id) {
                 $following = $repository_user->find($following_id['id_user']);
+                $isFollow = $repository_following->getUserIsFollowing($logged_user, $follower); // Determinamos si el usuario autenticado sigue a este
 
                 $followings[] = array(
                     'id' => $following->getId(),
@@ -189,7 +190,7 @@ class ProfileController extends Controller
                     'steam_id' => $following->getSteamId(),
                     'xbox_id' => $following->getXboxId(),
                     'psn_id' => $following->getPsnId(),
-                    'isFollowed' => 'followed',
+                    'isFollowed' => $isFollow,
                     'image' => $following->getImage(),
                 );
             }

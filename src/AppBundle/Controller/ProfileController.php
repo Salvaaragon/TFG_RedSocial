@@ -69,7 +69,7 @@ class ProfileController extends Controller
                 'numfollowing' => isset($query_numfollowing_user) ? $query_numfollowing_user : 0, 
                 'numfollowers' => isset($query_numfollowers_user) ? $query_numfollowers_user : 0,
                 'user' => $user,
-                'numlikes' => isset($query_numlikes_user) ? $query_numlikes_user : 0,
+                'numlikes' => $query_numlikes_user,
                 'puntuation' => isset($query_puntuation) ? round($query_puntuation,2): 0));
     }
 
@@ -145,7 +145,7 @@ class ProfileController extends Controller
                     'numfollowings' => isset($query_numfollowing_user) ? $query_numfollowing_user : 0,
                     'numposts' => isset($query_numpost_user) ? $query_numpost_user : 0,
                     'user' => $user,
-                    'numlikes' => isset($query_numlikes_user) ? $query_numlikes_user : 0,
+                    'numlikes' => $query_numlikes_user,
                     'puntuation' => isset($query_puntuation) ? round($query_puntuation,2):0));
         }
         else
@@ -201,7 +201,7 @@ class ProfileController extends Controller
                 'numfollowers' => isset($query_numfollower_user) ? $query_numfollower_user : 0,
                 'numposts' => isset($query_numpost_user) ? $query_numpost_user : 0,
                 'user' => $user,
-                'numlikes' => isset($query_numlikes_user) ? $query_numlikes_user : 0,
+                'numlikes' => $query_numlikes_user,
                 'puntuation' => isset($query_puntuation) ? round($query_puntuation,2):0));
         }
         else

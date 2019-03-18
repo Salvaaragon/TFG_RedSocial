@@ -42,6 +42,7 @@ class HomeController extends Controller
         $query_numfollowing_user = $repository_following->getNumFollowingsUser($logged_user); // Número de usuarios que sigue
         $query_numfollowers_user = $repository_following->getNumFollowersUser($logged_user); // Número de seguidores que posee
         $query_puntuation = $repository_votes->getAverageVoteUser($logged_user->getId()); // Puntuación media que posee de los grupos
+        $query_numlikes_user = $repository_likes->getNumPostUserHasLiked($logged_user); // Número de likes que ha realizado
 
         foreach($query_post as $post) {
 
@@ -103,6 +104,7 @@ class HomeController extends Controller
                 'numfollowing' => isset($query_numfollowing_user) ? $query_numfollowing_user:0,
                 'numfollowers' => isset($query_numfollowers_user) ? $query_numfollowers_user:0,
                 'puntuation' => isset($query_puntuation) ? $query_puntuation:0,
+                'numlikes' => $query_numlikes_user,
                 'form' => $form->createView()));
     }
 

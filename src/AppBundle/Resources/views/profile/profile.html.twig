@@ -26,7 +26,7 @@
                     <li class="list-inline-item user_data_element"><a href="{{ path('followers_user', { 'username' : user.username }) }}">Seguidores<br><b>{% if numfollowers is defined %} {{ numfollowers }} {% else %} 0 {% endif %}</b></a></li>
                     <li class="list-inline-item user_data_element"><a href="{{ path('followings_user', { 'username' : user.username }) }}">Siguiendo<br><b>{% if numfollowing is defined %} {{ numfollowing }} {% else %} 0 {% endif %}</b></a></li>
                     <li class="list-inline-item user_data_element"><a class="current_page">Publicaciones<br><b>{% if numposts is defined %} {{ numposts }} {% else %} 0 {% endif %}</b></a></li>
-                    <li class="list-inline-item user_data_element"><a href="{{ path('likes_user', { 'username' : user.username }) }}">Me gusta<br><b>0</b></a></li>
+                    <li class="list-inline-item user_data_element"><a href="{{ path('likes_user', { 'username' : user.username }) }}">Me gusta<br><b>{% if numlikes is defined %} {{ numlikes }} {% else %} 0 {% endif %}</b></a></li>
                     <li class="list-inline-item user_data_element">Puntuación<br><b>{{ puntuation }}</b></li>
                 </ul>
             </div>

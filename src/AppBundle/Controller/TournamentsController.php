@@ -632,6 +632,7 @@ class TournamentsController extends Controller
         $id_tournament = $request->request->get('tournament_id_player');
         $id_pairing = $request->request->get('pairing_id_player');
         $winner = $request->request->get('select_winner_player');
+        $user_result = $request->request->get('player_username');
 
         if($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Obtenemos la imagen
@@ -641,9 +642,9 @@ class TournamentsController extends Controller
             $image_result->move("uploads/results",$file_name);
 
             $pairing = $repository_pairing->findOneBy(array('id' => $id_pairing));
-
+            
             // Obtenemos el resultado
-            if($pairing->getPlayerOne()->getUsername() === $winner) {
+            if($pairing->getPlayerOne()->getUsername() === $user_result) {
                 $pairing->setResultPlayerOne($winner);
                 $pairing->setImageResultPlayerOne($file_name);
             }

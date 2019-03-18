@@ -82,14 +82,14 @@
                                         <td>
                                             {% if partida['playerOne'] == app.user.username %}
                                                 {% if partida['resultPOne'] is not defined or partida['resultPOne'] is null %}
-                                                <button id="btn_send_result" data-one="{{ partida['playerOne'] }}" data-two="{{ partida['playerTwo'] }}" data-tournament="{{ tournament.id }}" data-pairing="{{ partida['id'] }}" type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal">Enviar resultado</button>
+                                                <button id="btn_send_result" data-user="{{ partida['playerOne'] }}" data-one="{{ partida['playerOne'] }}" data-two="{{ partida['playerTwo'] }}" data-tournament="{{ tournament.id }}" data-pairing="{{ partida['id'] }}" type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal">Enviar resultado</button>
                                                 {% else %}
                                                 Ya ha enviado un resultado de este emparejamiento
                                                 {% endif %}
                                             {% endif %}
                                             {% if partida['playerTwo'] == app.user.username %}
                                                 {% if partida['resultPTwo'] is not defined or partida['resultPTwo'] is null %}
-                                                <button id="btn_send_result" data-one="{{ partida['playerOne'] }}" data-two="{{ partida['playerTwo'] }}" data-tournament="{{ tournament.id }}" data-pairing="{{ partida['id'] }}" type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal">Enviar resultado</button>
+                                                <button id="btn_send_result" data-user="{{ partida['playerTwo'] }}" data-one="{{ partida['playerOne'] }}" data-two="{{ partida['playerTwo'] }}" data-tournament="{{ tournament.id }}" data-pairing="{{ partida['id'] }}" type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal">Enviar resultado</button>
                                                 {% else %}
                                                 Ya ha enviado un resultado de este emparejamiento
                                                 {% endif %}
@@ -144,6 +144,7 @@
             <div class="form-group">
                 <input id="tournament_id_player" name="tournament_id_player" type="hidden" value="" readonly>
                 <input id="pairing_id_player" name="pairing_id_player" type="hidden" value="" readonly>
+                <input id="player_username" name="player_username" type="hidden" value="" readonly>
                 <label for="select_winner_player">Ganador</label>
                 <select name="select_winner_player" class="form-control" id="select_winner_player" required>
                 </select><br>
@@ -218,6 +219,7 @@
             
             var playerOne = $(this).data('one');
             var playerTwo = $(this).data('two');
+            var user = $(this).data('user');
             var select_winner_player = document.getElementById('select_winner_player');
             var tournament_id = $(this).data('tournament');
             var pairing_id = $(this).data('pairing');
@@ -234,6 +236,7 @@
 
             $('#tournament_id_player').val(tournament_id);
             $('#pairing_id_player').val(pairing_id);
+            $('#player_username').val(user);
         });
 
         $(".btn_show_results").click(function() {
